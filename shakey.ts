@@ -1,10 +1,35 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const { prefix, token } = require('./config.json');
-var fs = require('fs'); 
+//var fs = require('fs'); 
+import { appendFile } from 'fs';
 
 var fsdateObj = new Date();
-illegalChannels = ["709130030164475907"]
+const illegalChannels = ["709130030164475907"]
+var fsmonth;
+var fsday;
+var fsyear;
+
+var finalfswrite;
+
+var fsnewdate;
+
+var inviteCounterForServer;
+
+var illegalPrint;
+
+let commandLower = "";
+
+var burnlanguagelmao;
+
+var bruhserverlog;
+
+var bruhserverid;
+
+var bruhservername;
+
+var msgnextlog;
+
 function logFloorGangText(appendtxt) {
   fsdateObj = new Date();
   fsmonth =fsdateObj.getUTCMonth() + 1; //months from 1-12
@@ -19,7 +44,7 @@ function logFloorGangText(appendtxt) {
 
   finalfswrite =fsdateObj.getUTCHours() + ":" +fsdateObj.getUTCMinutes() + ":" +fsdateObj.getUTCSeconds()  + " - " + appendtxt + "\r\n";
 
-  fs.appendFile( "logs/" + fsnewdate + '.log.txt', finalfswrite, function (err) {
+  appendFile( "logs/" + fsnewdate + '.log.txt', finalfswrite, function (err) {
     if (err) return console.log(err);
     console.log('Appended!');
  });
@@ -60,6 +85,10 @@ client.on('message', async msg => {
         m.edit(`Pong! Latency is ${m.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
       }
   
+      if(command === "win") {
+        return msg.reply("Another win for Sweden! :flag_se:")
+      }
+
       if (command === 'guild' || command === 'server') {
         if (!args.length) {
           return msg.channel.send(`Please provide a valid guild id, ${msg.author}!`);
@@ -93,6 +122,11 @@ client.on('message', async msg => {
         msg.guild.fetchInvites()
         .then(
           invites => invites.forEach(function(eachInviteBurn){ 
+            //if no invites deteced
+            if (invites.size == 0) {
+              return msg.channel.send("No valid invites found to burn! Looks like an empty bonfire....")
+            } else
+            {
             burnlanguagelmao = "eachinviteburn" + eachInviteBurn.code + "{ maxage" + eachInviteBurn.maxAge + "}" +
              " expires at: " + eachInviteBurn.expiresAt + 
               "{created at " + eachInviteBurn.createdAt + "}" + 
@@ -102,6 +136,7 @@ client.on('message', async msg => {
             logFloorGangText(burnlanguagelmao);
             eachInviteBurn.delete("Purged by Shakey via Fl00r!");
             return msg.channel.send("BURNED " + eachInviteBurn.code + "!");
+            }
         }) 
         )
         .catch(console.error);
@@ -123,7 +158,7 @@ client.on('message', async msg => {
     bruhservername = msg.guild.name;
     bruhserverlog = "[Server:" + bruhserverid + "|" + bruhservername + "]";
   }
-  msgnextlog =  illegalPrint + "User:" + msg.author + ")" + msg.cleanContent + " [Channel:" + msg.channel + "] " + "{" + msg.content + "}" + "~ {Username:" + msg.author.username +  "|Tag:" + msg.author.tag + "}" + bruhserverlog + "{Msg id:" + msg.id + "}";
+  msgnextlog =  illegalPrint + "User:" + msg.author + ")" + msg.cleanContent + " [Channel:" + msg.channel + "] " + "{" + msg.content + "}" + "~ {Username:" + msg.author.username +  "|Tag:" + msg.author.tag + "}" + bruhserverlog + "{Msg id:" + msg.id + "}" + "Embed:" + msg.embeds;
   console.log(msgnextlog);
   logFloorGangText(msgnextlog);
 },

@@ -1,4 +1,4 @@
 while true
 do
-node index.js
+node shakey.js
 done
