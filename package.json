@@ -10,5 +10,8 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^14.0.1"
+  },
+  "dependencies": {
+    "edit-json-file": "^1.4.0"
   }
 }
