@@ -133,14 +133,17 @@ client.on('message', async msg => {
       commandLower =  command.toLowerCase;
 
       if (command === "inviteme") {
-        msg.channel.send("I'm thrilled I can be part of your next community! 😊🌌");
-        msg.channel.send("https://discord.com/oauth2/authorize?client_id=709113475929997342&scope=bot&permissions=8");
+        msg.channel.send("I'm thrilled I can be part of your next community! 😊🌌 \n https://discord.com/oauth2/authorize?client_id=709113475929997342&scope=bot&permissions=8");
       }
 
       //BIG FAT HELP COMMAND
       if (command == "help") {
         msg.author.send(helpFrontPageCombined);
+
+        //if not DMs
+        if (!(msg.guild == null)) {
         msg.reply("Check your DMs!");
+        }
       }
 
       //journalist check commands
