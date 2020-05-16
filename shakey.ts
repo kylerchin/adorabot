@@ -96,6 +96,21 @@ function logEventsJSON() {
   */
 }
 
+const helpFrontPage = [
+  "`shake help`: Sends this message.",
+  "`shake burn`: Burns all invites! Use this command with caution. You must have `shake set everyoneburn true` on for your guild or already be able to delete invites via the Server Settings",
+  "`shake invites`: Counts number of invites in your server.",
+  "`shake ping`: Pong!",
+  "`shake set`: Has settings, do `shake help set` for more info.",
+  "`shake win`: ABSOLUTE WIN!",
+  "`shake inviteme`: Add Tambourine to your next server!"
+]
+
+let helpFrontPageCombined = "";
+
+//combine all messages to prevent spam
+helpFrontPage.forEach(element => helpFrontPageCombined = helpFrontPageCombined + " \n " + element);
+
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
@@ -124,14 +139,8 @@ client.on('message', async msg => {
 
       //BIG FAT HELP COMMAND
       if (command == "help") {
-        msg.author.send("`shake help`: Sends this message.");
-        msg.author.send("`shake burn`: Burns all invites! Use this command with caution. You must have `shake set everyoneburn true` on for your guild or already be able to delete invites via the Server Settings");
-        msg.author.send("`shake invites`: Counts number of invites in your server.");
-        msg.author.send("`shake ping`: Pong!");
-        msg.author.send("`shake set`: Has settings, do `shake help set` for more info.");
-        msg.author.send("`shake win`: ABSOLUTE WIN!");
-        msg.author.send("`shake inviteme`: Add Tambourine to your next server!");
-        msg.reply("Check your DMs!")
+        msg.author.send(helpFrontPageCombined);
+        msg.reply("Check your DMs!");
       }
 
       //journalist check commands
