@@ -117,6 +117,19 @@ client.on('message', async msg => {
       console.log("Command is " + command)
       commandLower =  command.toLowerCase;
 
+
+
+      //BIG FAT HELP COMMAND
+      if (command == "help") {
+        msg.author.send("`shake help`: Sends this message.");
+        msg.author.send("`shake burn`: Burns all invites! Use this command with caution. You must have `shake set everyoneburn true` on for your guild or already be able to delete invites via the Server Settings");
+        msg.author.send("`shake invites`: Counts number of invites in your server.");
+        msg.author.send("`shake ping`: Pong!");
+        msg.author.send("`shake set`: Has settings, do `shake help set` for more info.");
+        msg.author.send("`shake win`: ABSOLUTE WIN!");
+        msg.reply("Check your DMs!")
+      }
+
       //journalist check commands
       if (command === 'user') {
         if (!args.length) {
