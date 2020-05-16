@@ -5,6 +5,11 @@ const { prefix, token } = require('./config.json');
 import { appendFile } from 'fs';
 const editJsonFile = require("edit-json-file");
 
+//Stores Server wide settings such as shake set lmao
+let serverSettings = editJsonFile(`${__dirname}/settings/servers.json`);
+serverSettings.set("planet", "Earth");
+serverSettings.save();
+
 //datadog
 var StatsD = require('node-dogstatsd').StatsD;
 var dogstatsd = new StatsD();
@@ -122,6 +127,32 @@ client.on('message', async msg => {
         }
       }
 
+      if (command === "set" && args[0] == "everyoneburn") {
+
+        if (msg.guild == null) {
+          return msg.reply("BRUH, this a DM?");
+        }
+
+        //If it's actually a server
+        //only admins can toggle this
+        if( msg.member.hasPermission('ADMINISTRATOR')) {
+          if (args[1] === "true") {
+            //Allow Everyone on this server to burn
+            serverSettings.set("servers." + msg.guild.id + ".everyoneburn", true);
+            serverSettings.save();
+            msg.reply("Everyone in this guild can now burn all invites.");
+          } else {
+           if (args[1] === "false") {
+            //Prevent anyone withoug MANAGE_GUILD on this server to burn
+            serverSettings.set("servers." + msg.guild.id + ".everyoneburn", false);
+            serverSettings.save();
+            msg.reply("Now, only those that can already edit the invites tab can burn all invites.");
+          } else {
+            msg.reply("Only Admins can toggle `everyoneburn`");
+          }}
+        }
+      }
+
       if(command === "ping") {
         // Calculates ping between sending a message and editing it, giving a nice round-trip latency.
         // The second ping is an average latency between the bot and the websocket server (one-way, not round-trip)
@@ -130,7 +161,7 @@ client.on('message', async msg => {
       }
   
       if(command === "win") {
-        return msg.reply("Another win for Sweden! :flag_se:")
+        return msg.channel.send("Another win for Sweden! :flag_se:")
       }
 
       if (command === 'guild' || command === 'server') {
@@ -171,11 +202,17 @@ client.on('message', async msg => {
         msg.guild.fetchInvites()
         .then(
           invites => 
-          {
-            if (invites.size == 0) {
-              dogstatsd.increment('tambourine.burn.empty');
-              return msg.channel.send("No valid invites found to burn! Looks like an empty bonfire....");
-            } else {
+          { 
+               if( msg.member.hasPermission('MANAGE_GUILD') || serverSettings.get("servers." + msg.guild.id + ".everyoneburn") === true ) {
+              //if(!msg.member.roles.some(r=>["Administrator", "Moderator"].includes(r.name)) )
+              //return msg.reply("Sorry, you don't have permissions to use this! You need the role `TamboBurn` to delete all invites.");
+
+              if (invites.size == 0) {
+                dogstatsd.increment('tambourine.burn.empty');
+                return msg.channel.send("No valid invites found to burn! Looks like an empty bonfire....");
+                msg.channel.send("Admins can use `shake set everyoneburn true` to allow everyone to burn messages and `shake set everyoneburn false` to turn it off");
+              } 
+
               dogstatsd.increment('tambourine.burn.success');
               invites.forEach(function(eachInviteBurn){ 
                 dogstatsd.increment('tambourine.burn.inviteburn');
@@ -191,8 +228,12 @@ client.on('message', async msg => {
                 return msg.channel.send("BURNED " + eachInviteBurn.code + "!");
                 
               })
+
+              msg.channel.send("Admins can use `shake set everyoneburn true` to allow everyone to burn messages and `shake set everyoneburn false` to turn it off");
+            } else {
+              msg.reply("You need `MANAGE_GUILD` priv or `everyoneburn` needs to be `true`!");
+              msg.channel.send("Admins can use `shake set everyoneburn true` to allow everyone to burn messages and `shake set everyoneburn false` to turn it off");
             }
-        
           }
         )
         .catch(console.error);

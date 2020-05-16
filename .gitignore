@@ -2,6 +2,7 @@ logs
 config.json
 node_modules
 shakey.js
+settings/
 
 # Logs
 logs
