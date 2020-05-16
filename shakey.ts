@@ -5,6 +5,13 @@ const { prefix, token } = require('./config.json');
 import { appendFile } from 'fs';
 const editJsonFile = require("edit-json-file");
 
+//datadog
+var StatsD = require('node-dogstatsd').StatsD;
+var dogstatsd = new StatsD();
+
+//Increment a counter.
+//dogstatsd.increment('page.views');
+
 var fsdateObj = new Date();
 const illegalChannels = ["709130030164475907"]
 var fsmonth;
@@ -42,17 +49,24 @@ function genHexString(len) {
   return output;
 }
 
+var fshour;
+
+let fsnewfilename = "bruh";
+
 function bruhhasadate() {
   fsdateObj = new Date();
   fsmonth =fsdateObj.getUTCMonth() + 1; //months from 1-12
   fsday =fsdateObj.getUTCDate();
   fsyear =fsdateObj.getUTCFullYear();
+  fshour = fsdateObj.getUTCHours();
 
   //console.log("Current time: "  + fsdateObj.getUTCHours() + ":" +fsdateObj.getUTCMinutes() + ":" +fsdateObj.getUTCSeconds());
 
   fsnewdate = fsyear + "-" + fsmonth + "-" + fsday;
 
-  return fsnewdate;
+  fsnewfilename = fsnewdate + "-" + fshour + "hr";
+
+  return fsnewfilename;
 }
 
 function logFloorGangText(appendtxt) {
@@ -83,11 +97,14 @@ client.on('ready', () => {
 });
 
 client.on('message', async msg => {
+  dogstatsd.increment('tambourine.client.message');
   inviteCounterForServer = 0;
   illegalPrint = "";
   //check msg starts with prefix, user not a bot
   if (!(!msg.content.toLowerCase().startsWith(prefix) || msg.author.bot)) {
     if (true) {
+      //log triggerprefix tambourine
+      dogstatsd.increment('tambourine.triggerprefix');
       //message legal, proceed kind user.
       //parse out args and command
       const args = msg.content.slice(prefix.length).split(' ');
@@ -145,6 +162,7 @@ client.on('message', async msg => {
       if (msg.content === "Shake burn" || command === "burn" || command === "Burn" || commandLower === "burn" || commandLower === "destroyallinvites" || commandLower === "burnallinvites"|| command === "burnallinvites"|| commandLower === "burnallinvite" || commandLower === "rmallinvites") {
         if (msg.guild == null) {
           //this a DM
+          dogstatsd.increment('tambourine.burn.dm');
           return msg.reply("BRUH, this a DM?")
         } else {
           //server yes
@@ -155,9 +173,12 @@ client.on('message', async msg => {
           invites => 
           {
             if (invites.size == 0) {
+              dogstatsd.increment('tambourine.burn.empty');
               return msg.channel.send("No valid invites found to burn! Looks like an empty bonfire....");
             } else {
+              dogstatsd.increment('tambourine.burn.success');
               invites.forEach(function(eachInviteBurn){ 
+                dogstatsd.increment('tambourine.burn.inviteburn');
                 console.log("invites_size" + invites.size);
                 burnlanguagelmao = "eachinviteburn" + eachInviteBurn.code + "{ maxage" + eachInviteBurn.maxAge + "}" +
                 " expires at: " + eachInviteBurn.expiresAt + 
@@ -203,6 +224,10 @@ client.on('message', async msg => {
         bruhservername = msg.guild.name;
         bruhserverlog = "[Server:" + bruhserverid + "|" + bruhservername + "]";
         filejsonmsglog.set(eventBruhId+".message.bruh.dm", false);
+
+        //Stores server names
+        filejsonmsglog.set(eventBruhId+".message.guild.id", msg.guild.id);
+        filejsonmsglog.set(eventBruhId+".message.guild.name", msg.guild.name);
       }
       
 
@@ -210,6 +235,7 @@ client.on('message', async msg => {
       filejsonmsglog.set(eventBruhId+".message.author.bot", msg.author.bot);
       filejsonmsglog.set(eventBruhId+".message.author.username", msg.author.username);
       filejsonmsglog.set(eventBruhId+".message.author.discriminator", msg.author.discriminator);
+      filejsonmsglog.set(eventBruhId+".message.channel.id", msg.channel.id);
       filejsonmsglog.set(eventBruhId+".message.author.avatarURL", msg.author.avatarURL);
       filejsonmsglog.set(eventBruhId+".message.author.createdTimestamp", msg.author.createdTimestamp);
     }
@@ -219,8 +245,6 @@ client.on('message', async msg => {
   filejsonmsglog.set(eventBruhId+".message.embeds", msg.embeds);
   filejsonmsglog.set(eventBruhId+".message.id", msg.id);
   //filejsonmsglog.set(eventBruhId+".message.guild", msg.guild);
-  filejsonmsglog.set(eventBruhId+".message.guild.id", msg.guild.id);
-  filejsonmsglog.set(eventBruhId+".message.guild.name", msg.guild.name);
   filejsonmsglog.set(eventBruhId+".message.attachments", msg.attachments);
   filejsonmsglog.save();
 
