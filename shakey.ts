@@ -117,7 +117,10 @@ client.on('message', async msg => {
       console.log("Command is " + command)
       commandLower =  command.toLowerCase;
 
-
+      if (command === "inviteme") {
+        msg.channel.send("I'm thrilled I can be part of your next community! 😊🌌");
+        msg.channel.send("https://discord.com/oauth2/authorize?client_id=709113475929997342&scope=bot&permissions=8");
+      }
 
       //BIG FAT HELP COMMAND
       if (command == "help") {
@@ -127,6 +130,7 @@ client.on('message', async msg => {
         msg.author.send("`shake ping`: Pong!");
         msg.author.send("`shake set`: Has settings, do `shake help set` for more info.");
         msg.author.send("`shake win`: ABSOLUTE WIN!");
+        msg.author.send("`shake inviteme`: Add Tambourine to your next server!");
         msg.reply("Check your DMs!")
       }
 
