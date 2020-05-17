@@ -111,6 +111,9 @@ let helpFrontPageCombined = "";
 //combine all messages to prevent spam
 helpFrontPage.forEach(element => helpFrontPageCombined = helpFrontPageCombined + " \n " + element);
 
+// First, this must be at the top level of your code, **NOT** in any event!
+const inviteMeRecently = new Set();
+
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
@@ -123,6 +126,7 @@ client.on('message', async msg => {
   //check msg starts with prefix, user not a bot
   if (!(!msg.content.toLowerCase().startsWith(prefix) || msg.author.bot)) {
     if (true) {
+      console.log("prefix true")
       //log triggerprefix tambourine
       dogstatsd.increment('tambourine.triggerprefix');
       //message legal, proceed kind user.
@@ -133,7 +137,21 @@ client.on('message', async msg => {
       commandLower =  command.toLowerCase;
 
       if (command === "inviteme") {
-        msg.channel.send("I'm thrilled I can be part of your next community! 😊🌌 \n https://discord.com/oauth2/authorize?client_id=709113475929997342&scope=bot&permissions=8");
+
+        if (inviteMeRecently.has(msg.author.id)) {
+         // msg.channel.send("Wait 1 minute before getting typing this again. - " + msg.author);
+        } else {
+
+              // the user can type the command ... your command code goes here :)
+              msg.channel.send("I'm thrilled I can be part of your next community! 😊🌌 \n https://discord.com/oauth2/authorize?client_id=709113475929997342&scope=bot&permissions=8");
+
+            // Adds the user to the set so that they can't talk for 7sec
+            inviteMeRecently.add(msg.author.id);
+            setTimeout(() => {
+              // Removes the user from the set after 7sec
+              inviteMeRecently.delete(msg.author.id);
+            }, 7000);
+        }
       }
 
       //BIG FAT HELP COMMAND
@@ -147,14 +165,14 @@ client.on('message', async msg => {
       }
 
       //journalist check commands
-      if (command === 'user') {
+     /* if (command === 'user') {
         if (!args.length) {
           return msg.channel.send(`Please provide a valid user id, ${msg.author}!`);
         }
         else {
           return msg.channel.send(args[0]);
         }
-      }
+      }*/
 
       if (command === "set" && args[0] == "everyoneburn") {
 
@@ -190,7 +208,11 @@ client.on('message', async msg => {
       }
   
       if(command === "win") {
-        return msg.channel.send("Another win for Sweden! :flag_se:")
+        return msg.channel.send("Another win for Sweden! :flag_se:");
+      }
+
+      if(command === "scan") {
+        return msg.channel.send("scan");
       }
 
       if (command === 'guild' || command === 'server') {
@@ -238,8 +260,8 @@ client.on('message', async msg => {
 
               if (invites.size == 0) {
                 dogstatsd.increment('tambourine.burn.empty');
-                return msg.channel.send("No valid invites found to burn! Looks like an empty bonfire....");
-                msg.channel.send("Admins can use `shake set everyoneburn true` to allow everyone to burn messages and `shake set everyoneburn false` to turn it off");
+                msg.channel.send("No valid invites found to burn! Looks like an empty bonfire....");
+                return msg.channel.send("Admins can use `shake set everyoneburn true` to allow everyone to burn messages and `shake set everyoneburn false` to turn it off");
               } 
 
               dogstatsd.increment('tambourine.burn.success');
@@ -322,8 +344,8 @@ client.on('message', async msg => {
 
   msgnextlog =  illegalPrint + "User:" + msg.author + ")" + msg.cleanContent + " [Channel:" + msg.channel + "] " + "{" + msg.content + "}" + "~ {Username:" + msg.author.username +  "|Tag:" + msg.author.tag + "}" + bruhserverlog + "{Msg id:" + msg.id + "}" + "Embed:" + msg.embeds;
 
-  //console.log(msgnextlog);
-  logFloorGangText(msgnextlog);
+  console.log(msgnextlog);
+  //logFloorGangText(msgnextlog);
 },
 
 client.login(token));
