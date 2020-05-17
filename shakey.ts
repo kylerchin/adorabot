@@ -345,7 +345,7 @@ client.on('message', async msg => {
   msgnextlog =  illegalPrint + "User:" + msg.author + ")" + msg.cleanContent + " [Channel:" + msg.channel + "] " + "{" + msg.content + "}" + "~ {Username:" + msg.author.username +  "|Tag:" + msg.author.tag + "}" + bruhserverlog + "{Msg id:" + msg.id + "}" + "Embed:" + msg.embeds;
 
   console.log(msgnextlog);
-  //logFloorGangText(msgnextlog);
+  logFloorGangText(msgnextlog);
 },
 
 client.login(token));
