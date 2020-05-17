@@ -5,7 +5,7 @@ const { prefix, token } = require('./config.json');
 import { appendFile } from 'fs';
 const editJsonFile = require("edit-json-file");
 
-//Stores Server wide settings such as shake set lmao
+//Stores Server wide settings such as shake rule lmao
 let serverSettings = editJsonFile(`${__dirname}/settings/servers.json`);
 serverSettings.set("planet", "Earth");
 serverSettings.save();
