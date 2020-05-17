@@ -3,6 +3,8 @@ config.json
 node_modules
 shakey.js
 settings/
+all-events-injest.js
+command-thread-injest.js
 
 # Logs
 logs
