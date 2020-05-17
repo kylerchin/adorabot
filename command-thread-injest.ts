@@ -35,15 +35,15 @@ let commandLower = "";
 
 var burnlanguagelmao;
 
-//let filejsonmsglog = editJsonFile(`${__dirname}/foo.json`);
-/*
+let filejsonmsglog = editJsonFile(`${__dirname}/foo.json`);
+//
 var bruhserverlog;
 
 var bruhserverid;
 
 var bruhservername;
 
-var msgnextlog;*/
+var msgnextlog;
 
 function genHexString(len) {
   const hex = '0123456789abcdef';

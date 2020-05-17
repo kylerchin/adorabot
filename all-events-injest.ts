@@ -24,7 +24,7 @@ var fsnewdate;
 
 var illegalPrint;
 
-//let filejsonmsglog = editJsonFile(`${__dirname}/foo.json`);
+let filejsonmsglog = editJsonFile(`${__dirname}/foo.json`);
 
 var bruhserverlog;
 
