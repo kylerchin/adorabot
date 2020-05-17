@@ -113,6 +113,8 @@ helpFrontPage.forEach(element => helpFrontPageCombined = helpFrontPageCombined +
 
 // First, this must be at the top level of your code, **NOT** in any event!
 const inviteMeRecently = new Set();
+const activatedFrontHelpRecently = new Set();
+const activatedFrontHelpSimp = new Set();
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -160,14 +162,55 @@ client.on('message', async msg => {
           msg.channel.send("`shake rule everyoneburn true` to allow everyone to use `shake burn` which burns all invites. \n `shake rule everyoneburn false` to only allow users that can already delete invites via server settings to execute `shake burn`");
           msg.channel.send('`shake rule everyoneburn` to check the status of the rule.');
         } else {
-          //No valid arg, show front page instead
-          msg.author.send(helpFrontPageCombined);
 
-          //if not DMs
-          if (!(msg.guild == null)) {
-            //Tell user to check DMs
-          msg.reply("Check your DMs!");
+          //If user has activated `shake help` recently.
+          if (activatedFrontHelpRecently.has(msg.author.id)) {
+            //If user has also gotten simp message
+            if (activatedFrontHelpSimp.has(msg.author.id)) {
+                  //msg.channel.send("Wait 1 minute before getting typing this again. - " + msg.author);
+
+                  //Too much simping, just ignore user.
+            } else {
+              //user has not recieved simp message recently...
+
+
+            //tell them not to simp.
+            msg.reply("BRUH - STOP SIMPING!!!! plz wait a while before doing that again. Just read what's in your DM for now.");
+      
+              // Adds the user to the set so that they can't get simp message anymore
+              activatedFrontHelpSimp.add(msg.author.id);
+              setTimeout(() => {
+                // Removes the user from the simp help set
+                activatedFrontHelpSimp.delete(msg.author.id);
+              }, 60000);
           }
+
+          } else {
+
+                // the user can type the command ... your command code goes here :)
+                //run help front page
+                if (true) {
+                  //No valid arg, show front page instead
+                  msg.author.send(helpFrontPageCombined);
+
+                  //if not DMs
+                  if (!(msg.guild == null)) {
+                    //Tell user to check DMs
+                  msg.reply("Check your DMs!");
+                  }
+
+                }
+
+              // Adds the user to the set so that they can't talk for a minute
+              activatedFrontHelpRecently.add(msg.author.id);
+              setTimeout(() => {
+                // Removes the user from the set after a minute
+                activatedFrontHelpRecently.delete(msg.author.id);
+                //also allows user to get simp message again after 1 min
+                activatedFrontHelpSimp.delete(msg.author.id);
+              }, 60000);
+    }
+
         }
       }
 
