@@ -98,10 +98,10 @@ function logEventsJSON() {
 
 const helpFrontPage = [
   "`shake help`: Sends this message.",
-  "`shake burn`: Burns all invites! Use this command with caution. You must have `shake set everyoneburn true` on for your guild or already be able to delete invites via the Server Settings",
+  "`shake burn`: Burns all invites! Use this command with caution. You must have `shake rule everyoneburn true` on for your guild or already be able to delete invites via the Server Settings",
   "`shake invites`: Counts number of invites in your server.",
   "`shake ping`: Pong!",
-  "`shake set`: Has settings, do `shake help set` for more info.",
+  "`shake rule`: Has settings, do `shake help rule` for more info.",
   "`shake win`: ABSOLUTE WIN!",
   "`shake inviteme`: Add Tambourine to your next server!"
 ]
@@ -143,7 +143,7 @@ client.on('message', async msg => {
         } else {
 
               // the user can type the command ... your command code goes here :)
-              msg.channel.send("I'm thrilled I can be part of your next community! 😊🌌 \n https://discord.com/oauth2/authorize?client_id=709113475929997342&scope=bot&permissions=8");
+              msg.channel.send("I'm thrilled I can be part of your next community! 😊🌌 \n https://discord.com/oauth2/authorize?client_id=711405398506078260&scope=bot&permissions=8");
 
             // Adds the user to the set so that they can't talk for 7sec
             inviteMeRecently.add(msg.author.id);
@@ -156,11 +156,18 @@ client.on('message', async msg => {
 
       //BIG FAT HELP COMMAND
       if (command == "help") {
-        msg.author.send(helpFrontPageCombined);
+        if (args[0] === "rule" || args[0] === "rules") {
+          msg.channel.send("`shake rule everyoneburn true` to allow everyone to use `shake burn` which burns all invites. \n `shake rule everyoneburn false` to only allow users that can already delete invites via server settings to execute `shake burn`");
+          msg.channel.send('`shake rule everyoneburn` to check the status of the rule.');
+        } else {
+          //No valid arg, show front page instead
+          msg.author.send(helpFrontPageCombined);
 
-        //if not DMs
-        if (!(msg.guild == null)) {
-        msg.reply("Check your DMs!");
+          //if not DMs
+          if (!(msg.guild == null)) {
+            //Tell user to check DMs
+          msg.reply("Check your DMs!");
+          }
         }
       }
 
@@ -174,29 +181,32 @@ client.on('message', async msg => {
         }
       }*/
 
-      if (command === "set" && args[0] == "everyoneburn") {
+      if ((command === "rule" || command === "rules") && args[0] == "everyoneburn") {
 
         if (msg.guild == null) {
           return msg.reply("BRUH, this a DM?");
         }
 
-        //If it's actually a server
+       if( msg.member.hasPermission('ADMINISTRATOR')) {
+           //If it's actually a server
         //only admins can toggle this
-        if( msg.member.hasPermission('ADMINISTRATOR')) {
-          if (args[1] === "true") {
+          if (args[1] === "true" || args[1] === "True" || args[1] === "yes" || args[1] === "y") {
             //Allow Everyone on this server to burn
             serverSettings.set("servers." + msg.guild.id + ".everyoneburn", true);
             serverSettings.save();
             msg.reply("Everyone in this guild can now burn all invites.");
           } else {
-           if (args[1] === "false") {
+           if (args[1] === "false" || args[1] === "no" || args[1] === "n") {
             //Prevent anyone withoug MANAGE_GUILD on this server to burn
             serverSettings.set("servers." + msg.guild.id + ".everyoneburn", false);
             serverSettings.save();
             msg.reply("Now, only those that can already edit the invites tab can burn all invites.");
-          } else {
-            msg.reply("Only Admins can toggle `everyoneburn`");
-          }}
+          }
+        }
+        }
+        //not an admin
+        else {
+          msg.reply("Only Admins can toggle `everyoneburn`");
         }
       }
 
@@ -261,7 +271,7 @@ client.on('message', async msg => {
               if (invites.size == 0) {
                 dogstatsd.increment('tambourine.burn.empty');
                 msg.channel.send("No valid invites found to burn! Looks like an empty bonfire....");
-                return msg.channel.send("Admins can use `shake set everyoneburn true` to allow everyone to burn messages and `shake set everyoneburn false` to turn it off");
+                return msg.channel.send("Admins can use `shake rule everyoneburn true` to allow everyone to burn messages and `shake rule everyoneburn false` to only allow those that can already delete invites to burn");
               } 
 
               dogstatsd.increment('tambourine.burn.success');
@@ -276,14 +286,14 @@ client.on('message', async msg => {
                 console.log(burnlanguagelmao)
                 logFloorGangText(burnlanguagelmao);
                 eachInviteBurn.delete("Purged by Shakey via Fl00r!");
-                return msg.channel.send("BURNED " + eachInviteBurn.code + "!");
+                msg.channel.send("BURNED " + eachInviteBurn.code + "!");
                 
               })
 
-              msg.channel.send("Admins can use `shake set everyoneburn true` to allow everyone to burn messages and `shake set everyoneburn false` to turn it off");
+              return msg.channel.send("Admins can use `shake rule everyoneburn true` to allow everyone to burn messages and `shake rule everyoneburn false` to only allow those that can already delete invites to burn");
             } else {
               msg.reply("You need `MANAGE_GUILD` priv or `everyoneburn` needs to be `true`!");
-              msg.channel.send("Admins can use `shake set everyoneburn true` to allow everyone to burn messages and `shake set everyoneburn false` to turn it off");
+              return msg.channel.send("Admins can use `shake rule everyoneburn true` to allow everyone to burn messages and `shake rule everyoneburn false` to only allow those that can already delete invites to burn");
             }
           }
         )
