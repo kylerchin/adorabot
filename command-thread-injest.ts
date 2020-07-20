@@ -103,7 +103,8 @@ const helpFrontPage = [
   "`shake ping`: Pong!",
   "`shake rule`: Has settings, do `shake help rule` for more info.",
   "`shake win`: ABSOLUTE WIN!",
-  "`shake inviteme`: Add Tambourine to your next server!"
+  "`shake inviteme`: Add Tambourine to your next server!",
+  "`shake fetchinvite <invitelink>`: Fetches invite link info such as users online, guild name, etc."
 ]
 
 let helpFrontPageCombined = "";
@@ -146,7 +147,7 @@ client.on('message', async msg => {
         } else {
 
               // the user can type the command ... your command code goes here :)
-              msg.channel.send("I'm thrilled I can be part of your next community! 😊🌌 \n https://discord.com/oauth2/authorize?client_id=711405398506078260&scope=bot&permissions=8");
+              msg.channel.send("I'm thrilled I can be part of your next community! 😊🌌 \n https://shake.yk3music.com/");
 
             // Adds the user to the set so that they can't talk for 7sec
             inviteMeRecently.add(msg.author.id);
@@ -169,6 +170,7 @@ client.on('message', async msg => {
             //If user has also gotten simp message
             if (activatedFrontHelpSimp.has(msg.author.id)) {
                   //msg.channel.send("Wait 1 minute before getting typing this again. - " + msg.author);
+                  dogstatsd.increment('tambourine.simp');
 
                   //Too much simping, just ignore user.
             } else {
@@ -177,6 +179,7 @@ client.on('message', async msg => {
 
             //tell them not to simp.
             msg.reply("BRUH - STOP SIMPING!!!! plz wait a while before doing that again. Just read what's in your DM for now.");
+            dogstatsd.increment('tambourine.simpwarn');
       
               // Adds the user to the set so that they can't get simp message anymore
               activatedFrontHelpSimp.add(msg.author.id);
@@ -188,6 +191,7 @@ client.on('message', async msg => {
 
           } else {
 
+            dogstatsd.increment('tambourine.help.front');
                 // the user can type the command ... your command code goes here :)
                 //run help front page
                 if (true) {
@@ -223,6 +227,37 @@ client.on('message', async msg => {
         else {
           return msg.channel.send(args[0]);
         }
+      }*/
+
+      if ((command === "foj")) {
+        client.fetchInvite("https://discord.gg/pUmpjn")
+        .then(invite => msg.channel.send(`Obtained invite: ${invite.code} going to ${invite.guild.name} | ${invite.channel} \n Online: ${invite.presenceCount} Total: ${invite.memberCount}`))
+        .catch(console.error);
+      }
+
+      if((command === "fetchinvite")) {
+
+        if (true) {
+          console.log(args[0])
+          client.fetchInvite(args[0])
+          .then(invite => {
+            msg.channel.send(`Obtained invite: \`${invite.code}\` going to ${invite.guild.name} | ${invite.channel}`);
+            msg.channel.send(`Online: ${invite.presenceCount} Total: ${invite.memberCount}`);
+            if (invite.inviter != null) {
+              msg.channel.send(`Inviter: ${invite.inviter.id}`)
+            }
+            //msg.channel.send(`Invite Created at: ${invite.createdAt}`)
+            if(invite.guild.available) {}
+            //msg.channel.send(`${invite.guild.iconURL({format: ""})}`)
+          }
+          )
+          .catch ()
+          }
+        }
+
+      /*
+      if((command === "fetchInvite")) {
+        client.fetchInvite("")
       }*/
 
       if ((command === "rule" || command === "rules") && args[0] == "everyoneburn") {
