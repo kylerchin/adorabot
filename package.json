@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node command-thread-injest.js",
     "compile": "tsc --extendedDiagnostics true command-thread-injest.ts && tsc --extendedDiagnostics true all-events-injest.ts"
   },
   "author": "",

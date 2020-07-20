@@ -1,6 +1,8 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const { prefix, token } = require('./config.json');
+//const { prefix, token } = require('./config.json');
+const prefix = "shake ";
+const token = process.env.BOT_TOKEN;
 //var fs = require('fs'); 
 import { appendFile } from 'fs';
 const editJsonFile = require("edit-json-file");
