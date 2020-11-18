@@ -1,19 +1,41 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const { prefix, token } = require('./config.json');
+const { prefix, token, youtubeApiKeys, googlecloudprojectid, googlecloudkeyFilename } = require('./config.json');
 //const prefix = "shake ";
 //const token = process.env.BOT_TOKEN;
 //var fs = require('fs'); 
 import { appendFile } from 'fs';
+
+import { sendYtCountsEmbed } from "./modules/sendYtEmbed"; 
+
 const editJsonFile = require("edit-json-file");
+
+const requestjson = require('request-json');
+
+const request = require('request');
+
+const wiktionary = require('wiktionary')
 
 const jsdom = require('jsdom');
 var dom = new jsdom.JSDOM();
 var window = dom.window;
 var document = window.document;
 
+const https = require('https')
+
 var $ = require('jquery')(window);
 console.log('version:', $.fn.jquery)
+
+const scrapeyoutube = require('scrape-youtube').default;
+
+const isUrl = require("is-url");
+
+// Imports the Google Cloud client library
+const {Translate} = require('@google-cloud/translate').v2;
+// Instantiates a client
+const translate = new Translate({googlecloudprojectid, googlecloudkeyFilename});
+
+const getQueryParam = require('get-query-param')
 
 //datadog
 var StatsD = require('node-dogstatsd').StatsD;
@@ -49,6 +71,10 @@ var bruhserverid;
 var bruhservername;
 
 var msgnextlog;
+
+import {validateVideoID} from 'youtube-validate'
+//..
+
 
 function genHexString(len) {
   const hex = '0123456789abcdef';
@@ -118,7 +144,8 @@ client.on('ready', () => {
 });
 
 client.on('message', async msg => {
-  dogstatsd.increment('tambourine.client.message');
+
+  dogstatsd.increment('adorabot.client.message');
   inviteCounterForServer = 0;
   illegalPrint = "";
   //check msg starts with prefix, user not a bot
@@ -126,7 +153,7 @@ client.on('message', async msg => {
     if (true) {
       console.log("prefix true")
       //log triggerprefix tambourine
-      dogstatsd.increment('tambourine.triggerprefix');
+      dogstatsd.increment('adorabot.triggerprefix');
       //message legal, proceed kind user.
       //parse out args and command
       const args = msg.content.slice(prefix.length).split(' ');
@@ -143,10 +170,58 @@ client.on('message', async msg => {
 
       if (command === "help") {
         msg.channel.send(
+          "**Adora Commands!**" +
           "`a! bbp`: Billboard Polls, run command for more info about each poll\n" +
-          "`a ping`: Pong test\n" + 
-          "`a bv: Billboard voting, use command to select poll`"
+          "`a! ping`: Pong test\n" + 
+          "`a! bv`: Billboard voting, use command to select poll\n",
+          "More coming soon... have an idea/request? Message `Kyler#9100`"
         )
+      }
+
+      if (command === "translate") {
+        msg.channel.send("")
+      }
+
+
+      if (command === "gaon" || command === "goan") {
+        let pages = ['Page one!', 'Second page', 'Third page']
+        let page = 1 
+
+        const embed = new Discord.MessageEmbed() // Define a new embed
+        .setColor(0xffffff) // Set the color
+        .setFooter(`Page ${page} of ${pages.length}`)
+        .setDescription(pages[page-1])
+
+        msg.channel.send({embed}).then(msgGaonEmbed => {
+          msgGaonEmbed.react('⬅').then( r => {
+            msgGaonEmbed.react('➡')
+
+            // Filters
+            const backwardsFilter = (reaction, user) => reaction.emoji.name === '⬅' && user.id === msg.author.id
+            const forwardsFilter = (reaction, user) => reaction.emoji.name === '➡' && user.id === msg.author.id
+
+            const backwards = msgGaonEmbed.createReactionCollector(backwardsFilter, {timer: 6000})
+            const forwards = msgGaonEmbed.createReactionCollector(forwardsFilter, {timer: 6000})
+
+            backwards.on('collect', (r, u) => {
+                if (page === 1) return r.users.remove(r.users.cache.filter(u => u === msg.author).first())
+                page--
+                embed.setDescription(pages[page-1])
+                embed.setFooter(`Page ${page} of ${pages.length}`)
+                msgGaonEmbed.edit(embed)
+                r.users.remove(r.users.cache.filter(u => u === msg.author).first())
+            })
+
+            forwards.on('collect', (r, u) => {
+                if (page === pages.length) return r.users.remove(r.users.cache.filter(u => u === msg.author).first())
+                page++
+                embed.setDescription(pages[page-1])
+                embed.setFooter(`Page ${page} of ${pages.length}`)
+                msgGaonEmbed.edit(embed)
+                r.users.remove(r.users.cache.filter(u => u === msg.author).first())
+            })
+          })
+        })
       }
 
       if (command === "bv") {
@@ -173,6 +248,82 @@ client.on('message', async msg => {
           "*more polls coming soon, go bug kyler lmao*")
         }
       }
+
+      if (command === "youtubestats" || command === "ytstat" || command === "ytstats") {
+
+        const youtubeApiKeyRandomlyChosen = youtubeApiKeys[Math.floor(Math.random() * youtubeApiKeys.length)];
+
+        var videoID = "dQw4w9WgXcQ"
+        if (isUrl(args[0])) {
+          // Valid url
+          if (args[0].includes("youtu.be/")) {
+            var precurser = args[0].replace("youtu.be/","www.youtube.com/watch?v=")
+          } else {
+            var precurser = args[0]
+          }
+          videoID = getQueryParam('v', precurser)
+          sendYtCountsEmbed(videoID,msg,youtubeApiKeyRandomlyChosen)
+        } else {
+          // Invalid url
+          
+          console.log("invalid url")
+
+          const searchYtString = msg.content.replace("a!","").replace(command,"").trim()
+
+          //check if video ID is valid without accessing the youtube API
+          var requestToYouTubeOembed = 'https://www.youtube.com/oembed?format=json&url=https://www.youtube.com/watch?v=' + searchYtString
+          await request(requestToYouTubeOembed, async function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            console.log("URL is OK") // Print the google web page.
+            videoID = getQueryParam('v', 'https://www.youtube.com/watch?v=' + searchYtString)
+            console.log(videoID + " is the videoID")
+            sendYtCountsEmbed(videoID,msg,youtubeApiKeyRandomlyChosen)
+          }  else {
+            //video ID is not valid
+
+            // search youtube for term instead
+            console.log("searching for:" + searchYtString)
+
+            await scrapeyoutube.search(searchYtString).then(results => {
+                // Unless you specify a type, it will only return 'video' results
+                videoID = results.videos[0].id
+                console.log(results.videos[0])
+                console.log(videoID);
+
+                sendYtCountsEmbed(videoID,msg,youtubeApiKeyRandomlyChosen)
+
+            });
+          }
+        })
+
+          }
+
+      }
+
+      if(command === 'wiktionary') {
+        const wikitionaryQuery = msg.content.replace("a! wiktionary","").trim()
+        wiktionary(wikitionaryQuery).then(result => {
+          console.log(result)
+          const discordResponse = result.html.replace(new RegExp('<(/)?i(\S||\s)*?>',"gm"),"_").replace(new RegExp('<(/)?b(\S||\s)*?>',"gm"),"**").replace(new RegExp("(<([^>]+)>)","gm"),"")
+          console.log(discordResponse)
+          var discordResponseArray = discordResponse.split("\n");
+          console.log(discordResponseArray)
+          var previousMessageWiktionaryBlankLine = true
+          discordResponseArray.forEach(
+             async function (element) { if (element === "") {
+               if (previousMessageWiktionaryBlankLine === false) {
+                await msg.channel.send("\u2800")
+                previousMessageWiktionaryBlankLine = true
+               }
+              } else {
+                await msg.channel.send(element)
+                previousMessageWiktionaryBlankLine = false
+              }
+            }
+
+          )
+      })
+    }
 
       if(command === "bbp") {
         
@@ -309,6 +460,11 @@ $content.$('.pds-question-top').each(function (i, row)
 
     }}
  //commands end bracket
+
+ client.user.setActivity(`a! help`, {type: 'LISTENING'})
+  .then()
+  .catch(console.error);
+
 },
 
 client.login(token));

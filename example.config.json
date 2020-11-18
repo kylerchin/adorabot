@@ -1,4 +1,7 @@
 {
 	"prefix": "shake ",
-	"token": "DISCORD-TOKEN"
+	"token": "DISCORD-TOKEN",
+	"googlecloudprojectid": "googlecloudprojectname",
+	"googlecloudkeyFilename": "./keyfile.json",
+	"youtubeApiKeys": ["apikey1","apikey2"]
 }

@@ -124,3 +124,5 @@ dist
 .pnp.*
 
 adora.js
+keyfile.json
+modules/*.js
