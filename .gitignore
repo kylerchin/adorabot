@@ -126,3 +126,9 @@ dist
 adora.js
 keyfile.json
 modules/*.js
+youtube/stats/videos/*.json
+runtime.js
+youtube/stats/videos/*/*.json
+youtube/stats/*/*/
+youtube/
+spotifygrapher

@@ -1,7 +1,10 @@
 {
-	"prefix": "shake ",
-	"token": "DISCORD-TOKEN",
-	"googlecloudprojectid": "googlecloudprojectname",
-	"googlecloudkeyFilename": "./keyfile.json",
-	"youtubeApiKeys": ["apikey1","apikey2"]
+	"config": {
+		"prefix": "a! ",
+		"token": "DISCORD-TOKEN",
+		"googlecloudprojectid": "googlecloudprojectname",
+		"googlecloudkeyFilename": "./keyfile.json",
+		"verboseChannel": "discord channel for verbose output",
+		"youtubeApiKeys": ["apikey1","apikey2"]
+	}
 }
