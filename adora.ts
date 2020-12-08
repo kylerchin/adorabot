@@ -58,11 +58,6 @@ function logFloorGangText(appendtxt) {
  });
 }
 
-// First, this must be at the top level of your code, **NOT** in any event!
-const inviteMeRecently = new Set();
-const activatedFrontHelpRecently = new Set();
-const activatedFrontHelpSimp = new Set();
-
 client.on('ready', () => {
     console.log("Command Thread Injest Activated");
   console.log(`Logged in as ${client.user.tag}!`);
