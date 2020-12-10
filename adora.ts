@@ -21,11 +21,6 @@ var finalfswrite;
 
 var fsnewdate;
 
-var inviteCounterForServer;
-
-var illegalPrint;
-//..
-
 var fshour;
 
 let fsnewfilename = "bruh";
@@ -46,6 +41,12 @@ function bruhhasadate() {
   return fsnewfilename;
 }
 
+async function setPresenceForAdora() {
+  await client.user.setActivity(`a! help`, {type: 'LISTENING'})
+  .then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
+  .catch(console.error);
+}
+
 function logFloorGangText(appendtxt) {
   
   bruhhasadate();
@@ -59,26 +60,20 @@ function logFloorGangText(appendtxt) {
 }
 
 client.on('ready', () => {
-    console.log("Command Thread Injest Activated");
+  console.log("Command Thread Injest Activated");
   console.log(`Logged in as ${client.user.tag}!`);
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
   
-  client.user.setActivity(`a! help`, {type: 'LISTENING'})
-  .then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
-  .catch(console.error);
+  setPresenceForAdora();
 });
 
 client.on('message', async msg => {
 
   dogstatsd.increment('adorabot.client.message');
-  inviteCounterForServer = 0;
-  illegalPrint = "";
- commandHandler(msg,client,config,dogstatsd)
+  commandHandler(msg,client,config,dogstatsd)
 
- client.user.setActivity(`a! help`, {type: 'LISTENING'})
-  .then()
-  .catch(console.error);
+  setPresenceForAdora();
 
-},
+});
 
-client.login(config.token));
+client.login(config.token);

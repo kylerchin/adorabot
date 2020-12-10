@@ -14,6 +14,7 @@ Features in development:
 - Browsable directory of birthdays and anniverseries, subscribe to events in advance
 - Webhook subscriptions for Twitter, Weverse, YouTube and other subscribed to data streams from artists and labels
 - Reaction roles and moderation features
-- Logging, anti-raid, verification, and small to large community safety features
+- Member profiles / birthday / other information directory
+- Logging, anti-raid, verification, anti-spam, and small to large community safety features
  
 This bot is in beta, if you would like to contribute, open up an issue or Pull Request!
