@@ -2,6 +2,7 @@
 
 Adora bot is a general purpose bot aimed at Kpop Discord Servers. 
 You can add it to your server by using this link:  https://discord.com/api/oauth2/authorize?client_id=737046643974733845&permissions=8&scope=bot
+
 The current features include:
  - Displaying the current YouTube View / Live & Dislike / Comment count in a discord embed
  ![YtStats Command Example with Dyanmite BTS music Video](https://user-images.githubusercontent.com/7539174/101548716-36dd0f00-3961-11eb-86c7-cebae7d43f9a.png)
