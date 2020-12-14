@@ -16,5 +16,7 @@ Features in development:
 - Reaction roles and moderation features
 - Member profiles / birthday / other information directory
 - Logging, anti-raid, verification, anti-spam, and small to large community safety features
+- Autoresponders, embeds, auto-react
+- Switching from storing everything in json to a highly compressed database in Cassandra, mapping CQL, creating a cluster and enabling the bot to be run off sharding
  
 This bot is in beta, if you would like to contribute, open up an issue or Pull Request!
