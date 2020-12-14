@@ -43,7 +43,7 @@ function bruhhasadate() {
 
 async function setPresenceForAdora() {
   await client.user.setActivity(`a! help`, {type: 'LISTENING'})
-  .then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
+//  .then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
   .catch(console.error);
 }
 
@@ -60,7 +60,6 @@ function logFloorGangText(appendtxt) {
 }
 
 client.on('ready', () => {
-  console.log("Command Thread Injest Activated");
   console.log(`Logged in as ${client.user.tag}!`);
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
   
@@ -75,5 +74,11 @@ client.on('message', async msg => {
   setPresenceForAdora();
 
 });
+
+client.on("invalidated", () => {
+  console.log("This client session has been invalidated. Exiting.")
+  process.exit(1)
+}
+)
 
 client.login(config.token);

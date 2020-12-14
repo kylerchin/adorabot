@@ -210,6 +210,12 @@ export async function commandHandler(msg,client,config,dogstatsd) {
               )
           })
         }
+
+          if (command === 'fetchvoiceregions') {
+            client.fetchVoiceRegions()
+              .then(regions => msg.channel.send(`Available regions are: ${regions.map(region => region.name).join(', ')}`))
+              .catch(console.error);
+          }
     
           if (msg.content.includes("Guys boy I'm home alone now and I'm free If anyone wants to get my nudes message me for free")) {
             console.log("wtf is this shit")

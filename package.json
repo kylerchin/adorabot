@@ -17,6 +17,7 @@
     "@google-cloud/translate": "^6.0.5",
     "@vitalets/google-translate-api": "^4.0.0",
     "billboard-top-100": "^2.5.9",
+    "cassandra-driver": "^4.6.1",
     "csv": "^5.3.2",
     "dd-trace": "^0.20.3",
     "discord.js": "^12.5.1",
