@@ -66,10 +66,10 @@ client.on('ready', () => {
   setPresenceForAdora();
 });
 
-client.on('message', async msg => {
+client.on('message', async message => {
 
   dogstatsd.increment('adorabot.client.message');
-  commandHandler(msg,client,config,dogstatsd)
+  commandHandler(message,client,config,dogstatsd)
 
   setPresenceForAdora();
 
