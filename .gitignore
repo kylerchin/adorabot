@@ -132,3 +132,4 @@ youtube/stats/videos/*/*.json
 youtube/stats/*/*/
 youtube/
 spotifygrapher
+app.js
