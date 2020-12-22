@@ -1,12 +1,6 @@
 {
 	"config": {
 		"prefix": "a! ",
-		"cassandra": {
-			"contactPoints": [ "172.17.0.3" ],
-			"localDataCenter": "datacenter1",
-			"plainTextUsername": "developer",
-			"plainTextPassword": "password"
-		},
 		"token": "DISCORD-TOKEN",
 		"googlecloudprojectid": "googlecloudprojectname",
 		"googlecloudkeyFilename": "./keyfile.json",

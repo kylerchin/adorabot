@@ -1,17 +1,12 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const { config } = require('./config.json');
+//const prefix = "shake ";
+//const token = process.env.BOT_TOKEN;
 //var fs = require('fs'); 
 import { appendFile } from 'fs';
+
 import { commandHandler } from "./modules/commandhandler"; 
-
-const cassandra = require('cassandra-driver');
-
-const cassandraclient = new cassandra.Client({
-  contactPoints: ['h1', 'h2'],
-  localDataCenter: 'datacenter1',
-  keyspace: 'ks1'
-});
 
 //datadog
 var StatsD = require('node-dogstatsd').StatsD;
@@ -64,7 +59,7 @@ function logFloorGangText(appendtxt) {
  });
 }
 
-client.on('ready', async () => {
+client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
   

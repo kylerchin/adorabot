@@ -2,9 +2,8 @@ const Discord = require('discord.js');
 import { sendYtCountsEmbed } from "./sendYtEmbed"; 
 import { verboseDiscordLog } from "./verboseDiscordLog"; 
 import { billboardVote,billboardPollGetValue } from "./billboardPolls"; 
-import { billboardCharts } from "./billboardCharts"; 
 const wiktionary = require('wiktionary')
-
+const { listCharts,getChart } = require('billboard-top-100');
 const isUrl = require("is-url");
 const scrapeyoutube = require('scrape-youtube').default;
 
@@ -75,7 +74,7 @@ export async function commandHandler(msg,client,config,dogstatsd) {
           }
     
           if (command === "billboard") {
-            billboardCharts(msg,args)
+
           }
 
           if (command === "gaon" || command === "goan") {
