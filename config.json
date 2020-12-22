@@ -1,0 +1,16 @@
+{
+	"config": {
+		"prefix": "a! ",
+		"cassandra": {
+			"contactPoints": [ "172.17.0.3" ],
+			"localDataCenter": "datacenter1",
+			"plainTextUsername": "developer",
+			"plainTextPassword": "taehyungSweetNightGucciYeontan"
+		},
+		"token": "NzM3MDQ2NjQzOTc0NzMzODQ1.Xx3qLQ.Y72-KBQKxbnZXOCXmM8Tbj4chDQ",
+		"googlecloudprojectid": "ipurpleyou",
+		"googlecloudkeyFilename": "./keyfile.json",
+		"verboseChannel": "767158443257364520",
+		"youtubeApiKeys": ["AIzaSyBjE0HhmrJiTQdO7zyuprOpPeu8-XYmEB8","AIzaSyCTnVn387_xcuu8q0g1Cj0m0DPwLEyK0pM","AIzaSyCMoYUEmXIp7yaRi1E-1jgrLRdhjObHwqY","AIzaSyB88xbgCMyqWezXLxW2WW85g2_eISkbJB8","AIzaSyDvJSd22UEFWv9pMhSTNALmjkg91_lNR0s"]
+	}
+}

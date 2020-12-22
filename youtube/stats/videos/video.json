@@ -1,0 +1,8 @@
+{
+    "stats": [
+        {
+            "time": Date.now(),
+            "viewcount": 1000
+        }
+    ]
+}
