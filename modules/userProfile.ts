@@ -52,6 +52,7 @@ async function explainSelectors(message) {
       message.channel.send("Here are the selectors avaliable")
       message.channel.send(exampleEmbed)
       message.channel.send("You can use any of the fields, but they will be blank by default. \n" +
+      "Emojis are valid in text fields!!!!\n" +
       "There are up to 25 fields, which you can set using field*1-25*name and field*1-25*value.\n" +
       "Additionally, by default, the fields are not inline, but you can force inline by changing field*1-25*inline to `true` or back to `false`\n" +
       "You should add links to the `content` field, as they will show up as rich embeds. \n You can add images by adding urls to `footerimage`,`authorimage`,`thumbnailimage`,`image`\n" + 
