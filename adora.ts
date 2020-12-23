@@ -25,6 +25,15 @@ var fshour;
 
 let fsnewfilename = "bruh";
 
+const cassandra = require('cassandra-driver');
+
+const cassandraclient = new cassandra.Client({
+  contactPoints: config.cassandra.contactPoints,
+  localDataCenter: config.cassandra.localDataCenter,
+  authProvider: new cassandra.auth
+   .PlainTextAuthProvider(config.cassandra.plainTextUsername, config.cassandra.plainTextPassword)
+});
+
 function bruhhasadate() {
   fsdateObj = new Date();
   fsmonth =fsdateObj.getUTCMonth() + 1; //months from 1-12
@@ -69,7 +78,7 @@ client.on('ready', () => {
 client.on('message', async message => {
 
   dogstatsd.increment('adorabot.client.message');
-  commandHandler(message,client,config,dogstatsd)
+  commandHandler(message,client,config,cassandraclient,dogstatsd)
 
   setPresenceForAdora();
 
