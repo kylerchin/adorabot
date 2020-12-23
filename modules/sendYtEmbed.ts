@@ -20,6 +20,7 @@ export async function sendYtCountsEmbed(id,message,apikey) {
 
           console.log(body)
 
+          console.log("body.items")
           console.log(body.items)
 
           const channelIdOfVideo = body.items[0].snippet.channelId
@@ -27,6 +28,8 @@ export async function sendYtCountsEmbed(id,message,apikey) {
           const pathForChannelOfVideoRequest = "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2Cstatistics%2Cstatus%2CtopicDetails&id=" + channelIdOfVideo + "&key=" + apikey
 
         await  youtubeclient.get(pathForChannelOfVideoRequest, async function(channelErr, channelRes, channelBody) {
+
+          console.dir(body)
 
           const videostats = body.items[0].statistics;
   

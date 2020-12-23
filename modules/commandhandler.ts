@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 import { sendYtCountsEmbed } from "./sendYtEmbed"; 
 import { verboseDiscordLog } from "./verboseDiscordLog"; 
 import { billboardVote,billboardPollGetValue } from "./billboardPolls"; 
+import { editProfile,fetchProfile } from "./userProfile"; 
 const wiktionary = require('wiktionary')
 const { listCharts,getChart } = require('billboard-top-100');
 const isUrl = require("is-url");
@@ -18,7 +19,7 @@ const https = require('https')
 
 const translate = require('@vitalets/google-translate-api');
 
-export async function commandHandler(msg,client,config,dogstatsd) {
+export async function commandHandler(msg,client,config,cassandraclient,dogstatsd) {
 
     if (!(!msg.content.toLowerCase().startsWith(config.prefix) || msg.author.bot)) {
         if (true) {
@@ -52,6 +53,14 @@ export async function commandHandler(msg,client,config,dogstatsd) {
                        })
                        .catch(console.error);
                 }
+
+          if (command === "bio" || command === "viewbio") {
+            fetchProfile(client,msg,args,cassandraclient)
+          }
+
+          if (command === "editbio") {
+            editProfile(client,msg,args,cassandraclient)
+          }
     
           if (command === "help") {
             msg.channel.send(
@@ -145,15 +154,16 @@ export async function commandHandler(msg,client,config,dogstatsd) {
     
               const searchYtString = msg.content.replace("a!","").replace(command,"").trim()
     
+              /*
               //check if video ID is valid without accessing the youtube API
-              var requestToYouTubeOembed = 'https://www.youtube.com/oembed?format=json&url=https://www.youtube.com/watch?v=' + searchYtString
+              var requestToYouTubeOembed = 'https://www.youtube.com/watch?v=' + searchYtString
               await request(requestToYouTubeOembed, async function (error, response, body) {
               if (!error && response.statusCode == 200) {
                 console.log("URL is OK") // Print the google web page.
                 videoID = getQueryParam('v', 'https://www.youtube.com/watch?v=' + searchYtString)
                 console.log(videoID + " is the videoID")
                 sendYtCountsEmbed(videoID,msg,youtubeApiKeyRandomlyChosen)
-              }  else {
+              }  else {*/
                 //video ID is not valid
     
                 // search youtube for term instead
@@ -172,10 +182,10 @@ export async function commandHandler(msg,client,config,dogstatsd) {
                     sendYtCountsEmbed(videoID,msg,youtubeApiKeyRandomlyChosen)
     
                 });
-              }
-            })
+              //}
+            }
     
-              }
+              
     
           }
     
