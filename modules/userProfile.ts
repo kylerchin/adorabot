@@ -55,13 +55,14 @@ async function explainSelectors(message) {
       "Emojis are valid in text fields!!!!\n" +
       "There are up to 25 fields, which you can set using field*1-25*name and field*1-25*value.\n" +
       "Additionally, by default, the fields are not inline, but you can force inline by changing field*1-25*inline to `true` or back to `false`\n" +
-      "You should add links to the `content` field, as they will show up as rich embeds. \n You can add images by adding urls to `footerimage`,`authorimage`,`thumbnailimage`,`image`\n" + 
+      "You should add links to the `content` field, as they will show up as rich embeds. \n You can add images by adding urls to slots `footerimage`,`authorimage`,`thumbnailimage`,`image[1-7]`\n" + 
       "Finally, there are three url fields you can set. They are `authorurl`, `url`, and `footer_url`")
+      message.channel.send("There are a maximum of 7 pages and 7 primary images per page.")
 }
 
 export async function editProfile(client, message, args,cassandraclient) {
 
-    message.channel.send("This feature is in alpha and isn't ready for full use yet. You are welcome to try and poke at it, but Kyler and I can't promise anything. Data may be lost, beware! :) \n Stream Mikrokosmos!")
+    message.reply("This feature is in alpha and isn't ready for full use yet. You are welcome to try and poke at it, but Kyler and I can't promise anything. Data may be lost, beware! :) \n Stream Mikrokosmos!")
 
 /*
 
@@ -69,7 +70,7 @@ export async function editProfile(client, message, args,cassandraclient) {
 
     **/
 
-    if(args.length <= 0) {
+    if(args.length <= 0 || args[0] === "help" || args[0] === "h") {
        const profileHelpPageEmbed = {
         "embed": {
           "title": "Adora Profile Help Page",
@@ -117,7 +118,7 @@ export async function editProfile(client, message, args,cassandraclient) {
         }
       }
 
-      message.channel.send(profileHelpPageEmbed)
+      message.reply(profileHelpPageEmbed)
       explainSelectors(message)
     }
 

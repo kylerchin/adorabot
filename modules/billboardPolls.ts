@@ -5,52 +5,113 @@ var document = window.document;
 
 var $ = require('jquery')(window);
 console.log('jquery version:', $.fn.jquery)
+const editJsonFile = require("edit-json-file");
+
+const forEach = require("for-each")
+
+// If the file doesn't exist, the content will be an empty object by default.
+let billboardPollsDirectory = editJsonFile(`billboardPolls.json`);
+
+async function bvHelpPage(msg) {
+
+  var pollsListFetchVote = billboardPollsDirectory.get()
+
+  var pollMenuBV  = ""
+
+  //Creates list of polls as menu to choose from
+  forEach(pollsListFetchVote.pollsList, function (pollValueFirst, pollKey, pollObject) {
+    pollMenuBV = pollMenuBV + "`a! bv " + pollValueFirst.id + "` : \"" + pollValueFirst.title + "\"\n"
+  })
+
+  msg.channel.send("Select Poll to Vote:\n" + 
+  pollMenuBV +
+  "*more polls coming soon, go bug kyler lmao*")
+}
 
 export function billboardVote(msg,args) {
     var precurserpoll = "Remember to vote on a different browser, device, incognito mode, or clear cookies! The bot won't let you vote as the same cookie session. If you see \"Thank you, we have counted your vote\", you are repeat voting and your new vote is not counted!\n"
-    
+
     if (args[0]) {
-      if (args[0] === "1") {
-        msg.channel.send(precurserpoll + "https://www.billboard.com/articles/columns/pop/9420280/favorite-boy-band-of-all-time-poll")
-      } else {
-        if (args[0] === "2") {
-          msg.channel.send(precurserpoll + "https://www.billboard.com/articles/columns/pop/9418334/favorite-boy-band-album-poll")
-        } else {
-          msg.channel.send("Select Poll to Vote:\n" + 
-      "`a! bv 1`: \"What's Your Favorite Boy Band of All Time?\"\n" + 
-      "`a! bbp 2` : \"What's Your Favorite Boy Band Album from the Past 30 Years?\"\n" + 
-      "*more polls coming soon, go bug kyler lmao*")
+
+      //fetch json
+      var billboardPollMenu = billboardPollsDirectory.get()
+      //for each item in pollsList Object, check if args[0] === id,
+      // if id matches, paste link
+      //if nothing matches, bvHelpPage(msg)
+
+      var pollsListFetch = billboardPollsDirectory.get()
+
+      forEach(pollsListFetch.pollsList, function (pollValue, pollKey, pollObject) {
+        console.log(args[0] + "args 0")
+        //console.log(pollKey)
+        //console.log(pollValue)
+        console.log("id poll" + pollValue.id)
+
+        if(args[0] === pollValue.id) {
+          var pollfmlink = pollValue.polldaddy
+          console.log(pollfmlink)
+          msg.reply(precurserpoll + "\n" + pollfmlink)
         }
+
+      })
       }
-    } else {
-      msg.channel.send("Select Poll to Vote:\n" + 
-      "`a! bv 1`: \"What's Your Favorite Boy Band of All Time?\"\n" + 
-      "`a! bbp 2` : \"What's Your Favorite Boy Band Album from the Past 30 Years?\"\n" + 
-      "*more polls coming soon, go bug kyler lmao*")
+     else {
+     bvHelpPage(msg)
     }
 }
 
 export function billboardPollGetValue(msg,args) {
+
+  var pollsListFetch = billboardPollsDirectory.get()
+
+    //Creates list of polls as menu to choose from
+    var textStringPolls = ""
+    forEach(pollsListFetch.pollsList, function (pollValueFirst, pollKey, pollObject) {
+      textStringPolls = textStringPolls + "`a! bbp " + pollValueFirst.id + "` : \"" + pollValueFirst.title + "\"\n"
+    })
+
+
     if(args[0]) {
+
+      console.log("peanut butter")
     
         var nameArray = []
       var scoreArray = []
 
       var polllink = "";
 
-      if (args[0] === "1") {
-        polllink = "https://polls.polldaddy.com/vote-js.php?p=10581243"
-      } else {
-        if (args[0] === "2") {
-          polllink = "https://polls.polldaddy.com/vote-js.php?p=10580016"
-        } else {
+      var foundPollInDatabase = false;
+
+      var pollsListFetch = billboardPollsDirectory.get()
+
+      console.log(pollsListFetch)
+
+      forEach(pollsListFetch.pollsList, function (pollValue, pollKey, pollObject) {
+        console.log(args[0] + "args 0")
+        //console.log(pollKey)
+        //console.log(pollValue)
+        console.log("id poll" + pollValue.id)
+
+        if(args[0] === pollValue.id) {
+          polllink = "https://polls.polldaddy.com/vote-js.php?p=" + pollValue.polldatabase
+          console.log(polllink)
+          console.log(pollValue.title)
+          foundPollInDatabase = true
+        }
+
+      })
+
+      if (foundPollInDatabase === false) {
+        
+        
           msg.channel.send("We didn't get a valid link!")
           msg.channel.send("**Choose from the following polls**\n" +
-          "`a! bbp 1` : \"What's Your Favorite Boy Band of All Time?\"\n" + 
-          "`a! bbp 2` : \"What's Your Favorite Boy Band Album from the Past 30 Years?\"\n" + 
+          textStringPolls +
           "**Command: `a! bbp <poll-number> <how-many-top-results>`**")
-        }
-        }
+          
+
+      }
+        
 
       if (polllink.length > 1) {
   $.get(polllink,  // url
@@ -106,7 +167,7 @@ export function billboardPollGetValue(msg,args) {
           poll2index = poll2index + 1;
         });
       
-        msg.channel.send(pollResultToDiscord);
+        msg.reply(pollResultToDiscord);
 
 console.log(nameArray.length)
 
@@ -116,9 +177,8 @@ console.log(nameArray[1])
       }
 
       } else {
-        msg.channel.send("**Choose from the following polls**\n" +
-        "`a! bbp 1` : \"What's Your Favorite Boy Band of All Time?\"\n" + 
-        "`a! bbp 2` : \"What's Your Favorite Boy Band Album from the Past 30 Years?\"\n" +
+        msg.reply("**Choose from the following polls**\n" +
+        textStringPolls + 
         "**Command: `a! bbp <poll-number> <how-many-top-results>`**")
       }
 }

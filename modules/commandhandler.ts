@@ -63,12 +63,12 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
           }
     
           if (command === "help") {
-            msg.channel.send(
+            msg.reply(
               "**Adora Commands!**\n" +
-         //     "`a! bbp`: Billboard Polls, run command for more info about each poll\n" +
+             "`a! bbp`: Billboard Polls, run command for more info about each poll\n" +
               "`a! ping`: Pong! Returns the bot's latency to Discord's servers.\n" + 
               "`a! inviteme`: Invite the bot to all your other servers!\n" +
-         //     "`a! bv`: Billboard voting, use command to select poll\n",
+            "`a! bv`: Billboard voting, use command to select poll\n" +
               "`a! ytstats <video link / search for a video>`: Realtime view counter for YouTube videos. \n Example: `a! ytstats fake love music video` or `a! ytstats https://www.youtube.com/watch?v=gdZLi9oWNZg`\n" +
               "More coming soon... have an idea/request? Message `Kyler#9100`"
             )
@@ -79,7 +79,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
           }
     
           if (command === "inviteme") {
-            msg.channel.send("Here's the invite link! It's an honor to help you :) \n https://discord.com/api/oauth2/authorize?client_id=737046643974733845&permissions=8&scope=bot")
+            msg.reply("Here's the invite link! It's an honor to help you :) \n https://discord.com/api/oauth2/authorize?client_id=737046643974733845&permissions=8&scope=bot")
           }
     
           if (command === "billboard") {
@@ -175,6 +175,11 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
     
                 await scrapeyoutube.search(searchYtString).then(results => {
                     // Unless you specify a type, it will only return 'video' results
+
+                    if (results.videos.length <= 0) {
+                      msg.reply("I couldn't find any videos matching that term!")
+                    }
+
                     videoID = results.videos[0].id
                     console.log(results.videos[0])
                     console.log(videoID);
