@@ -73,7 +73,7 @@ export async function sendYtCountsEmbed(id,message,apikey) {
               }
             }
   
-            await message.channel.send(embedYtStats)
+            await message.reply(embedYtStats)
             
             try {
               storeYoutubeDataIntoDatabase(body);
@@ -88,7 +88,7 @@ export async function sendYtCountsEmbed(id,message,apikey) {
         });
       } 
       catch {
-        message.channel.send("Ooops, Youtube crashed... try again?")
+        message.reply("Ooops, Youtube crashed... try again?")
       }
 
     } 

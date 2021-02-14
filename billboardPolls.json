@@ -1,0 +1,36 @@
+{
+    "pollsList": [
+        {
+            "id": "1",
+            "billboardlink": "https://www.billboard.com/articles/columns/pop/9420280/favorite-boy-band-of-all-time-poll",
+            "polldaddy": "https://poll.fm/10581243",
+            "polldatabase" : "10581243",
+            "title" : "What's Your Favorite Boy Band of All Time?",
+            "active": false
+        },
+        {
+            "id": "2",
+            "billboardlink": "https://www.billboard.com/articles/columns/pop/9420280/favorite-boy-band-of-all-time-poll",
+            "polldaddy": "https://poll.fm/10580016",
+            "polldatabase" : "10580016",
+            "title": "What's Your Favorite Boy Band Album from the Past 30 Years?",
+            "active": false
+        },
+        {
+            "id": "3",
+            "billboardlink": "https://www.billboard.com/articles/columns/pop/9499353/who-dominated-2020-poll/",
+            "polldaddy": "https://poll.fm/10686543",
+            "polldatabase": "10686543",
+            "title": "Who Dominated 2020?",
+            "active": true
+        },
+        {
+            "id": "4",
+            "billboardlink": "https://www.billboard.com/index.php/articles/news/9522761/super-bowl-2022-halftime-show-performer-poll",
+            "polldaddy": "https://poll.fm/10739243",
+            "polldatabase": "10739243",
+            "title": "Who Should Perform at the 2022 Super Bowl Halftime Show?",
+            "active": true
+        }
+    ]
+}
