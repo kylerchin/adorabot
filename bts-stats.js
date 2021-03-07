@@ -105,4 +105,5 @@ $content.$('.pds-question-top').each(function (i, row)
         runPoll("https://polls.polldaddy.com/vote-js.php?p=10581243","favboyband");
         runPoll("https://polls.polldaddy.com/vote-js.php?p=10522566","2020albumbinge");
         runPoll("https://polls.polldaddy.com/vote-js.php?p=10573577","potential2020mtvvmasperformance");
-        runPoll("https://polls.polldaddy.com/vote-js.php?p=10739243","whoshouldperformatasuperbowl2022")
+        runPoll("https://polls.polldaddy.com/vote-js.php?p=10739243","whoshouldperformatasuperbowl2022");
+        runPoll("https://polls.polldaddy.com/vote-js.php?p=10584893","whodeservestowinalbumoftheyearatthe2021grammys")

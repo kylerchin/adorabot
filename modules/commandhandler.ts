@@ -3,6 +3,8 @@ import { sendYtCountsEmbed } from "./sendYtEmbed";
 import { verboseDiscordLog } from "./verboseDiscordLog"; 
 import { billboardVote,billboardPollGetValue } from "./billboardPolls"; 
 import { editProfile,fetchProfile } from "./userProfile"; 
+import { banGuildMember } from "./moderation";
+import {geniusLyrics } from "./genius"
 const wiktionary = require('wiktionary')
 const { listCharts,getChart } = require('billboard-top-100');
 const isUrl = require("is-url");
@@ -21,14 +23,25 @@ const translate = require('@vitalets/google-translate-api');
 
 export async function commandHandler(msg,client,config,cassandraclient,dogstatsd) {
 
-    if (!(!msg.content.toLowerCase().startsWith(config.prefix) || msg.author.bot)) {
-        if (true) {
+    if (msg.content.toLowerCase().startsWith(config.prefix) || msg.content.toLowerCase().startsWith("a!")) {
+        if (!msg.author.bot) {
           console.log("prefix true")
           //log triggerprefix adorabot
-          dogstatsd.increment('adorabot.triggerprefix');
+          
           //message legal, proceed kind user.
           //parse out args and command
-          const args = msg.content.slice(config.prefix.length).split(' ');
+
+          var args;
+
+          if(msg.content.toLowerCase().startsWith(config.prefix)) {
+            args = msg.content.slice(config.prefix.length).split(' ');
+          } else {
+            if(msg.content.toLowerCase().startsWith("a!")) {
+              args = msg.content.slice("a!".length).split(' ');
+            }
+          }
+
+          
           const command = args.shift().toLowerCase();
           console.log("Command is " + command)
     
@@ -39,7 +52,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             pingReturn.edit(`**펑!** Latency is ${pingReturn.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`);
           }
 
-          if (command === 'stats') {
+          if (command === 'botinfo') {
                    const promises = [
                        client.shard.fetchClientValues('guilds.cache.size'),
                        client.shard.broadcastEval('this.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)')
@@ -49,7 +62,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
                        .then(results => {
                            const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
                            const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
-                           return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}`);
+                           return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}\nNumber of Shards: ${client.shard.count}`);
                        })
                        .catch(console.error);
                 }
@@ -69,6 +82,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
               "`a! ping`: Pong! Returns the bot's latency to Discord's servers.\n" + 
               "`a! inviteme`: Invite the bot to all your other servers!\n" +
             "`a! bv`: Billboard voting, use command to select poll\n" +
+            "`a! botinfo`: Shows adora bot statistics\n" + 
               "`a! ytstats <video link / search for a video>`: Realtime view counter for YouTube videos. \n Example: `a! ytstats fake love music video` or `a! ytstats https://www.youtube.com/watch?v=gdZLi9oWNZg`\n" +
               "More coming soon... have an idea/request? Message `Kyler#9100`"
             )
@@ -195,7 +209,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
           }
     
           if(command === 'wiktionary') {
-            const wikitionaryQuery = msg.content.replace("a! wiktionary","").trim()
+            const wikitionaryQuery = msg.content.replace("a!wiktionary","").replace("a! wiktionary","").trim()
             wiktionary(wikitionaryQuery).then(result => {
               console.log(result)
               const discordResponse = result.html.replace(new RegExp('<(/)?i(\S||\s)*?>',"gm"),"_").replace(new RegExp('<(/)?b(\S||\s)*?>',"gm"),"**").replace(new RegExp("(<([^>]+)>)","gm"),"")
@@ -225,16 +239,21 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
               .catch(console.error);
           }
     
-          if (msg.content.includes("Guys boy I'm home alone now and I'm free If anyone wants to get my nudes message me for free")) {
-            console.log("wtf is this shit")
-            verboseDiscordLog("code 1d10t \n" + "content: " + msg.content + "\nmessage.id: " + msg.id + "\nauthor.id:" + msg.author.id, client)
-          }
-    
           if(command === "bbp") {
             
             billboardPollGetValue(msg,args)
     
           }
+
+          if (command === "ban") {
+            banGuildMember(msg)
+          }
+
+          if (command === "genius" || command === "lyric" || command === "lyrics") {
+            geniusLyrics(msg,args,config)
+          }
+    
+          dogstatsd.increment('adorabot.triggerprefix');
     
         }}
 }
