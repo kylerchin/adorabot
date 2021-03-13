@@ -11,6 +11,16 @@
 		"googlecloudprojectid": "googlecloudprojectname",
 		"googlecloudkeyFilename": "./keyfile.json",
 		"verboseChannel": "discord channel for verbose output",
-		"youtubeApiKeys": ["apikey1","apikey2"]
+		"youtubeApiKeys": ["apikey1","apikey2"],
+		"allowedToBanUsers": {
+			"yeonjun": {
+				"userid" : "628372877382828438",
+				"adorareference": "yeonjun main account"
+			},
+			"kai": {
+				"userid" : "542371578324638239",
+				"adorareference": "yeonjun main account"
+			}
+		}
 	}
 }

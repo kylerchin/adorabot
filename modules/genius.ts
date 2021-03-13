@@ -16,12 +16,14 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
 			var lyrics = ''
 			$('div[class="lyrics"]').each((i, elem) => {
 				if($(elem).text().length !== 0) {
-					let snippet = $(elem).html()
+                    let snippet = $(elem).html()
                     .replace(/<br>/g, '\n')
                     .replace(/\*/g, '\\*')
                     .replace(/<\/? *i[^>]*>/g, '*')
                     .replace(/<\/? *b*>/g, '**')
-                    .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '');
+                    .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '')
+                   // .replace(/\n\n\n/g, '\n')
+                    .replace(/\n\n\n/g, '\n');
                     console.log($(elem).html() + " => " + snippet)
 					lyrics += $('<textarea/>').html(snippet).text().trim() + '\n\n';
 				}
@@ -76,8 +78,10 @@ export async function geniusLyrics(message,args,config) {
             var songLyricsHTML = await geniusSongUrlHTMLExtract(response.data.response.hits[0].result.url);
             console.log(songLyricsHTML)
 
-            try {message.channel.send(songLyricsHTML)} catch {
-                console.log("fuck")
+            try {
+                message.channel.send(songLyricsHTML)
+            } catch (geniusmessagefailederror) {
+                console.error(geniusmessagefailederror)
             }
             
         }
