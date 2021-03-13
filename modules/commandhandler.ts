@@ -5,10 +5,13 @@ import { billboardVote,billboardPollGetValue } from "./billboardPolls";
 import { editProfile,fetchProfile } from "./userProfile"; 
 import { banGuildMember } from "./moderation";
 import {geniusLyrics } from "./genius"
+import {processAllModerationCommands} from "./moderation"
 const wiktionary = require('wiktionary')
 const { listCharts,getChart } = require('billboard-top-100');
 const isUrl = require("is-url");
 const scrapeyoutube = require('scrape-youtube').default;
+const fs = require('fs');
+const ytdl = require('ytdl-core');
 
 const getQueryParam = require('get-query-param')
 
@@ -76,14 +79,44 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
           }
     
           if (command === "help") {
-            msg.reply(
-              "**Adora Commands!**\n" +
-             "`a! bbp`: Billboard Polls, run command for more info about each poll\n" +
-              "`a! ping`: Pong! Returns the bot's latency to Discord's servers.\n" + 
-              "`a! inviteme`: Invite the bot to all your other servers!\n" +
-            "`a! bv`: Billboard voting, use command to select poll\n" +
-            "`a! botinfo`: Shows adora bot statistics\n" + 
-              "`a! ytstats <video link / search for a video>`: Realtime view counter for YouTube videos. \n Example: `a! ytstats fake love music video` or `a! ytstats https://www.youtube.com/watch?v=gdZLi9oWNZg`\n" +
+            msg.channel.send("**Adora Commands**");
+            msg.channel.send({
+              "embed": {
+                "title": "Help Page - Music Charts & Statistics",
+                "description": "Access live information across music charts and platforms",
+                "fields": [
+                  {
+                    "name": "`a!bbp`",
+                    "value": "View statistics for billboard polls, run command for more info"
+                  },
+                  {
+                    "name": "`a!bv`",
+                    "value": "Retrieve voting links for billboard polls, run command for a list of polls"
+                  },
+                  {
+                    "name": "`a!ytstats`",
+                    "value": "`a!ytstats <video link / search for a video>`: Realtime view counter for YouTube videos. \n Example: `a! ytstats fake love music video` or `a! ytstats https://www.youtube.com/watch?v=gdZLi9oWNZg`"
+                  }
+                ]
+              }
+            });
+            msg.channel.send({
+              "embed": {
+                "title": "Help Page - Moderation",
+                "description": "Make protecting your community easier!",
+                "fields": [
+                  {
+                    "name": "`a!autoban`",
+                    "value": "Automatically block known-raid accounts before they come to your server, run command for more info"
+                  }
+                ]
+              }
+            });
+            msg.channel.send(
+              "`a!ping`: Pong! Returns the bot's latency to Discord's servers.\n" + 
+              "`a!invite`: Invite the bot to all your other servers!\n" +
+              "`a!tomato`: Plays the BT21 tomato song in your current vc. yep... that's all this does....\n" +
+            "`a!botinfo`: Shows adora bot statistics\n" + 
               "More coming soon... have an idea/request? Message `Kyler#9100`"
             )
           }
@@ -92,7 +125,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             msg.channel.send("")
           }
     
-          if (command === "inviteme") {
+          if (command === "inviteme" || command === "invite") {
             msg.reply("Here's the invite link! It's an honor to help you :) \n https://discord.com/api/oauth2/authorize?client_id=737046643974733845&permissions=8&scope=bot")
           }
     
@@ -249,8 +282,41 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             banGuildMember(msg)
           }
 
+          if (command === "tomato") {// Join the same voice channel of the author of the message
+            try {
+              msg.reply("🍅  TOMATO! 🍅")
+              if (msg.member.voice.channel) {
+                const connection = await msg.member.voice.channel.join();
+
+                                // Create a dispatcher
+                const dispatcher = connection.play('tomato.mp3');
+
+                dispatcher.on('start', () => {
+                  console.log('tomato.mp3 is now playing!');
+                });
+
+                dispatcher.on('finish', () => {
+                  console.log('tomato.mp3 has finished playing!');
+                });
+
+                // Always remember to handle errors appropriately!
+                dispatcher.on('error', console.error);
+            }
+            } catch {
+              console.log("ooops")
+            }
+          }
+
+          processAllModerationCommands(msg,command,args,config,cassandraclient)
+
           if (command === "genius" || command === "lyric" || command === "lyrics") {
-            geniusLyrics(msg,args,config)
+            try {
+              geniusLyrics(msg,args,config)
+            }
+            catch (geniusLyricsCommandError) {
+              console.log(geniusLyricsCommandError)
+            }
+           
           }
     
           dogstatsd.increment('adorabot.triggerprefix');

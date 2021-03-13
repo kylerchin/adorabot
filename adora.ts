@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const client = new Discord.Client({{ partials: ['MESSAGE', 'CHANNEL', 'REACTION'], retryLimit: Infinity});
+const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'], retryLimit: Infinity});
 const { config } = require('./config.json');
 //const prefix = "shake ";
 //const token = process.env.BOT_TOKEN;
@@ -7,6 +7,7 @@ const { config } = require('./config.json');
 import { appendFile } from 'fs';
 
 import { commandHandler } from "./modules/commandhandler"; 
+import { runOnStartup } from "./modules/moderation";
 
 //datadog
 var StatsD = require('node-dogstatsd').StatsD;
@@ -51,9 +52,10 @@ function bruhhasadate() {
 }
 
 async function setPresenceForAdora() {
-  await client.user.setActivity(`a!help`, {type: 'LISTENING'})
-//  .then(presence => console.log(`Activity set to ${presence.activities[0].name}`))
-  .catch(console.error);
+  // Set the client user's presence
+await client.user.setPresence({ activity: { name: 'a!help \n 💜 Invite me to your server please! do a!invite' }, status: 'online' })
+.then(console.log)
+.catch(console.error);
 }
 
 function logFloorGangText(appendtxt) {
@@ -68,19 +70,34 @@ function logFloorGangText(appendtxt) {
  });
 }
 
+async function moderationCassandra() {
+  await runOnStartup(cassandraclient)
+}
+
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
   
   setPresenceForAdora();
+
+    //ban list
+    try {moderationCassandra()} catch (error38362) {
+      console.error(error38362)
+    }
+    
+
 });
 
 client.on('message', async message => {
 
   dogstatsd.increment('adorabot.client.message');
-  commandHandler(message,client,config,cassandraclient,dogstatsd)
-
-  setPresenceForAdora();
+  try {
+    commandHandler(message,client,config,cassandraclient,dogstatsd)
+  }
+    catch {
+      console.log("Command failed")
+    }
+  //setPresenceForAdora();
 });
 
 client.on("invalidated", () => {
