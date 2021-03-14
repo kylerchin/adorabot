@@ -279,7 +279,7 @@ export async function runOnStartup(cassandraclient, client) {
                 var individualservertodoeachban = client.guilds.cache.get(eachServerThatIsSubscribed.serverid);
 
                 individualservertodoeachban.members.ban(row.banneduserid)
-                    .then(user => console.log(`Banned ${user.username || user.id || user} from ${guild.name}`))
+                    .then(user => console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`))
                     .catch(console.error);
             })
       })
