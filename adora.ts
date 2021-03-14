@@ -71,7 +71,7 @@ function logFloorGangText(appendtxt) {
 }
 
 async function moderationCassandra() {
-  await runOnStartup(cassandraclient)
+  await runOnStartup(cassandraclient, client)
 }
 
 client.on('ready', () => {
