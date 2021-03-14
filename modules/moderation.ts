@@ -22,7 +22,7 @@ export async function banGuildMember(message) {
 
 }
 
-export async function processAllModerationCommands(message,command,args,config,cassandraclient) {
+export async function processAllModerationCommands(message,command,args,config,cassandraclient,client) {
 
     const isDM:boolean = message.guild === null;
 
@@ -39,7 +39,7 @@ export async function processAllModerationCommands(message,command,args,config,c
         });
 
         if (isauthorizedtoaddbanstodatabase) {
-            message.reply("You are authorized")
+            await message.reply("You are authorized")
             //split message into list of userids and reason
 
             //this line prevents accidental role mentions from being added
@@ -48,11 +48,13 @@ export async function processAllModerationCommands(message,command,args,config,c
             //transforms the user id list into a list to be banned
             var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
 
-            if(arrayOfUserIdsToBan) {message.channel.send(`Banning ${arrayOfUserIdsToBan.length} users.`)}
+            if(arrayOfUserIdsToBan) {
+                await message.channel.send(`Banning ${arrayOfUserIdsToBan.length} users.`)
+            }
 
             var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*adoraban(\ )*)/g, '').trim()
             //apply the bans to the database
-            message.channel.send(`Reason: ${reasonForBanRegister}`)
+            await message.channel.send(`Reason: ${reasonForBanRegister}`)
 
             forEach(arrayOfUserIdsToBan, async function(individualUserIdToAddToBanDatabase, keyBan, arrayBan) {
                 //write bans to adoramoderation.banneduserlist
@@ -92,10 +94,14 @@ export async function processAllModerationCommands(message,command,args,config,c
                             params = [individualUserIdToAddToBanDatabase, true, reasonForBanRegister, message.author.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
                         }
                     console.log(params)
-                    await cassandraclient.execute(query, params, { prepare: true }, function (err) {
+                    await cassandraclient.execute(query, params, { prepare: true }, await function (err) {
                         console.log(err);
                     //Inserted in the cluster
                     });
+
+                    //now update every server
+                    await runBanStream(cassandraclient, client)
+                    await client.shard.broadcastEval('runBanStream(cassandraclient, this)');
                     
             })   
         } else {
@@ -234,36 +240,32 @@ export async function processAllModerationCommands(message,command,args,config,c
     }
 }
 
-export async function runOnStartup(cassandraclient, client) {
-    //This Function will automatically create the adoramoderation keyspace if it doesn't exist, otherwise, carry on
-  await cassandraclient.execute("CREATE KEYSPACE IF NOT EXISTS adoramoderation WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy',  'datacenter1': 1  };")
-  .then(result => console.log(result)).catch(error => console.error(error));
-
-  //Goes inside adora moderation keyspace, makes the table "guildssubscribedtoautoban"
-  await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.guildssubscribedtoautoban (serverid text PRIMARY KEY, subscribed boolean, lastchangedbyid text, lastchangedtime timeuuid, firstchangedbyid text, firstchangedtime timeuuid);").then(result => console.log(result)).catch(error => console.error(error));
-
-  //Goes inside adora moderation keyspace, makes the table "banneduserlist"
-  await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.banneduserlist (banneduserid text PRIMARY KEY, banned boolean, reason text, lastchangedbyid text, lastchangedtime timeuuid, firstchangedbyid text, firstchangedtime timeuuid);").then(result => console.log(result)).catch(error => console.error(error));
-
-  //start listening to new incoming bans
+export async function runBanStream(cassandraclient,client) {
+    //start listening to new incoming bans
    //stream each new ban that arrives
   await cassandraclient.stream('SELECT banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime FROM adoramoderation.banneduserlist')
   .on('readable', async function () {
     // 'readable' is emitted as soon a row is received and parsed
     let row;
     while (row = this.read()) {
+
+        const banneduseriduwu = row.banneduserid;
+       // console.log("banneduseriduwu " + banneduseriduwu);
+
       //console.log('time %s and value %s', row.time, row.val);
       
-      console.log(`Incoming AutoBan: ${row.banneduserid} status: ${row.banned} for reason ${row.reason}`)
+      //console.log(`Incoming AutoBan: ${row.banneduserid} status: ${row.banned} for reason ${row.reason}`)
 
-        var currentShardServerIDArray = []
+        if (row.banned) {
+            var currentShardServerIDArray = []
 
-      await client.guilds.cache.forEach(guild => {
-          //console.log(`${guild.name} | ${guild.id}`);
-          currentShardServerIDArray.push(guild.id)
-      })
+            await client.guilds.cache.forEach(guild => {
+                //console.log(`${guild.name} | ${guild.id}`);
+                currentShardServerIDArray.push(guild.id)
+            })
 
-      console.log(currentShardServerIDArray)
+
+      //console.log(currentShardServerIDArray)
 
       //each shard fetch it's servers it's able to ban the user on
       var queryForMatchingServers = ('SELECT serverid, subscribed, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime FROM adoramoderation.guildssubscribedtoautoban WHERE serverid IN ? AND subscribed = ? ALLOW FILTERING;')
@@ -272,18 +274,47 @@ export async function runOnStartup(cassandraclient, client) {
         var parametersServers = [currentShardServerIDArray, true];
         await cassandraclient.execute( queryForMatchingServers, parametersServers, { prepare: true })
         .then(matchingServerList => {
-            console.log(matchingServerList)
+            //console.log(matchingServerList)
+            //console.log(`${matchingServerList.rows.length} matching servers`)
             //.rows.length === 0
-            forEach(matchingServerList.rows.length, async function(eachServerThatIsSubscribed) {
+
+            //for each server that the shard client is able to ban on...
+            forEach(matchingServerList.rows, async function(eachServerThatIsSubscribed) {
                 //eachServerThatIsSubscribed.serverid
                 var individualservertodoeachban = client.guilds.cache.get(eachServerThatIsSubscribed.serverid);
 
-                individualservertodoeachban.members.ban(row.banneduserid)
+                //is the user already banned?
+
+                async function strikeDaHammer() {
+                    //if not then ban them
+                    individualservertodoeachban.members.ban(row.banneduserid)
                     .then(user => console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`))
                     .catch(console.error);
+                }
+
+                // Async context needed for 'await' (meaning this must be within an async function).
+                    // Assuming 'message' is a Message within the guild.
+
+                    try {
+                        const existingbanrecord = await client.guilds.cache.get(eachServerThatIsSubscribed.serverid).fetchBan(banneduseriduwu)
+
+                        //console.log(existingbanrecord)
+
+                        if (existingbanrecord) {
+                            //don't do anything
+                        } else {
+                            //no ban record found 
+                            strikeDaHammer().catch(console.error)
+                        }
+
+                    } catch {
+                        console.error()
+                    }
+                
             })
       })
       }
+        }
     
 
       
@@ -291,8 +322,25 @@ export async function runOnStartup(cassandraclient, client) {
   })
   .on('end', function () {
     // Stream ended, there aren't any more rows
+    console.log("Stream ended, there aren't any more rows")
   })
   .on('error', function (err) {
     // Something went wrong: err is a response error from Cassandra
   });
+}
+
+export async function runOnStartup(cassandraclient, client) {
+    //This Function will automatically create the adoramoderation keyspace if it doesn't exist, otherwise, carry on
+  await cassandraclient.execute("CREATE KEYSPACE IF NOT EXISTS adoramoderation WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy',  'datacenter1': 1  };")
+  .then(result => console.log(result)).catch(error => console.error(error));
+
+  //Goes inside adora moderation keyspace, makes the table "guildssubscribedtoautoban"
+  await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.guildssubscribedtoautoban (serverid text PRIMARY KEY, subscribed boolean, lastchangedbyid text, lastchangedtime timeuuid, firstchangedbyid text, firstchangedtime timeuuid);")
+  .then(result => console.log(result)).catch(error => console.error(error));
+
+  //Goes inside adora moderation keyspace, makes the table "banneduserlist"
+  await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.banneduserlist (banneduserid text PRIMARY KEY, banned boolean, reason text, lastchangedbyid text, lastchangedtime timeuuid, firstchangedbyid text, firstchangedtime timeuuid);")
+  .then(result => console.log(result)).catch(error => console.error(error));
+
+  await runBanStream(cassandraclient, client)
 }
