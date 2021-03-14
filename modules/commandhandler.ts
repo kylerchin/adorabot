@@ -307,7 +307,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             }
           }
 
-          processAllModerationCommands(msg,command,args,config,cassandraclient)
+          processAllModerationCommands(msg,command,args,config,cassandraclient,client)
 
           if (command === "genius" || command === "lyric" || command === "lyrics") {
             try {

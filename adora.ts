@@ -7,7 +7,7 @@ const { config } = require('./config.json');
 import { appendFile } from 'fs';
 
 import { commandHandler } from "./modules/commandhandler"; 
-import { runOnStartup } from "./modules/moderation";
+import { runOnStartup, runBanStream } from "./modules/moderation";
 
 //datadog
 var StatsD = require('node-dogstatsd').StatsD;
