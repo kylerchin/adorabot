@@ -161,7 +161,10 @@ export async function processAllModerationCommands(message,command,args,config,c
                 "content": "Usage: `a!autoban on/off`",
                 "embed": {
                   "title": "Autoban Feature",
-                  "description": "Automatically bans user accounts known for raiding, racism, lgbtq+phobia, disruption of servers based on ban list reports.\nAdministrators can enable autoban by typing `a!autoban on` and disable new bans from happening via `a!autoban off`",
+                  "image": {
+                    "url": "https://user-images.githubusercontent.com/7539174/111216262-6ff4d300-8591-11eb-902c-a25e1595730c.png"
+                  },
+                  "description": "Automatically bans user accounts known for raiding, racism, lgbtq+phobia, disruption of servers based on ban list reports and blacklists.\nAdministrators can enable autoban by typing `a!autoban on` and disable new bans from happening via `a!autoban off`",
                   "fields": [
                     {
                       "name": "Is Autoban On for this server?",
@@ -197,7 +200,16 @@ export async function processAllModerationCommands(message,command,args,config,c
                     //Inserted in the cluster
                     });
                     if (subscribeStateToWrite === true) {
-                        await message.reply("This server is now subscribed to autobans! To turn it off, type `a!autoban off`")
+                        await message.reply(
+                            {
+                                "embed": {
+                                  "description": " ╭₊˚ʚ[🍰]ɞ・[This server is now subscribed to autobans!]\n ╰₊˚ʚ[🍩]ɞ・[To turn it off, type `a!autoban off`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
+                                  "image": {
+                                    "url": "https://user-images.githubusercontent.com/7539174/111224943-5b6a0800-859c-11eb-90bc-8806a51fd681.jpg"
+                                  }
+                                }
+                              }
+                        )
 
                         if (message.guild.me.hasPermission("ADMINISTRATOR")) {
                             
@@ -244,14 +256,24 @@ export async function processAllModerationCommands(message,command,args,config,c
                         ).catch(error => console.error(error));
                     } else {
                         if (subscribeStateToWrite === false) {
-                            await message.reply("This server is now unsubscribed to autobans! To turn autoban back on, type `a!autoban on`")
+                            //await message.reply("This server is now unsubscribed to autobans! To turn autoban back on, type `a!autoban on`")
+                            await message.reply(
+                                {
+                                    "embed": {
+                                      "description": " ╭₊˚ʚ[:herb:]ɞ・[This server is now unsubscribed to autobans!] \n ﹕˚₊  ❀ ꒱⋅** :warning: You're no longer protected from known raiders from entering your safe space :warning: ** ๑˚₊⊹ \n╰₊˚ʚ[:fish_cake:]ɞ・[To turn autoban back on, type `a!autoban on`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
+                                      "image": {
+                                        "url": "https://user-images.githubusercontent.com/7539174/111216153-49369c80-8591-11eb-8eaf-0a0f13bf875c.png"
+                                      }
+                                    }
+                                  }
+                            )
                         }
                     }
                 }
                     
                 }
             else {
-                await message.reply("You don't have permission to toggle this feature. Only Administrators of the current guild can turn autoban on and off");
+                await message.reply("You don't have permission to toggle this feature. Only Administrators of the current guild can turn autoban on and off \n 𓆩 𓆪 ʾ ִֶָ%˓ ᵎ ҂ ࣪˖﹫𓂃⌁. ࣪˖");
             }
         }
         else 
@@ -302,7 +324,7 @@ await cassandraclient.execute( queryForMatchingServers, parametersServers, { pre
 
             //for each server that the shard client is able to ban on...
             forEach(matchingServerList.rows, async function(eachServerThatIsSubscribed) {
-                console.log("serverid to work on" + eachServerThatIsSubscribed.serverid)
+                //console.log("serverid to work on" + eachServerThatIsSubscribed.serverid)
                 var individualservertodoeachban = await client.guilds.cache.get(eachServerThatIsSubscribed.serverid);
 
                 //console.log(individualservertodoeachban)

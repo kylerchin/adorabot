@@ -107,7 +107,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
                 "fields": [
                   {
                     "name": "`a!autoban`",
-                    "value": "Automatically block known-raid accounts before they come to your server, run command for more info"
+                    "value": "Automatically block known-raid accounts from blacklists before they come to your server, run command for more info"
                   }
                 ]
               }
