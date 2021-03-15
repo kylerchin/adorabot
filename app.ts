@@ -12,7 +12,7 @@ import {} from "./adora";
 const manager = new ShardingManager('./adora.js', {
     // for ShardingManager options see:
     // https://discord.js.org/#/docs/main/v12/class/ShardingManager
-    totalShards: 4,
+    totalShards: 'auto',
     token: config.token
 });
 

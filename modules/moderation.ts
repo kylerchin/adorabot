@@ -100,10 +100,10 @@ export async function processAllModerationCommands(message,command,args,config,c
                     });
 
                     //now update every server
-                    await runBanStream(cassandraclient, client)
+                    //await runBanStream(cassandraclient, client)
 
                     //instruct every server to run the ban stream
-                    await client.shard.broadcastEval(`this.runBanStreamOnThisShard()`)
+                   await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`)
             })   
         } else {
             message.reply("You don't have permission to do that!")
@@ -206,37 +206,38 @@ export async function processAllModerationCommands(message,command,args,config,c
                         }
 
                         //after, go back and read the entire ban log to make sure everyone in the list is banned
-                        await cassandraclient.execute("SELECT * FROM adoramoderation.banneduserlist WHERE banned = true ALLOW FILTERING;").then(fetchAllBansResult => {
+                        await cassandraclient.execute("SELECT * FROM adoramoderation.banneduserlist WHERE banned = true ALLOW FILTERING;").then(async fetchAllBansResult => {
                             console.log(fetchAllBansResult);
                             //for each user that is banned in the database
+
+                            var listofusersbannedinindividualserver = await message.guild.fetchBans();
+
                                 forEach(fetchAllBansResult.rows, async function (banRowValue, banRowKey, banRowArray) {
-                                    var toBanReason:string;
+                                   
+
+
+                                    var isUserBannedFromThisGuild = listofusersbannedinindividualserver.has(banRowValue.banneduserid)
+                                    //  console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
+
+                                    if (isUserBannedFromThisGuild) {
+                                        //this user is already fuckin banned
+                                    }
+                                    else {
+                                        //THE BAN HAMMER FUCKING STRIKES!
+
+                                        var toBanReason:string;
                                     if (!banRowValue.reason || banRowValue.reason.length == 0) {
                                         toBanReason = "Banned by Adora's Automagical system!"
                                     } else {
                                         toBanReason = `${banRowValue.reason} | Banned by Adora's Automagical system!`
                                     }
 
-                                    /*
-                                    const existingbanrecordcheck = await message.guild.fetchBan(banRowValue.banneduserid)
-
-                                    //console.log(existingbanrecord)
-
-                                    if (existingbanrecordcheck) {
-                                        //don't do anything
-                                        //console.log("user already banned... do nothing")
-                                    } else {
-                                        //no ban record found
-                                        //ban the user
                                     await message.guild.members.ban(banRowValue.banneduserid, {'reason': toBanReason})
-                                    .then(user => console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`))
-                                    .catch(console.error);
+                                        .then(user => console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`))
+                                        .catch(console.error);
                                     }
-                                    */
 
-                                   await message.guild.members.ban(banRowValue.banneduserid, {'reason': toBanReason})
-                                   .then(user => console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`))
-                                   .catch(console.error);
+                                   
                                 })
                             
                         }
@@ -260,110 +261,100 @@ export async function processAllModerationCommands(message,command,args,config,c
     }
 }
 
-export async function runBanStream(cassandraclient,client) {
-    //start listening to new incoming bans
-   //stream each new ban that arrives
-  await cassandraclient.stream('SELECT banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime FROM adoramoderation.banneduserlist')
-  .on('readable', async function () {
-    // 'readable' is emitted as soon a row is received and parsed
-    let row;
-    while (row = this.read()) {
+export async function everyServerRecheckBans(cassandraclient,client) {
+    //for every server subscribed
+    //fetch the ban list for the server
+    
+    //fetch the ban database
+    //is each ban inside the database?
+    //if not, ban them
+    var currentShardServerIDArray = []
 
-        const banneduseriduwu = row.banneduserid;
-       // console.log("banneduseriduwu " + banneduseriduwu);
-
-      //console.log('time %s and value %s', row.time, row.val);
-      
-      //console.log(`Incoming AutoBan: ${row.banneduserid} status: ${row.banned} for reason ${row.reason}`)
-
-        if (row.banned) {
-            var currentShardServerIDArray = []
-
-            await client.guilds.cache.forEach(guild => {
-                //console.log(`${guild.name} | ${guild.id}`);
-                currentShardServerIDArray.push(guild.id)
-            })
+    await client.guilds.cache.forEach(guild => {
+        //console.log(`${guild.name} | ${guild.id}`);
+        currentShardServerIDArray.push(guild.id)
+        //console.log("guild.id " + guild.id)
+    })
 
 
-      //console.log(currentShardServerIDArray)
+    var queryForBanList = "SELECT * FROM adoramoderation.banneduserlist WHERE banned = ? ALLOW FILTERING;"
+    var parametersForBanList = [true];
+    var globallistOfBannableUsers
+    //fetch the ban database
+await cassandraclient.execute(queryForBanList, parametersForBanList, {prepare: true})
+.then(listOfBannableUsers => {
+    globallistOfBannableUsers = listOfBannableUsers;
+})
 
-      //each shard fetch it's servers it's able to ban the user on
-      var queryForMatchingServers = ('SELECT serverid, subscribed, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime FROM adoramoderation.guildssubscribedtoautoban WHERE serverid IN ? AND subscribed = ? ALLOW FILTERING;')
+console.log(`currentShardServerIDArray.length = ${currentShardServerIDArray.length}`)
 
-      if (currentShardServerIDArray.length > 0) {
-        var parametersServers = [currentShardServerIDArray, true];
-        await cassandraclient.execute( queryForMatchingServers, parametersServers, { prepare: true })
-        .then(matchingServerList => {
-            //console.log(matchingServerList)
-            //console.log(`${matchingServerList.rows.length} matching servers`)
-            //.rows.length === 0
+//each shard fetch it's servers it's able to ban the user on
+var queryForMatchingServers = ('SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid IN ? AND subscribed = ? ALLOW FILTERING;')
+
+var parametersServers = [currentShardServerIDArray, true];
+
+console.log(parametersServers)
+await cassandraclient.execute( queryForMatchingServers, parametersServers, { prepare: true })
+.then(matchingServerList => {
+    console.log(matchingServerList)
+    console.log(`${matchingServerList.rows.length} matching servers`)
+    //.rows.length === 0
 
             //for each server that the shard client is able to ban on...
             forEach(matchingServerList.rows, async function(eachServerThatIsSubscribed) {
-                //eachServerThatIsSubscribed.serverid
-                var individualservertodoeachban = client.guilds.cache.get(eachServerThatIsSubscribed.serverid);
+                console.log("serverid to work on" + eachServerThatIsSubscribed.serverid)
+                var individualservertodoeachban = await client.guilds.cache.get(eachServerThatIsSubscribed.serverid);
 
-                //is the user already banned?
+                //console.log(individualservertodoeachban)
 
-                // Async context needed for 'await' (meaning this must be within an async function).
-                    // Assuming 'message' is a Message within the guild.
+                var listofusersbannedinindividualserver = await individualservertodoeachban.fetchBans();
 
-                    /*
-                    try {
-                        const existingbanrecord = await client.guilds.cache.get(eachServerThatIsSubscribed.serverid).fetchBan(banneduseriduwu)
+                //check if list of users has the user that we want to ban
+                forEach(globallistOfBannableUsers.rows, async function (eachBannableUserRow) {
+                    var isUserBannedFromThisGuild = listofusersbannedinindividualserver.has(eachBannableUserRow.banneduserid)
+                  //  console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
 
-                        //console.log(existingbanrecord)
+                  if (isUserBannedFromThisGuild) {
+                      //this user is already fuckin banned
+                  }
+                  else {
+                      //THE BAN HAMMER FUCKING STRIKES!
 
-                        if (existingbanrecord) {
-                            //don't do anything
-                            //console.log("user already banned... do nothing")
-                        } else {
-                    //if not then ban them
-                    console.log("ban them!")
-                    individualservertodoeachban.members.ban(row.banneduserid)
-                    .then(user => console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`))
-                    .catch(console.error());
-                        }
+                      var toBanReason:string;
+                                    if (!eachBannableUserRow.reason || eachBannableUserRow.reason.length == 0) {
+                                        toBanReason = "Banned by Adora's Automagical system!"
+                                    } else {
+                                        toBanReason = `${eachBannableUserRow.reason} | Banned by Adora's Automagical system!`
+                                    }
 
-                    } catch {
-                        console.error()
-                    }
-                    */
+                      await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, {'reason': toBanReason})
+                        .then(user => console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`))
+                        .catch(console.error);
+                  }
+                })
 
-                   individualservertodoeachban.members.ban(row.banneduserid)
-                   .then(user => console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`))
-                   .catch(console.error());
-                
+                //console.log(listofusersbannedinindividualserver)
+
+                //console.log()
             })
-      })
-      }
-        }
     
-
-      
-    }
-  })
-  .on('end', function () {
-    // Stream ended, there aren't any more rows
-    console.log("Stream ended, there aren't any more rows")
-  })
-  .on('error', function (err) {
-    // Something went wrong: err is a response error from Cassandra
-  });
+})
+.catch(console.error())
 }
+
 
 export async function runOnStartup(cassandraclient, client) {
     //This Function will automatically create the adoramoderation keyspace if it doesn't exist, otherwise, carry on
   await cassandraclient.execute("CREATE KEYSPACE IF NOT EXISTS adoramoderation WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy',  'datacenter1': 1  };")
-  .then(result => console.log(result)).catch(error => console.error(error));
+.then(result => {/*console.log(result)*/}).catch(error => console.error(error));
 
   //Goes inside adora moderation keyspace, makes the table "guildssubscribedtoautoban"
   await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.guildssubscribedtoautoban (serverid text PRIMARY KEY, subscribed boolean, lastchangedbyid text, lastchangedtime timeuuid, firstchangedbyid text, firstchangedtime timeuuid);")
-  .then(result => console.log(result)).catch(error => console.error(error));
+.then(result => {/*console.log(result)*/}).catch(error => console.error(error));
 
   //Goes inside adora moderation keyspace, makes the table "banneduserlist"
   await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.banneduserlist (banneduserid text PRIMARY KEY, banned boolean, reason text, lastchangedbyid text, lastchangedtime timeuuid, firstchangedbyid text, firstchangedtime timeuuid);")
-  .then(result => console.log(result)).catch(error => console.error(error));
+  .then(result => {/*console.log(result)*/}).catch(error => console.error(error));
 
-  await runBanStream(cassandraclient, client)
+  await everyServerRecheckBans(cassandraclient,client)
 }
