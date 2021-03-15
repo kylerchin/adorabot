@@ -7,7 +7,7 @@ const { config } = require('./config.json');
 import { appendFile } from 'fs';
 
 import { commandHandler } from "./modules/commandhandler"; 
-import { runOnStartup, runBanStream } from "./modules/moderation";
+import { runOnStartup, everyServerRecheckBans } from "./modules/moderation";
 
 //datadog
 var StatsD = require('node-dogstatsd').StatsD;
@@ -35,8 +35,9 @@ const cassandraclient = new cassandra.Client({
    .PlainTextAuthProvider(config.cassandra.plainTextUsername, config.cassandra.plainTextPassword)
 });
 
-client.runBanStreamOnThisShard = function () {
-  runBanStream(cassandraclient,client)
+
+client.everyServerRecheckBansOnThisShard = function () {
+  everyServerRecheckBans(cassandraclient,client)
 }
 
 function bruhhasadate() {
@@ -91,6 +92,10 @@ client.on('ready', () => {
     
 
 });
+
+client.on('rateLimit', async rateLimitInfo => {
+  console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
+})
 
 client.on('message', async message => {
 
