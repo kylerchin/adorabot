@@ -101,8 +101,9 @@ export async function processAllModerationCommands(message,command,args,config,c
 
                     //now update every server
                     await runBanStream(cassandraclient, client)
-                    await client.shard.broadcastEval('runBanStream(cassandraclient, this)');
-                    
+
+                    //instruct every server to run the ban stream
+                    await client.shard.broadcastEval(`this.runBanStreamOnThisShard()`)
             })   
         } else {
             message.reply("You don't have permission to do that!")
@@ -207,6 +208,7 @@ export async function processAllModerationCommands(message,command,args,config,c
                         //after, go back and read the entire ban log to make sure everyone in the list is banned
                         await cassandraclient.execute("SELECT * FROM adoramoderation.banneduserlist WHERE banned = true ALLOW FILTERING;").then(fetchAllBansResult => {
                             console.log(fetchAllBansResult);
+                            //for each user that is banned in the database
                                 forEach(fetchAllBansResult.rows, async function (banRowValue, banRowKey, banRowArray) {
                                     var toBanReason:string;
                                     if (!banRowValue.reason || banRowValue.reason.length == 0) {
@@ -214,9 +216,27 @@ export async function processAllModerationCommands(message,command,args,config,c
                                     } else {
                                         toBanReason = `${banRowValue.reason} | Banned by Adora's Automagical system!`
                                     }
+
+                                    /*
+                                    const existingbanrecordcheck = await message.guild.fetchBan(banRowValue.banneduserid)
+
+                                    //console.log(existingbanrecord)
+
+                                    if (existingbanrecordcheck) {
+                                        //don't do anything
+                                        //console.log("user already banned... do nothing")
+                                    } else {
+                                        //no ban record found
+                                        //ban the user
                                     await message.guild.members.ban(banRowValue.banneduserid, {'reason': toBanReason})
-                                        .then(user => console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`))
-                                        .catch(console.error);
+                                    .then(user => console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`))
+                                    .catch(console.error);
+                                    }
+                                    */
+
+                                   await message.guild.members.ban(banRowValue.banneduserid, {'reason': toBanReason})
+                                   .then(user => console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`))
+                                   .catch(console.error);
                                 })
                             
                         }
@@ -285,16 +305,10 @@ export async function runBanStream(cassandraclient,client) {
 
                 //is the user already banned?
 
-                async function strikeDaHammer() {
-                    //if not then ban them
-                    individualservertodoeachban.members.ban(row.banneduserid)
-                    .then(user => console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`))
-                    .catch(console.error);
-                }
-
                 // Async context needed for 'await' (meaning this must be within an async function).
                     // Assuming 'message' is a Message within the guild.
 
+                    /*
                     try {
                         const existingbanrecord = await client.guilds.cache.get(eachServerThatIsSubscribed.serverid).fetchBan(banneduseriduwu)
 
@@ -302,14 +316,23 @@ export async function runBanStream(cassandraclient,client) {
 
                         if (existingbanrecord) {
                             //don't do anything
+                            //console.log("user already banned... do nothing")
                         } else {
-                            //no ban record found 
-                            strikeDaHammer().catch(console.error)
+                    //if not then ban them
+                    console.log("ban them!")
+                    individualservertodoeachban.members.ban(row.banneduserid)
+                    .then(user => console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`))
+                    .catch(console.error());
                         }
 
                     } catch {
                         console.error()
                     }
+                    */
+
+                   individualservertodoeachban.members.ban(row.banneduserid)
+                   .then(user => console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`))
+                   .catch(console.error());
                 
             })
       })
