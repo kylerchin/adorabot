@@ -9,6 +9,9 @@ import { appendFile } from 'fs';
 import { commandHandler } from "./modules/commandhandler"; 
 import { runOnStartup, everyServerRecheckBans } from "./modules/moderation";
 
+const discordbots = require('discord.bots.gg')
+const dbots = new discordbots(config.clientid, config.discordbotsggapitoken)
+
 //datadog
 var StatsD = require('node-dogstatsd').StatsD;
 var dogstatsd = new StatsD();
@@ -79,7 +82,7 @@ async function moderationCassandra() {
   await runOnStartup(cassandraclient, client)
 }
 
-client.on('ready', () => {
+client.on('ready',async () => {
   console.log(`Logged in as ${client.user.tag}!`);
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
   
@@ -89,6 +92,8 @@ client.on('ready', () => {
     try {moderationCassandra()} catch (error38362) {
       console.error(error38362)
     }
+
+    //dbots.postStats(client.guilds.size, client.shard.count, client.shard.id)
     
 
 });
@@ -101,10 +106,10 @@ client.on('message', async message => {
 
   dogstatsd.increment('adorabot.client.message');
   try {
-    commandHandler(message,client,config,cassandraclient,dogstatsd)
+    commandHandler(message,client,config,cassandraclient,dogstatsd,dbots)
   }
     catch {
-      console.log("Command failed")
+      console.log("Command failed");
     }
   //setPresenceForAdora();
 });
