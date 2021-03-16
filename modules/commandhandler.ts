@@ -79,7 +79,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
           }
     
           if (command === "help") {
-            msg.channel.send("**Adora Commands**");
+            msg.channel.send("**Adora Commands**").catch(console.error());;
             msg.channel.send({
               "embed": {
                 "title": "Help Page - Music Charts & Statistics",
@@ -99,7 +99,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
                   }
                 ]
               }
-            });
+            }).catch(console.error());;
             msg.channel.send({
               "embed": {
                 "title": "Help Page - Moderation",
@@ -111,14 +111,14 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
                   }
                 ]
               }
-            });
+            }).catch(console.error());
             msg.channel.send(
               "`a!ping`: Pong! Returns the bot's latency to Discord's servers.\n" + 
               "`a!invite`: Invite the bot to all your other servers!\n" +
               "`a!tomato`: Plays the BT21 tomato song in your current vc. yep... that's all this does....\n" +
             "`a!botinfo`: Shows adora bot statistics\n" + 
               "More coming soon... have an idea/request? Message `Kyler#9100`"
-            )
+            ).catch(console.error());
           }
     
           if (command === "translate") {
