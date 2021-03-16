@@ -24,7 +24,7 @@ const https = require('https')
 
 const translate = require('@vitalets/google-translate-api');
 
-export async function commandHandler(msg,client,config,cassandraclient,dogstatsd) {
+export async function commandHandler(msg,client,config,cassandraclient,dogstatsd,dbots) {
 
     if (msg.content.toLowerCase().startsWith(config.prefix) || msg.content.toLowerCase().startsWith("a!")) {
         if (!msg.author.bot) {
@@ -55,22 +55,38 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             pingReturn.edit(`**펑!** Latency is ${pingReturn.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`);
           }
 
+          if(command === "dbot") {
+            //console.log(dbots.postStats(client.guilds.size, client.shard.count, client.shard.id))
+          }
+
           if (command === 'info' || command === "botinfo") {
 
-            await howManyUsersInBanDatabase(cassandraclient)
+            //await howManyUsersInBanDatabase(cassandraclient)
 
-                   const promises = [
-                       client.shard.fetchClientValues('guilds.cache.size'),
-                       client.shard.broadcastEval('this.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)')
-                  ];
-            
-                   return Promise.all(promises)
-                       .then(results => {
-                           const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
-                           const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
-                           return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}\nNumber of Shards: ${client.shard.count}`);
-                       })
-                       .catch(console.error);
+
+            var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
+            await cassandraclient.execute(lookuphowmanybannedusersquery)
+            .then(async returnBanDatabaseAmount => {
+                var numberofrowsindatabase = await returnBanDatabaseAmount.rows[0].count.low
+                console.log(typeof numberofrowsindatabase + numberofrowsindatabase)
+                //return numberofrowsindatabase;
+
+                const promises = [
+                  client.shard.fetchClientValues('guilds.cache.size'),
+                  client.shard.broadcastEval('this.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)')
+             ];
+       
+              return Promise.all(promises)
+                  .then(results => {
+                      const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
+                      const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
+                      return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}\nNumber of Shards: ${client.shard.count}\nNumber of Bans in Database:${numberofrowsindatabase}`);
+                  })
+                  .catch(console.error);
+            })
+
+
+                   
                 }
 
           if (command === "bio" || command === "viewbio") {

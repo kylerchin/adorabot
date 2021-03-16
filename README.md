@@ -14,6 +14,8 @@ The current features include:
 
 - `a!autoban` Automatically bans user accounts known for raiding, racism, lgbtq+phobia, disruption of servers based on ban list reports. No extra configuration required, just `a!autoban on` and go!
 ![Autoban turning on](https://user-images.githubusercontent.com/7539174/111341783-12b35d00-8637-11eb-990a-2b9d356f3943.png)
+
+
 Features in development:
 - Graphing out Youtube and Spotify view counts into embeds with changable time
 - Billboard, Gaon, and other music chart ranking into embeds
