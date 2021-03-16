@@ -6,10 +6,14 @@ You can add it to your server by using this link:  https://discord.com/api/oauth
 The current features include:
  - Displaying the current YouTube View / Live & Dislike / Comment count in a discord embed
  ![YtStats Command Example with Dyanmite BTS music Video](https://user-images.githubusercontent.com/7539174/101548716-36dd0f00-3961-11eb-86c7-cebae7d43f9a.png)
+
+ 
  - Displaying live Billboard Poll scores and vote links
 ![Screenshot from 2021-03-06 20-29-30](https://user-images.githubusercontent.com/7539174/110228991-b45de000-7eba-11eb-9b27-33929a96ca3f.png)
+
+
 - `a!autoban` Automatically bans user accounts known for raiding, racism, lgbtq+phobia, disruption of servers based on ban list reports. No extra configuration required, just `a!autoban on` and go!
-![Autoban turning on](https://user-images.githubusercontent.com/7539174/111226028-c6680e80-859d-11eb-8aee-9e11d90e0882.png)
+![Autoban turning on](https://user-images.githubusercontent.com/7539174/111341783-12b35d00-8637-11eb-990a-2b9d356f3943.png)
 Features in development:
 - Graphing out Youtube and Spotify view counts into embeds with changable time
 - Billboard, Gaon, and other music chart ranking into embeds

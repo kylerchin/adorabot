@@ -22,6 +22,16 @@ export async function banGuildMember(message) {
 
 }
 
+export async function howManyUsersInBanDatabase(cassandraclient) {
+    var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
+    await cassandraclient.execute(lookuphowmanybannedusersquery)
+    .then(async returnBanDatabaseAmount => {
+        var numberofrowsindatabase = await returnBanDatabaseAmount.rows[0].count.low
+        console.log(typeof numberofrowsindatabase + numberofrowsindatabase)
+        return numberofrowsindatabase;
+    })
+}
+
 export async function processAllModerationCommands(message,command,args,config,cassandraclient,client) {
 
     const isDM:boolean = message.guild === null;
@@ -120,167 +130,183 @@ export async function processAllModerationCommands(message,command,args,config,c
         var firstchangedtimefirststate;
         var validToggleArgument : boolean = (args[0] === "yes" || args[0]==="no" || args[0]==="on" || args[0]==="off" || args[0]==="true" || args[0]==="false")
 
-        if (!isDM) {
-                    //check if server is registered
-        const lookupexistingsubscriptionquery = 'SELECT serverid, subscribed, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime FROM adoramoderation.guildssubscribedtoautoban WHERE serverid = ?';
+        var numberOfBannedUsersInDatabase;
 
-        var readExistingSubscriptionStatus : boolean = false;
+        var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
+        await cassandraclient.execute(lookuphowmanybannedusersquery)
+        .then(async returnBanDatabaseAmount => {
+            var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
+            console.log(typeof numberofrowsindatabase + numberofrowsindatabase)
+            numberOfBannedUsersInDatabase = numberofrowsindatabase;      
+            
+            if (!isDM) {
+                //check if server is registered
+    const lookupexistingsubscriptionquery = 'SELECT serverid, subscribed, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime FROM adoramoderation.guildssubscribedtoautoban WHERE serverid = ?';
 
-        await cassandraclient.execute(lookupexistingsubscriptionquery, [ message.guild.id ])
-        .then(fetchExistingSubscriptionResult => {
-            //console.log(fetchExistingSubscriptionResult)
-            if(fetchExistingSubscriptionResult.rows.length === 0) {
-                //entry hasn't happened before
-                console.log("new entry")
-                isNewEntry = true;
-                firstchangedbyidfirststate = message.author.id;
-                firstchangedtimefirststate =  TimeUuid.now();
-                readExistingSubscriptionStatus = false;
-            }
-            else {
-                console.log("old entry")
-                isNewEntry = false;
-                firstchangedbyidfirststate = fetchExistingSubscriptionResult.rows[0].firstchangedbyid;
-                firstchangedtimefirststate = fetchExistingSubscriptionResult.rows[0].firstchangedtime;
-                readExistingSubscriptionStatus = fetchExistingSubscriptionResult.rows[0].subscribed;
-            }
-        });
+    var readExistingSubscriptionStatus : boolean = false;
+
+    await cassandraclient.execute(lookupexistingsubscriptionquery, [ message.guild.id ])
+    .then(fetchExistingSubscriptionResult => {
+        //console.log(fetchExistingSubscriptionResult)
+        if(fetchExistingSubscriptionResult.rows.length === 0) {
+            //entry hasn't happened before
+            console.log("new entry")
+            isNewEntry = true;
+            firstchangedbyidfirststate = message.author.id;
+            firstchangedtimefirststate =  TimeUuid.now();
+            readExistingSubscriptionStatus = false;
+        }
+        else {
+            console.log("old entry")
+            isNewEntry = false;
+            firstchangedbyidfirststate = fetchExistingSubscriptionResult.rows[0].firstchangedbyid;
+            firstchangedtimefirststate = fetchExistingSubscriptionResult.rows[0].firstchangedtime;
+            readExistingSubscriptionStatus = fetchExistingSubscriptionResult.rows[0].subscribed;
+        }
+    });
+    }
+
+    //if argument is empty or if the first argument is not a valid toggle argument
+    if ((!validToggleArgument)) {
+
+        var autobanstatustext:string;
+        if (readExistingSubscriptionStatus) {
+            autobanstatustext = "On"
+        } else {
+            autobanstatustext = "Off"
         }
 
-        //if argument is empty or if the first argument is not a valid toggle argument
-        if ((!validToggleArgument)) {
+        console.log(`numberOfBannedUsersInDatabase ${numberOfBannedUsersInDatabase}`)
 
-            var autobanstatustext:string;
-            if (readExistingSubscriptionStatus) {
-                autobanstatustext = "On"
-            } else {
-                autobanstatustext = "Off"
-            }
-
-            //show autoban help page
-            message.reply({
-                "content": "Usage: `a!autoban on/off`",
-                "embed": {
-                  "title": "Autoban Feature",
-                  "image": {
-                    "url": "https://user-images.githubusercontent.com/7539174/111216262-6ff4d300-8591-11eb-902c-a25e1595730c.png"
-                  },
-                  "description": "Automatically bans user accounts known for raiding, racism, lgbtq+phobia, disruption of servers based on ban list reports and blacklists.\nAdministrators can enable autoban by typing `a!autoban on` and disable new bans from happening via `a!autoban off`",
-                  "fields": [
-                    {
-                      "name": "Is Autoban On for this server?",
-                      "value": `${autobanstatustext}`
-                    }
-                  ]
+        //show autoban help page
+        await message.reply({
+            "content": "Usage: `a!autoban on/off`",
+            "embed": {
+              "title": "Autoban Feature",
+              "image": {
+                "url": "https://user-images.githubusercontent.com/7539174/111216262-6ff4d300-8591-11eb-902c-a25e1595730c.png"
+              },
+              "description": "Automatically bans user accounts known for raiding, racism, lgbtq+phobia, disruption of servers based on ban list reports and blacklists.\nAdministrators can enable autoban by typing `a!autoban on` and disable new bans from happening via `a!autoban off`",
+              "fields": [
+                {
+                  "name": "Is Autoban On for this server?",
+                  "value": `${autobanstatustext}`
+                },
+                {  
+                    "name": "# of bans in banlist",
+                    "value": `${numberOfBannedUsersInDatabase} and growing!`
                 }
-              })
-        }
+              ]
+            }
+          })
+    }
 
-        if((!isDM)) {
-            if (message.member.hasPermission("ADMINISTRATOR")) {
-                console.log("user has permissions to ban inside this guild")
-                    if (args[0] === "yes" || args[0]==="on" || args[0] ==="true") {
-                        var subscribeStateToWrite = true
+    if((!isDM)) {
+        if (message.member.hasPermission("ADMINISTRATOR")) {
+            console.log("user has permissions to ban inside this guild")
+                if (args[0] === "yes" || args[0]==="on" || args[0] ==="true") {
+                    var subscribeStateToWrite = true
+                }
+                if (args[0] === "no" || args[0]==="off" || args[0] ==="false") {
+                    var subscribeStateToWrite = false
+                }
+                //validToggleArgument
+                //register server in database
+                if (validToggleArgument) {
+                    const query = 'INSERT INTO adoramoderation.guildssubscribedtoautoban (serverid, subscribed, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime) VALUES (?, ?, ?, ?, ?, ?)';
+                    var params;
+                    if (isNewEntry) {
+                        params = [message.guild.id, subscribeStateToWrite, message.author.id, firstchangedtimefirststate, firstchangedbyidfirststate, firstchangedtimefirststate];
+                    } else {
+                        params = [message.guild.id, subscribeStateToWrite, message.author.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
                     }
-                    if (args[0] === "no" || args[0]==="off" || args[0] ==="false") {
-                        var subscribeStateToWrite = false
+                //console.log(params)
+                await cassandraclient.execute(query, params, { prepare: true }, function (err) {
+                    console.log(err);
+                //Inserted in the cluster
+                });
+                if (subscribeStateToWrite === true) {
+                    await message.reply(
+                        {
+                            "embed": {
+                              "description": " ╭₊˚ʚ[🍰]ɞ・[This server is now subscribed to autobans!]\n ╰₊˚ʚ[🍩]ɞ・[To turn it off, type `a!autoban off`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
+                              "image": {
+                                "url": "https://user-images.githubusercontent.com/7539174/111216153-49369c80-8591-11eb-8eaf-0a0f13bf875c.png"
+                              }
+                            }
+                          }
+                    )
+
+                    if (message.guild.me.hasPermission("ADMINISTRATOR")) {
+                        
+                    } else {
+                        message.reply("Adorabot needs Administrator permissions for this to work! \nPlease turn on Administrator in `Server Settings > Roles > Adora > Permissions > Administrator` and slide the switch for Administrator to the right.")
                     }
-                    //validToggleArgument
-                    //register server in database
-                    if (validToggleArgument) {
-                        const query = 'INSERT INTO adoramoderation.guildssubscribedtoautoban (serverid, subscribed, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime) VALUES (?, ?, ?, ?, ?, ?)';
-                        var params;
-                        if (isNewEntry) {
-                            params = [message.guild.id, subscribeStateToWrite, message.author.id, firstchangedtimefirststate, firstchangedbyidfirststate, firstchangedtimefirststate];
-                        } else {
-                            params = [message.guild.id, subscribeStateToWrite, message.author.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
-                        }
-                    //console.log(params)
-                    await cassandraclient.execute(query, params, { prepare: true }, function (err) {
-                        console.log(err);
-                    //Inserted in the cluster
-                    });
-                    if (subscribeStateToWrite === true) {
+
+                    //after, go back and read the entire ban log to make sure everyone in the list is banned
+                    await cassandraclient.execute("SELECT * FROM adoramoderation.banneduserlist WHERE banned = true ALLOW FILTERING;").then(async fetchAllBansResult => {
+                        console.log(fetchAllBansResult);
+                        //for each user that is banned in the database
+
+                        var listofusersbannedinindividualserver = await message.guild.fetchBans();
+
+                            forEach(fetchAllBansResult.rows, async function (banRowValue, banRowKey, banRowArray) {
+                               
+
+
+                                var isUserBannedFromThisGuild = listofusersbannedinindividualserver.has(banRowValue.banneduserid)
+                                //  console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
+
+                                if (isUserBannedFromThisGuild) {
+                                    //this user is already fuckin banned
+                                }
+                                else {
+                                    //THE BAN HAMMER FUCKING STRIKES!
+
+                                    var toBanReason:string;
+                                if (!banRowValue.reason || banRowValue.reason.length == 0) {
+                                    toBanReason = "Banned by Adora's Automagical system!"
+                                } else {
+                                    toBanReason = `${banRowValue.reason} | Banned by Adora's Automagical system!`
+                                }
+
+                                await message.guild.members.ban(banRowValue.banneduserid, {'reason': toBanReason})
+                                    .then(user => console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`))
+                                    .catch(console.error);
+                                }
+
+                               
+                            })
+                        
+                    }
+                    ).catch(error => console.error(error));
+                } else {
+                    if (subscribeStateToWrite === false) {
+                        //await message.reply("This server is now unsubscribed to autobans! To turn autoban back on, type `a!autoban on`")
                         await message.reply(
                             {
                                 "embed": {
-                                  "description": " ╭₊˚ʚ[🍰]ɞ・[This server is now subscribed to autobans!]\n ╰₊˚ʚ[🍩]ɞ・[To turn it off, type `a!autoban off`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
+                                  "description": " ╭₊˚ʚ[:herb:]ɞ・[This server is now unsubscribed to autobans!] \n ﹕˚₊  ❀ ꒱⋅** :warning: You're no longer protected from known raiders from entering your safe space :warning: ** ๑˚₊⊹ \n╰₊˚ʚ[:fish_cake:]ɞ・[To turn autoban back on, type `a!autoban on`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
                                   "image": {
-                                    "url": "https://user-images.githubusercontent.com/7539174/111216153-49369c80-8591-11eb-8eaf-0a0f13bf875c.png"
+                                    "url": "https://user-images.githubusercontent.com/7539174/111224943-5b6a0800-859c-11eb-90bc-8806a51fd681.jpg"
                                   }
                                 }
                               }
                         )
-
-                        if (message.guild.me.hasPermission("ADMINISTRATOR")) {
-                            
-                        } else {
-                            message.reply("Adorabot needs Administrator permissions for this to work! \nPlease turn on Administrator in `Server Settings > Roles > Adora > Permissions > Administrator` and slide the switch for Administrator to the right.")
-                        }
-
-                        //after, go back and read the entire ban log to make sure everyone in the list is banned
-                        await cassandraclient.execute("SELECT * FROM adoramoderation.banneduserlist WHERE banned = true ALLOW FILTERING;").then(async fetchAllBansResult => {
-                            console.log(fetchAllBansResult);
-                            //for each user that is banned in the database
-
-                            var listofusersbannedinindividualserver = await message.guild.fetchBans();
-
-                                forEach(fetchAllBansResult.rows, async function (banRowValue, banRowKey, banRowArray) {
-                                   
-
-
-                                    var isUserBannedFromThisGuild = listofusersbannedinindividualserver.has(banRowValue.banneduserid)
-                                    //  console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
-
-                                    if (isUserBannedFromThisGuild) {
-                                        //this user is already fuckin banned
-                                    }
-                                    else {
-                                        //THE BAN HAMMER FUCKING STRIKES!
-
-                                        var toBanReason:string;
-                                    if (!banRowValue.reason || banRowValue.reason.length == 0) {
-                                        toBanReason = "Banned by Adora's Automagical system!"
-                                    } else {
-                                        toBanReason = `${banRowValue.reason} | Banned by Adora's Automagical system!`
-                                    }
-
-                                    await message.guild.members.ban(banRowValue.banneduserid, {'reason': toBanReason})
-                                        .then(user => console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`))
-                                        .catch(console.error);
-                                    }
-
-                                   
-                                })
-                            
-                        }
-                        ).catch(error => console.error(error));
-                    } else {
-                        if (subscribeStateToWrite === false) {
-                            //await message.reply("This server is now unsubscribed to autobans! To turn autoban back on, type `a!autoban on`")
-                            await message.reply(
-                                {
-                                    "embed": {
-                                      "description": " ╭₊˚ʚ[:herb:]ɞ・[This server is now unsubscribed to autobans!] \n ﹕˚₊  ❀ ꒱⋅** :warning: You're no longer protected from known raiders from entering your safe space :warning: ** ๑˚₊⊹ \n╰₊˚ʚ[:fish_cake:]ɞ・[To turn autoban back on, type `a!autoban on`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
-                                      "image": {
-                                        "url": "https://user-images.githubusercontent.com/7539174/111224943-5b6a0800-859c-11eb-90bc-8806a51fd681.jpg"
-                                      }
-                                    }
-                                  }
-                            )
-                        }
                     }
                 }
-                    
-                }
-            else {
-                await message.reply("You don't have permission to toggle this feature. Only Administrators of the current guild can turn autoban on and off \n 𓆩 𓆪 ʾ ִֶָ%˓ ᵎ ҂ ࣪˖﹫𓂃⌁. ࣪˖");
             }
+                
+            }
+        else {
+            await message.reply("You don't have permission to toggle this feature. Only Administrators of the current guild can turn autoban on and off \n 𓆩 𓆪 ʾ ִֶָ%˓ ᵎ ҂ ࣪˖﹫𓂃⌁. ࣪˖");
         }
-        else 
-        {
-            await message.reply("You are accessing this command in a DM. Only Administrators of the current guild can turn autoban on and off");
-        }
+    }
+    else 
+    {
+        await message.reply("You are accessing this command in a DM. Only Administrators of the current guild can turn autoban on and off");
+    }
+        })
     }
 }
 

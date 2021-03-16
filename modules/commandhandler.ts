@@ -5,7 +5,7 @@ import { billboardVote,billboardPollGetValue } from "./billboardPolls";
 import { editProfile,fetchProfile } from "./userProfile"; 
 import { banGuildMember } from "./moderation";
 import {geniusLyrics } from "./genius"
-import {processAllModerationCommands} from "./moderation"
+import {processAllModerationCommands,howManyUsersInBanDatabase} from "./moderation"
 const wiktionary = require('wiktionary')
 const { listCharts,getChart } = require('billboard-top-100');
 const isUrl = require("is-url");
@@ -55,7 +55,10 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             pingReturn.edit(`**펑!** Latency is ${pingReturn.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`);
           }
 
-          if (command === 'botinfo') {
+          if (command === 'info' || command === "botinfo") {
+
+            await howManyUsersInBanDatabase(cassandraclient)
+
                    const promises = [
                        client.shard.fetchClientValues('guilds.cache.size'),
                        client.shard.broadcastEval('this.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)')
@@ -116,7 +119,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
               "`a!ping`: Pong! Returns the bot's latency to Discord's servers.\n" + 
               "`a!invite`: Invite the bot to all your other servers!\n" +
               "`a!tomato`: Plays the BT21 tomato song in your current vc. yep... that's all this does....\n" +
-            "`a!botinfo`: Shows adora bot statistics\n" + 
+            "`a!info`: Shows adora bot statistics\n" + 
               "More coming soon... have an idea/request? Message `Kyler#9100`"
             ).catch(console.error());
           }
