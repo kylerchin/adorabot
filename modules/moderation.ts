@@ -104,6 +104,7 @@ export async function processAllModerationCommands(message,command,args,config,c
 
                     //instruct every server to run the ban stream
                    await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`)
+                   //await everyServerRecheckBans(cassandraclient,client)
             })   
         } else {
             message.reply("You don't have permission to do that!")
@@ -127,7 +128,7 @@ export async function processAllModerationCommands(message,command,args,config,c
 
         await cassandraclient.execute(lookupexistingsubscriptionquery, [ message.guild.id ])
         .then(fetchExistingSubscriptionResult => {
-            console.log(fetchExistingSubscriptionResult)
+            //console.log(fetchExistingSubscriptionResult)
             if(fetchExistingSubscriptionResult.rows.length === 0) {
                 //entry hasn't happened before
                 console.log("new entry")
@@ -194,7 +195,7 @@ export async function processAllModerationCommands(message,command,args,config,c
                         } else {
                             params = [message.guild.id, subscribeStateToWrite, message.author.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
                         }
-                    console.log(params)
+                    //console.log(params)
                     await cassandraclient.execute(query, params, { prepare: true }, function (err) {
                         console.log(err);
                     //Inserted in the cluster
@@ -315,10 +316,10 @@ var queryForMatchingServers = ('SELECT * FROM adoramoderation.guildssubscribedto
 
 var parametersServers = [currentShardServerIDArray, true];
 
-console.log(parametersServers)
+//console.log(parametersServers)
 await cassandraclient.execute( queryForMatchingServers, parametersServers, { prepare: true })
 .then(matchingServerList => {
-    console.log(matchingServerList)
+    //console.log(matchingServerList)
     console.log(`${matchingServerList.rows.length} matching servers`)
     //.rows.length === 0
 
