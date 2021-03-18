@@ -8,6 +8,7 @@ import { appendFile } from 'fs';
 
 import { commandHandler } from "./modules/commandhandler"; 
 import { runOnStartup, everyServerRecheckBans } from "./modules/moderation";
+import {updateDiscordBotsGG} from "./modules/uploadStatsToBotsGg"
 
 const discordbots = require('discord.bots.gg')
 const dbots = new discordbots(config.clientid, config.discordbotsggapitoken)
@@ -95,7 +96,7 @@ client.on('ready',async () => {
 
     //dbots.postStats(client.guilds.size, client.shard.count, client.shard.id)
     
-
+    updateDiscordBotsGG(client,config)
 });
 
 client.on('rateLimit', async rateLimitInfo => {

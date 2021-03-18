@@ -6,6 +6,7 @@ import { editProfile,fetchProfile } from "./userProfile";
 import { banGuildMember } from "./moderation";
 import {geniusLyrics } from "./genius"
 import {processAllModerationCommands,howManyUsersInBanDatabase} from "./moderation"
+import {updateDiscordBotsGG } from "./uploadStatsToBotsGg"
 const wiktionary = require('wiktionary')
 const { listCharts,getChart } = require('billboard-top-100');
 const isUrl = require("is-url");
@@ -63,8 +64,16 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
 
             //await howManyUsersInBanDatabase(cassandraclient)
 
+            var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban WHERE subscribed= ? ALLOW FILTERING;"
+            var parametersForSubscribedServers = [true]
 
-            var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
+            await cassandraclient.execute(queryNumberOfSubscribedServers, parametersForSubscribedServers)
+            .then(async returnSubscribedServersCount => {
+              var subscribedServerCount = await returnSubscribedServersCount.rows[0].count.low
+              console.log(typeof subscribedServerCount + ": " + subscribedServerCount)
+
+
+              var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
             await cassandraclient.execute(lookuphowmanybannedusersquery)
             .then(async returnBanDatabaseAmount => {
                 var numberofrowsindatabase = await returnBanDatabaseAmount.rows[0].count.low
@@ -80,9 +89,10 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
                   .then(results => {
                       const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
                       const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
-                      return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}\nNumber of Shards: ${client.shard.count}\nNumber of Bans in Database:${numberofrowsindatabase}`);
+                      return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}\nNumber of Shards: ${client.shard.count}\nNumber of Bans in Database: ${numberofrowsindatabase}\nNumber of Servers Subscribed to Autoban: ${subscribedServerCount}`);
                   })
                   .catch(console.error);
+            })
             })
 
 
@@ -338,7 +348,9 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
            
           }
     
-          dogstatsd.increment('adorabot.triggerprefix');
+          await dogstatsd.increment('adorabot.triggerprefix');
     
+          await updateDiscordBotsGG(client,config)
+
         }}
 }
