@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-var client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'], retryLimit: Infinity});
+var client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'], intents: Discord.Intents.NON_PRIVILEGED, retryLimit: Infinity});
 const { config } = require('./config.json');
 //const prefix = "shake ";
 //const token = process.env.BOT_TOKEN;
@@ -10,8 +10,8 @@ import { commandHandler } from "./modules/commandhandler";
 import { runOnStartup, everyServerRecheckBans } from "./modules/moderation";
 import {updateDiscordBotsGG} from "./modules/uploadStatsToBotsGg"
 
-const discordbots = require('discord.bots.gg')
-const dbots = new discordbots(config.clientid, config.discordbotsggapitoken)
+//const discordbots = require('discord.bots.gg')
+//const dbots = new discordbots(config.clientid, config.discordbotsggapitoken)
 
 //datadog
 var StatsD = require('node-dogstatsd').StatsD;
@@ -107,7 +107,7 @@ client.on('message', async message => {
 
   dogstatsd.increment('adorabot.client.message');
   try {
-    commandHandler(message,client,config,cassandraclient,dogstatsd,dbots)
+    commandHandler(message,client,config,cassandraclient,dogstatsd)
   }
     catch {
       console.log("Command failed");

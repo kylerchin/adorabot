@@ -25,7 +25,7 @@ const https = require('https')
 
 const translate = require('@vitalets/google-translate-api');
 
-export async function commandHandler(msg,client,config,cassandraclient,dogstatsd,dbots) {
+export async function commandHandler(msg,client,config,cassandraclient,dogstatsd) {
 
     if (msg.content.toLowerCase().startsWith(config.prefix) || msg.content.toLowerCase().startsWith("a!")) {
         if (!msg.author.bot) {
