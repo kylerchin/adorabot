@@ -13,7 +13,7 @@ The current features include:
 
 
 - `a!autoban` Automatically bans user accounts known for raiding, racism, lgbtq+phobia, disruption of servers based on ban list reports. No extra configuration required, just `a!autoban on` and go!
-![Autoban turning on](https://user-images.githubusercontent.com/7539174/111341783-12b35d00-8637-11eb-990a-2b9d356f3943.png)
+![Autoban turning on](https://user-images.githubusercontent.com/7539174/111886597-1a9f3400-898c-11eb-9c68-46a8704d9e66.png)
 
 
 Features in development:
@@ -40,6 +40,8 @@ This bot is designed to be horizontally scalable and fault-tolerent. What does t
 Here are the features that help it be fault tolerent:
 - Sharding: This allows for the incoming commands from servers to be split across multiple cores or computers. The sharding application, `app.ts`, creates multiple bots, which are hosted inside `app.ts`. 
 - Scylla DB: Syclla Database basically a faster version of cassandra. It is backwards compatible, so that's why you'll see the bot access the database using the driver `cassandra-driver`. It can replicate it's data across multiple machines and is designed for redundancy.
+
+You need to install scylla db, you can add as many nodes to scale as you want, and change the contact name and username and password in config.json. The bot will automagically make a keyspace called `adoramoderation` and 2 tables to store the guilds subscribed to autoban and the list of bans. 
 
 Things that need to be added to maintain this:
 - Sharding needs to be upgraded to multi-host sharding. This means multiple computers in different locations should be able to host the bot.
