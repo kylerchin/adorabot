@@ -62,9 +62,14 @@ function bruhhasadate() {
 
 async function setPresenceForAdora() {
   // Set the client user's presence
-await client.user.setPresence({ activity: { name: 'a!help \n 💜 Invite me to your server please! do a!invite' }, status: 'online' })
-.then(console.log)
-.catch(console.error);
+  try {
+    await client.user.setPresence(
+      { activity: 
+        { name: 'a!help \n 💜 Invite me to your server please! do a!invite' },
+          status: 'online' 
+        }
+        )
+  } catch {}
 }
 
 function logFloorGangText(appendtxt) {

@@ -56,10 +56,6 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             pingReturn.edit(`**펑!** Latency is ${pingReturn.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`);
           }
 
-          if(command === "dbot") {
-            //console.log(dbots.postStats(client.guilds.size, client.shard.count, client.shard.id))
-          }
-
           if (command === 'info' || command === "botinfo") {
 
             //await howManyUsersInBanDatabase(cassandraclient)

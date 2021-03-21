@@ -8,7 +8,7 @@ const userReg = RegExp(/<@!?(\d+)>/);
 
 export async function banGuildMember(message) {
     //check if user trying to do the command has permissions
-    if(message.member.hasPermission('BAN_MEMBERS')) {
+    if(message.member.permissions.has('BAN_MEMBERS')) {
         message.reply("You have the permission to ban!")
     } else {
         message.reply("You do not have permission to ban users in this guild.")
@@ -202,7 +202,7 @@ export async function processAllModerationCommands(message,command,args,config,c
     }
 
     if((!isDM)) {
-        if (message.member.hasPermission("ADMINISTRATOR")) {
+        if (message.member.permissions.has("ADMINISTRATOR")) {
             console.log("user has permissions to ban inside this guild")
                 if (args[0] === "yes" || args[0]==="on" || args[0] ==="true") {
                     var subscribeStateToWrite = true
@@ -237,7 +237,7 @@ export async function processAllModerationCommands(message,command,args,config,c
                           }
                     )
 
-                    if (message.guild.me.hasPermission("ADMINISTRATOR")) {
+                    if (message.guild.me.permissions.has("ADMINISTRATOR")) {
                         
                     } else {
                         message.reply("Adorabot needs Administrator permissions for this to work! \nPlease turn on Administrator in `Server Settings > Roles > Adora > Permissions > Administrator` and slide the switch for Administrator to the right.")
