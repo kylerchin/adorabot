@@ -237,10 +237,10 @@ export async function processAllModerationCommands(message,command,args,config,c
                           }
                     )
 
-                    if (message.guild.me.permissions.has("ADMINISTRATOR")) {
+                    if (message.guild.me.permissions.has("BAN_MEMBERS")) {
                         
                     } else {
-                        message.reply("Adorabot needs Administrator permissions for this to work! \nPlease turn on Administrator in `Server Settings > Roles > Adora > Permissions > Administrator` and slide the switch for Administrator to the right.")
+                        message.reply("Adorabot needs BAN_MEMBERS permissions for this to work! \nPlease turn on Administrator in `Server Settings > Roles > Adora > Permissions > Administrator` and slide the switch for Administrator to the right.")
                     }
 
                     //after, go back and read the entire ban log to make sure everyone in the list is banned
