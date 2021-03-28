@@ -151,7 +151,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
           }
     
           if (command === "inviteme" || command === "invite") {
-            msg.reply("Here's the invite link! It's an honor to help you :) \n https://discord.com/api/oauth2/authorize?client_id=737046643974733845&permissions=8&scope=bot")
+            msg.reply("Here's the invite link! It's an honor to help you :) \n https://discord.bots.gg/bots/737046643974733845\nHere's our support server for announcements and questions! https://discord.gg/Dgvm3kt")
           }
     
           if (command === "billboard") {
