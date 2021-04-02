@@ -1,5 +1,8 @@
 var forEach = require("for-each")
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
+const editJsonFile = require("edit-json-file");
+var importconfigfile = editJsonFile(`${__dirname}/../config.json`);
+//let file = editJsonFile(`${__dirname}/config.json`);
 //Generate time with TimeUuid.now();
 
 const userIDsRegex = /^(?:<@\D?)?(\d+)(?:>)?\s*,?\s*/;
@@ -36,11 +39,19 @@ export async function processAllModerationCommands(message,command,args,config,c
 
     const isDM:boolean = message.guild === null;
 
+    if (command === "mooooocowwwww") {
+        message.reply(`${__dirname}`)
+    }
+
     if (command === "adoraban") {    
 
         var isauthorizedtoaddbanstodatabase:boolean = false;
 
-        forEach(config.allowedToBanUsers, function (value, key, array) {
+        var loadedConfigData = importconfigfile.get()
+
+        console.log(loadedConfigData)
+
+        forEach(loadedConfigData.config.allowedToBanUsers, function (value, key, array) {
             if(value.userid === message.author.id) {
                 isauthorizedtoaddbanstodatabase = true;
             } else {
@@ -340,12 +351,29 @@ console.log(`currentShardServerIDArray.length = ${currentShardServerIDArray.leng
 //each shard fetch it's servers it's able to ban the user on
 var queryForMatchingServers = ('SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid IN ? AND subscribed = ? ALLOW FILTERING;')
 
-var parametersServers = [currentShardServerIDArray, true];
+var listOfQueriesToSendToScylla = []
 
-//console.log(parametersServers)
-await cassandraclient.execute( queryForMatchingServers, parametersServers, { prepare: true })
-.then(matchingServerList => {
-    //console.log(matchingServerList)
+await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
+    //console.log(eachServerIdItem)
+
+    var serverIdArrayThing = []
+    serverIdArrayThing.push(eachServerIdItem)
+
+    var parametersServers = [serverIdArrayThing, true];
+
+    listOfQueriesToSendToScylla.push(cassandraclient.execute( queryForMatchingServers, parametersServers, { prepare: true }))
+
+    })
+
+    //console.log(listOfQueriesToSendToScylla)
+
+   await Promise.all(listOfQueriesToSendToScylla ).then(async function (values) {
+       //console.log(values)
+
+       forEach(values, async (matchingServerList) => {
+           //console.log(matchingServerList.rows.length)
+
+            //console.log(matchingServerList)
     console.log(`${matchingServerList.rows.length} matching servers`)
     //.rows.length === 0
 
@@ -387,9 +415,14 @@ await cassandraclient.execute( queryForMatchingServers, parametersServers, { pre
                 //console.log()
             })
     
-})
-.catch(console.error())
+
+       })
+       });
+
+
+//console.log(parametersServers)
 }
+
 
 
 export async function runOnStartup(cassandraclient, client) {
