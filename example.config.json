@@ -7,6 +7,7 @@
 			"plainTextUsername": "developer",
 			"plainTextPassword": "password"
 		},
+		"spplaycountlibrespotapi": "https://api.t4ils.dev",
 		"token": "DISCORD-TOKEN",
 		"googlecloudprojectid": "googlecloudprojectname",
 		"googlecloudkeyFilename": "./keyfile.json",
