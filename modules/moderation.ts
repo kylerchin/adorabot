@@ -353,6 +353,7 @@ var queryForMatchingServers = ('SELECT * FROM adoramoderation.guildssubscribedto
 
 var listOfQueriesToSendToScylla = []
 
+//For Every server in the array, transform it into a query to send to Cassandra
 await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
     //console.log(eachServerIdItem)
 
@@ -367,9 +368,11 @@ await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
 
     //console.log(listOfQueriesToSendToScylla)
 
+    //Run All the queries, then
    await Promise.all(listOfQueriesToSendToScylla ).then(async function (values) {
        //console.log(values)
 
+       //For Each server in the shard that is subscribed, run the ban database check
        forEach(values, async (matchingServerList) => {
            //console.log(matchingServerList.rows.length)
 
@@ -395,7 +398,7 @@ await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
                       //this user is already fuckin banned
                   }
                   else {
-                      //THE BAN HAMMER FUCKING STRIKES!
+                      //THE BAN HAMMER STRIKES!
 
                       var toBanReason:string;
                                     if (!eachBannableUserRow.reason || eachBannableUserRow.reason.length == 0) {
@@ -417,6 +420,8 @@ await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
     
 
        })
+
+       //now all bans have been completed
        });
 
 
