@@ -407,6 +407,9 @@ await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
                                         toBanReason = `${eachBannableUserRow.reason} | Banned by Adora's Automagical system!`
                                     }
 
+                                    //trim the reason text to 512 char just in case it fails because the reason is too long
+                                    toBanReason = toBanReason.substring(0,511)
+
                       await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, {'reason': toBanReason})
                         .then(user => console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`))
                         .catch(console.error);
