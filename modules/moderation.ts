@@ -43,6 +43,40 @@ export async function processAllModerationCommands(message,command,args,config,c
         message.reply(`${__dirname}`)
     }
 
+    if (command === "inspect") {
+
+    }
+
+    if (command === "updatebans") {
+
+        var isauthorizedtoaddbanstodatabase:boolean = false;
+
+        var loadedConfigData = importconfigfile.get()
+
+        console.log(loadedConfigData)
+
+        forEach(loadedConfigData.config.allowedToBanUsers, function (value, key, array) {
+            if(value.userid === message.author.id) {
+                isauthorizedtoaddbanstodatabase = true;
+            } else {
+                
+            }
+        });
+
+        if (isauthorizedtoaddbanstodatabase) {
+            await message.channel.send("You are authorized")
+            await message.channel.send("Forcing Updating Ban List on All Guilds on All Shards")
+        await message.channel.send("a!adoraban and a!autoban will also trigger this command automatically, so there's no need to run this after")
+        await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`)
+        //await message.reply("Finished!")
+        }
+    }
+
+    if (command === "adminhelp") {
+        await message.reply("Adora's admin help page! Only for adora managers\n`a!adoraban <user id list/tags> <reason (max 512 chars)>`: Inserts bans into database and completes bans on all shards"+
+        "\n`a!updatebans`: Force all guilds in all shards to check for bans")
+    }
+
     if (command === "adoraban") {    
 
         var isauthorizedtoaddbanstodatabase:boolean = false;
@@ -133,6 +167,10 @@ export async function processAllModerationCommands(message,command,args,config,c
 
     }
 
+    if (command === "wrongfulban") {
+        message.reply("We apologize for the wrongful ban. We make mistakes as we import data from other banlist databases from other servers. Please fill out the form at https://forms.gle/V3QKNg3Vyi4P4CK7A so we can investigate this and unban you.")
+    }
+
     if (command === "autoban") {
 
         var subscribeStateToWrite : boolean;
@@ -197,7 +235,7 @@ export async function processAllModerationCommands(message,command,args,config,c
               "image": {
                 "url": "https://user-images.githubusercontent.com/7539174/111216262-6ff4d300-8591-11eb-902c-a25e1595730c.png"
               },
-              "description": "Automatically bans user accounts known for raiding, racism, lgbtq+phobia, disruption of servers based on ban list reports and blacklists.\nAdministrators can enable autoban by typing `a!autoban on` and disable new bans from happening via `a!autoban off`",
+              "description": "Automatically bans user accounts known for raiding, racism, lgbtq+phobia, disruption of servers based on ban list reports and blacklists.\nAdministrators can enable autoban by typing `a!autoban on` and disable new bans from happening via `a!autoban off`\nIf someone has been wrongly banned, please run `a!wrongfulban` to report this and we will investigate and unban.",
               "fields": [
                 {
                   "name": "Is Autoban On for this server?",
