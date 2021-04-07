@@ -4,6 +4,7 @@ const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../config.json`);
 //let file = editJsonFile(`${__dirname}/config.json`);
 //Generate time with TimeUuid.now();
+const emptylinesregex = /\n/ig;
 
 const userIDsRegex = /^(?:<@\D?)?(\d+)(?:>)?\s*,?\s*/;
 
@@ -43,8 +44,23 @@ export async function processAllModerationCommands(message,command,args,config,c
         message.reply(`${__dirname}`)
     }
 
-    if (command === "inspect") {
+    if (command === "inspectuser") {
 
+        //transforms the user id list into a list to be banned
+        //this line prevents accidental role mentions from being added
+        var roleMentionsRemoved = message.content.replace(/<@&(\d{18})>/g, '')
+
+        var arrayOfUserIdsToLookup = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
+
+
+        forEach(arrayOfUserIdsToLookup, async function(individualUserId, key, array) {
+            await cassandraclient.execute("SELECT * FROM adoramoderation.banneduserlist WHERE banneduserid = ?", [individualUserId])
+            .then(fetchExistingBanResult => {
+                if(fetchExistingBanResult.rows.length === 0) {
+                    //new ban
+                }
+            });
+        });
     }
 
     if (command === "updatebans") {
@@ -107,7 +123,7 @@ export async function processAllModerationCommands(message,command,args,config,c
                 await message.channel.send(`Banning ${arrayOfUserIdsToBan.length} users.`)
             }
 
-            var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*adoraban(\ )*)/g, '').trim()
+            var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*adoraban(\ )*)/g, '').trim().replace(emptylinesregex, "")
             //apply the bans to the database
             await message.channel.send(`Reason: ${reasonForBanRegister}`)
 
@@ -115,7 +131,7 @@ export async function processAllModerationCommands(message,command,args,config,c
                 //write bans to adoramoderation.banneduserlist
                 //banneduserid text PRIMARY KEY, banned boolean, reason text, lastchangedbyid text, lastchangedtime timeuuid, firstchangedbyid text, firstchangedtime timeuuid);
 
-                    const lookupexistingbanquery = 'SELECT banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime FROM adoramoderation.banneduserlist WHERE banneduserid = ?';
+                    const lookupexistingbanquery = 'SELECT * FROM adoramoderation.banneduserlist WHERE banneduserid = ?';
                 
                     var isBanRecordNew : boolean;
                     var banFirstChangedByIdInitialState;
@@ -297,7 +313,7 @@ export async function processAllModerationCommands(message,command,args,config,c
                         console.log(fetchAllBansResult);
                         //for each user that is banned in the database
 
-                        var listofusersbannedinindividualserver = await message.guild.fetchBans();
+                        var listofusersbannedinindividualserver = await message.guild.fetchBans().catch();
 
                             forEach(fetchAllBansResult.rows, async function (banRowValue, banRowKey, banRowArray) {
                                
@@ -318,6 +334,10 @@ export async function processAllModerationCommands(message,command,args,config,c
                                 } else {
                                     toBanReason = `${banRowValue.reason} | Banned by Adora's Automagical system!`
                                 }
+
+                                // global flag required when calling replaceAll with regex
+                                
+                                toBanReason = toBanReason.replace(emptylinesregex, '');
 
                                 await message.guild.members.ban(banRowValue.banneduserid, {'reason': toBanReason})
                                     .then(user => console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`))
