@@ -88,6 +88,10 @@ async function moderationCassandra() {
   await runOnStartup(cassandraclient, client)
 }
 
+client
+  .on("debug", console.log)
+  .on("warn", console.log)
+
 client.on('ready',async () => {
   console.log(`Logged in as ${client.user.tag}!`);
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
@@ -110,6 +114,7 @@ client.on('rateLimit', async rateLimitInfo => {
 
 client.on('guildCreate', async guild => {
   await client.shard.broadcastEval('this.everyServerRecheckBansOnThisShard()');
+  await updateDiscordBotsGG(client,config)
 })
 
 client.on('guildDelete', async guild => {
