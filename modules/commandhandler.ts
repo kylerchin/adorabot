@@ -56,7 +56,11 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             pingReturn.edit(`**펑!** Latency is ${pingReturn.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`);
           }
 
-          if (command === 'info' || command === "botinfo") {
+          if (command === "info") {
+            msg.reply("This command is deprecated, please use `a!botstats`")
+          }
+
+          if (command === 'botstats') {
 
             //await howManyUsersInBanDatabase(cassandraclient)
 
@@ -133,17 +137,38 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
                   {
                     "name": "`a!autoban`",
                     "value": "Automatically block known-raid accounts from blacklists before they come to your server, run command for more info"
+                  },
+                  {
+                    "name": "`a!wrongfulban`",
+                    "value": "Report wrongful bans applied by the Adora system and we'll investigate and unban as quickly as we can."
                   }
                 ]
               }
             }).catch(console.error());
-            msg.channel.send(
-              "`a!ping`: Pong! Returns the bot's latency to Discord's servers.\n" + 
-              "`a!invite`: Invite the bot to all your other servers!\n" +
-              "`a!tomato`: Plays the BT21 tomato song in your current vc. yep... that's all this does....\n" +
-            "`a!info`: Shows adora bot statistics\n" + 
-              "More coming soon... have an idea/request? Message `Kyler#9100`"
-            ).catch(console.error());
+            msg.channel.send({
+              "embed": {
+                "title": "Help Page - Adora",
+                "description": "General tools and access!",
+                "fields": [
+                  {
+                    "name": "`a!ping`",
+                    "value": "Pong! Returns the bot's latency to Discord's servers."
+                  },
+                  {
+                    "name": "`a!invite`",
+                    "value": "Invite the bot to all your friend's servers! Shows invite link and support server."
+                  },
+                  {
+                    "name": "`a!botstats`",
+                    "value": "Shows adora bot statistics"
+                  },
+                  {
+                    "name": "I have an idea for a command or feedback!",
+                    "value": "We'd love to hear it! Please join our support server and tell us! Run `a!invite` for the invite link to our Support & Suggestion Adorabot Discord Server"
+                  }
+                ]
+              }
+            }).catch(console.error());
           }
     
           if (command === "translate") {
