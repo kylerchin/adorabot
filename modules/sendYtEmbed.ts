@@ -75,12 +75,7 @@ export async function sendYtCountsEmbed(id,message,apikey) {
   
             await message.reply(embedYtStats)
             
-            try {
-              storeYoutubeDataIntoDatabase(body);
-            }
-           catch {
-             console.log("logging this chart failed!")
-           }
+            
 
             //return console.log(body);
   
