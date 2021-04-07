@@ -40,8 +40,8 @@ const cassandraclient = new cassandra.Client({
 });
 
 
-client.everyServerRecheckBansOnThisShard = function () {
-  everyServerRecheckBans(cassandraclient,client)
+client.everyServerRecheckBansOnThisShard = async () => {
+  everyServerRecheckBans(cassandraclient, client);
 }
 
 function bruhhasadate() {
@@ -106,6 +106,14 @@ client.on('ready',async () => {
 
 client.on('rateLimit', async rateLimitInfo => {
   console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
+})
+
+client.on('guildCreate', async guild => {
+  await client.shard.broadcastEval('this.everyServerRecheckBansOnThisShard()');
+})
+
+client.on('guildDelete', async guild => {
+  await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`);
 })
 
 client.on('message', async message => {
