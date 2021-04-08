@@ -96,7 +96,7 @@ client.on('ready',async () => {
   console.log(`Logged in as ${client.user.tag}!`);
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
   
-  setPresenceForAdora();
+  await setPresenceForAdora();
 
     //ban list
     try {moderationCassandra()} catch (error38362) {
@@ -105,7 +105,7 @@ client.on('ready',async () => {
 
     //dbots.postStats(client.guilds.size, client.shard.count, client.shard.id)
     
-    updateDiscordBotsGG(client,config)
+    await updateDiscordBotsGG(client,config)
 });
 
 client.on('rateLimit', async rateLimitInfo => {
