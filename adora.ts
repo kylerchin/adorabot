@@ -44,6 +44,10 @@ client.everyServerRecheckBansOnThisShard = async () => {
   everyServerRecheckBans(cassandraclient, client);
 }
 
+client.setPresenceForAdora = async () => {
+  await setPresenceForAdora()
+}
+
 function bruhhasadate() {
   fsdateObj = new Date();
   fsmonth =fsdateObj.getUTCMonth() + 1; //months from 1-12
@@ -62,14 +66,8 @@ function bruhhasadate() {
 
 async function setPresenceForAdora() {
   // Set the client user's presence
-  try {
-    await client.user.setPresence(
-      { activity: 
-        { name: 'a!help \n 💜 Invite me to your server please! do a!invite' },
-          status: 'online' 
-        }
-        )
-  } catch {}
+
+  client.user.setPresence({ activities: [{ name: 'a!help \n 💜 Invite me to your server please! do a!invite' }], status: 'online' });
 }
 
 function logFloorGangText(appendtxt) {
