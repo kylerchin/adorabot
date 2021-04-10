@@ -60,6 +60,13 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             msg.reply("This command is deprecated, please use `a!botstats`")
           }
 
+          if (command === "updatepresence") {
+            await msg.channel.send('updating presence...')
+            await client.setPresenceForAdora()
+            await client.shard.broadcastEval('this.setPresenceForAdora()')
+            await msg.channel.send('done!')
+          }
+
           if (command === 'botstats') {
 
             //await howManyUsersInBanDatabase(cassandraclient)
@@ -111,7 +118,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             msg.channel.send("**Adora Commands**").catch(console.error());;
             msg.channel.send({
               "embed": {
-                "title": "Help Page - Music Charts & Statistics",
+                "title": "Help Page 1 of 3 - Music Charts & Statistics",
                 "description": "Access live information across music charts and platforms",
                 "fields": [
                   {
@@ -131,7 +138,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             }).catch(console.error());;
             msg.channel.send({
               "embed": {
-                "title": "Help Page - Moderation",
+                "title": "Help Page 2 of 3 - Moderation",
                 "description": "Make protecting your community easier!",
                 "fields": [
                   {
@@ -147,7 +154,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             }).catch(console.error());
             msg.channel.send({
               "embed": {
-                "title": "Help Page - Adora",
+                "title": "Help Page 3 of 3 - Adora",
                 "description": "General tools and access!",
                 "fields": [
                   {
