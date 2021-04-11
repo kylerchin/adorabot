@@ -339,10 +339,6 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
     
           }
 
-          if (command === "ban") {
-            banGuildMember(msg)
-          }
-
           if (command === "tomato") {// Join the same voice channel of the author of the message
             try {
               msg.reply("🍅  TOMATO! 🍅")
