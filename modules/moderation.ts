@@ -39,6 +39,7 @@ export async function banGuildMember(message) {
                 await message.channel.send(`Reason: ${reasonForBanRegister}`)
         
                 await forEach(arrayOfUserIdsToBan, async (banID) => {
+                    console.log(banID)
                     await message.guild.members.ban(banID, {'reason': reasonForBanRegister})
                     .then(async (user) => {console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`)
                     await message.channel.send(`Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
