@@ -58,6 +58,54 @@ export async function banGuildMember(message) {
 
 }
 
+export async function unbanGuildMember(message) {
+    //check if user trying to do the command has permissions
+
+    const isDM:boolean = message.guild === null;
+
+    if(isDM) {
+        message.channel.send("You can't ban or unban users in DMs, this comamnd only applies to servers!")
+    } else {
+        if(message.member.permissions.has('BAN_MEMBERS')) {
+            //message.reply("You have the permission to ban!")
+
+            //this line prevents accidental role mentions from being added
+            var roleMentionsRemoved = message.content.replace(/<@&(\d{18})>/g, '')
+
+            //transforms the user id list into a list to be banned
+            var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
+
+            if(arrayOfUserIdsToBan.length === 0) {
+                message.reply("The correct format is `a!unban (Mentions/UserIDs) [reason]")
+            } else {
+                if(arrayOfUserIdsToBan) {
+                    await message.channel.send(`Unbanning ${arrayOfUserIdsToBan.length} users.`)
+                }
+    
+                var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*unban(\ )*)/g, '').trim().replace(emptylinesregex, "")
+                //apply the bans to the database
+                await message.channel.send(`Reason: ${reasonForBanRegister}`)
+        
+                await forEach(arrayOfUserIdsToBan, async (banID) => {
+                    console.log(banID)
+                    await message.guild.members.unban(banID, {'reason': reasonForBanRegister})
+                    .then(async (user) => {console.log(`Unbanned ${user.username || user.id || user} from ${message.guild.name}`)
+                    await message.channel.send(`Unbanned ${user.username || user.id || user} from ${message.guild.name}`).catch()
+                }
+                    )
+                    .catch(error => {
+                        message.channel.send(`Failed to unban ${banID}`)
+                    });
+                 })
+            }
+
+        } else {
+            message.reply("You do not have permission to ban users in this guild.")
+        }
+    }
+
+}
+
 export async function howManyUsersInBanDatabase(cassandraclient) {
     var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
     await cassandraclient.execute(lookuphowmanybannedusersquery)
@@ -74,6 +122,10 @@ export async function processAllModerationCommands(message,command,args,config,c
 
     if (command === "ban") {
         await banGuildMember(message)
+    }
+
+    if (command === "unban") {
+        await unbanGuildMember(message)
     }
 
     if (command === "mooooocowwwww") {
