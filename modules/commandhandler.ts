@@ -146,6 +146,10 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
                     "value": "Automatically block known-raid accounts from blacklists before they come to your server, run command for more info"
                   },
                   {
+                    "name": "`a!ban (Mentions/UserIDs)`",
+                    "value": "a!ban can ban as many users via mention or user ids as you wish!"
+                  },
+                  {
                     "name": "`a!wrongfulban`",
                     "value": "Report wrongful bans applied by the Adora system and we'll investigate and unban as quickly as we can."
                   }
