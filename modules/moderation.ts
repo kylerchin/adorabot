@@ -12,17 +12,48 @@ const userReg = RegExp(/<@!?(\d+)>/);
 
 export async function banGuildMember(message) {
     //check if user trying to do the command has permissions
-    if(message.member.permissions.has('BAN_MEMBERS')) {
-        message.reply("You have the permission to ban!")
+
+    const isDM:boolean = message.guild === null;
+
+    if(isDM) {
+        message.channel.send("You can't ban users in DMs, this comamnd only applies to servers!")
     } else {
-        message.reply("You do not have permission to ban users in this guild.")
-    }
+        if(message.member.permissions.has('BAN_MEMBERS')) {
+            //message.reply("You have the permission to ban!")
 
-    var userIdArray = []
+            //this line prevents accidental role mentions from being added
+            var roleMentionsRemoved = message.content.replace(/<@&(\d{18})>/g, '')
 
-    forEach(userIdArray, function() {
+            //transforms the user id list into a list to be banned
+            var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
+
+            if(arrayOfUserIdsToBan.length === 0) {
+                message.reply("The correct format is `a!ban (Mentions/UserIDs) [reason]")
+            } else {
+                if(arrayOfUserIdsToBan) {
+                    await message.channel.send(`Banning ${arrayOfUserIdsToBan.length} users.`)
+                }
+    
+                var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*ban(\ )*)/g, '').trim().replace(emptylinesregex, "")
+                //apply the bans to the database
+                await message.channel.send(`Reason: ${reasonForBanRegister}`)
         
-    })
+                await forEach(arrayOfUserIdsToBan, async (banID) => {
+                    await message.guild.members.ban(banID, {'reason': reasonForBanRegister})
+                    .then(async (user) => {console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`)
+                    await message.channel.send(`Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
+                }
+                    )
+                    .catch(error => {
+                        message.channel.send(`Failed to ban ${banID}`)
+                    });
+                 })
+            }
+
+        } else {
+            message.reply("You do not have permission to ban users in this guild.")
+        }
+    }
 
 }
 
@@ -39,6 +70,10 @@ export async function howManyUsersInBanDatabase(cassandraclient) {
 export async function processAllModerationCommands(message,command,args,config,cassandraclient,client) {
 
     const isDM:boolean = message.guild === null;
+
+    if (command === "ban") {
+        await banGuildMember(message)
+    }
 
     if (command === "mooooocowwwww") {
         message.reply(`${__dirname}`)
@@ -341,7 +376,7 @@ export async function processAllModerationCommands(message,command,args,config,c
 
                                 await message.guild.members.ban(banRowValue.banneduserid, {'reason': toBanReason})
                                     .then(user => console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`))
-                                    .catch(console.error);
+                                    .catch({/*console.error*/});
                                 }
 
                                
