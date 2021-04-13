@@ -5,10 +5,10 @@ import { billboardVote,billboardPollGetValue } from "./billboardPolls";
 import { editProfile,fetchProfile } from "./userProfile"; 
 import { banGuildMember } from "./moderation";
 import {geniusLyrics } from "./genius"
+import { billboardCharts } from "./billboard"
 import {processAllModerationCommands,howManyUsersInBanDatabase} from "./moderation"
 import {updateDiscordBotsGG } from "./uploadStatsToBotsGg"
 const wiktionary = require('wiktionary')
-const { listCharts,getChart } = require('billboard-top-100');
 const isUrl = require("is-url");
 const scrapeyoutube = require('scrape-youtube').default;
 const fs = require('fs');
@@ -195,7 +195,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
           }
     
           if (command === "billboard") {
-
+            await billboardCharts(msg,command,args)
           }
 
           if (command === "gaon" || command === "goan") {
