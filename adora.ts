@@ -107,7 +107,7 @@ client.on('ready',async () => {
 });
 
 client.on('rateLimit', async rateLimitInfo => {
-  console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
+ // console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
 })
 
 client.on('guildCreate', async guild => {
