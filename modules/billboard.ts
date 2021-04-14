@@ -26,62 +26,43 @@ export async function billboardListChartsScrollable(message,command,args) {
         'Page 3' // 2
     ];
 
-    let current = 0;
-    let m = await message.channel.send('Loading pages...');
-
-    function createEmbed (page) {
-        let embed = new Discord.MessageEmbed()
-        .setDescription(pages[page]);
-        return embed;
-    };
-
-    function reactionsNeeded (page) {
-        return [
-            pages[page - 1],
-            pages[page + 1]
-        ];
-    };
-
-    async function showPage (page) {
-        let output = createEmbed(page);
-        await m.edit(null, { embed: output });
-        await m.reactions.removeAll();
-
-        let needed = reactionsNeeded(page);
-        let left, right;
-
-        if (needed[0]) {
-            await m.react('⬅️');
-
-            let filter = (r, u) => r.emoji.name == '⬅️' && u.id == message.author.id;
-            left = m.createReactionCollector(filter, { time: 60000 });
-
-            left.on('collect', (r) => {
-                if (right) right.stop();
-                left.stop();
-
-                showPage(current - 1);
-                current = current - 1;
-            });
-        };
-
-        if (needed[1]) {
-            await m.react('➡️');
-
-            let filter = (r, u) => r.emoji.name == '➡️' && u.id == message.author.id;
-            right = m.createReactionCollector(filter, { time: 60000 });
-
-            right.on('collect', (r) => {
-                if (left) left.stop();
-                right.stop();
-
-                showPage(current + 1);
-                current = current + 1;
-            });
-        };
-    };
-
-    showPage(current);
+            let page = 1 
+    
+            const embed = new Discord.MessageEmbed() // Define a new embed
+            .setColor(0xffffff) // Set the color
+            .setFooter(`Page ${page} of ${pages.length}`)
+            .setDescription(pages[page-1])
+    
+            message.channel.send({embed}).then(messageBillboardEmbed => {
+              messageBillboardEmbed.react('⬅').then( r => {
+                messageBillboardEmbed.react('➡')
+    
+                // Filters
+                const backwardsFilter = (reaction, user) => reaction.emoji.name === '⬅' && user.id === message.author.id
+                const forwardsFilter = (reaction, user) => reaction.emoji.name === '➡' && user.id === message.author.id
+    
+                const backwards = messageBillboardEmbed.createReactionCollector(backwardsFilter, {timer: 60000})
+                const forwards = messageBillboardEmbed.createReactionCollector(forwardsFilter, {timer: 60000})
+    
+                backwards.on('collect', (r, u) => {
+                    if (page === 1) return r.users.remove(r.users.cache.filter(u => u === message.author).first())
+                    page--
+                    embed.setDescription(pages[page-1])
+                    embed.setFooter(`Page ${page} of ${pages.length}`)
+                    messageBillboardEmbed.edit(embed)
+                    r.users.remove(r.users.cache.filter(u => u === message.author).first())
+                })
+    
+                forwards.on('collect', (r, u) => {
+                    if (page === pages.length) return r.users.remove(r.users.cache.filter(u => u === message.author).first())
+                    page++
+                    embed.setDescription(pages[page-1])
+                    embed.setFooter(`Page ${page} of ${pages.length}`)
+                    messageBillboardEmbed.edit(embed)
+                    r.users.remove(r.users.cache.filter(u => u === message.author).first())
+                })
+              })
+            })
 }
 
 export async function billboardCharts(message,command,args) {
