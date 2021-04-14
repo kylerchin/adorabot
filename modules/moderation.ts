@@ -122,7 +122,12 @@ export async function processAllModerationCommands(message,command,args,config,c
 
     if (command === "ban") {
         await banGuildMember(message)
-        await message.reply("Are you banning someone because they are raiding, putting NSFW, etc?\nPlease help protect other servers by reporting it! \n Step 1: Join the Adorabot support server by typing `a!invite`.\nStep 2: Add the UserIDs of the offending users and detailed evidence such as screenshots and logs. \n Step 3: Adora's moderation team will ban that user acorss all of adora's servers.")
+        await message.reply({
+            "embed": {
+                "description": "Are you banning someone because they are raiding, putting NSFW, etc?\n" + 
+                "Please help protect other servers by reporting it! " + 
+            " \n Step 1: Join the Adorabot support server https://discord.gg/Dgvm3kt .\nStep 2: Add the UserIDs of the offending users and detailed evidence such as screenshots and logs in the #reporting-station channel. \n Step 3: Adora's moderation team will ban that user across all of adora's servers."
+            }})
     }
 
     if (command === "unban") {
