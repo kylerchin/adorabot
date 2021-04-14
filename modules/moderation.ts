@@ -41,8 +41,8 @@ export async function banGuildMember(message) {
                 await forEach(arrayOfUserIdsToBan, async (banID) => {
                     console.log(banID)
                     await message.guild.members.ban(banID, {'reason': reasonForBanRegister})
-                    .then(async (user) => {console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`)
-                    await message.channel.send(`Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
+                    .then(async (user) => {/*console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`)*/
+                    await message.channel.send(`:ballot_box_with_check: Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
                 }
                     )
                     .catch(error => {
@@ -87,9 +87,9 @@ export async function unbanGuildMember(message) {
                 await message.channel.send(`Reason: ${reasonForBanRegister}`)
         
                 await forEach(arrayOfUserIdsToBan, async (banID) => {
-                    console.log(banID)
+                   /* console.log(banID)*/
                     await message.guild.members.unban(banID, {'reason': reasonForBanRegister})
-                    .then(async (user) => {console.log(`Unbanned ${user.username || user.id || user} from ${message.guild.name}`)
+                    .then(async (user) => {/*console.log(`Unbanned ${user.username || user.id || user} from ${message.guild.name}`)*/
                     await message.channel.send(`Unbanned ${user.username || user.id || user} from ${message.guild.name}`).catch()
                 }
                     )
@@ -111,7 +111,7 @@ export async function howManyUsersInBanDatabase(cassandraclient) {
     await cassandraclient.execute(lookuphowmanybannedusersquery)
     .then(async returnBanDatabaseAmount => {
         var numberofrowsindatabase = await returnBanDatabaseAmount.rows[0].count.low
-        console.log(typeof numberofrowsindatabase + numberofrowsindatabase)
+       /* console.log(typeof numberofrowsindatabase + numberofrowsindatabase) */
         return numberofrowsindatabase;
     })
 }
@@ -163,7 +163,7 @@ export async function processAllModerationCommands(message,command,args,config,c
 
         var loadedConfigData = importconfigfile.get()
 
-        console.log(loadedConfigData)
+      /*  console.log(loadedConfigData) */
 
         forEach(loadedConfigData.config.allowedToBanUsers, function (value, key, array) {
             if(value.userid === message.author.id) {
@@ -193,7 +193,7 @@ export async function processAllModerationCommands(message,command,args,config,c
 
         var loadedConfigData = importconfigfile.get()
 
-        console.log(loadedConfigData)
+/*        console.log(loadedConfigData) */
 
         forEach(loadedConfigData.config.allowedToBanUsers, function (value, key, array) {
             if(value.userid === message.author.id) {
@@ -238,12 +238,12 @@ export async function processAllModerationCommands(message,command,args,config,c
                         //is there a record matching it?
                         if(fetchExistingBanResult.rows.length === 0) {
                             //entry hasn't happened before
-                            console.log("new ban entry")
+                           /* console.log("new ban entry") */
                             isBanRecordNew = true;
                             banFirstChangedByIdInitialState = message.author.id;
                             banFirstChangedTimeInitialState = TimeUuid.now();
                         } else {
-                            console.log("not a new entry, existing record found")
+                           /* console.log("not a new entry, existing record found") */
                             isBanRecordNew = false;
                             banFirstChangedByIdInitialState = fetchExistingBanResult.rows[0].firstchangedbyid;
                             banFirstChangedTimeInitialState = fetchExistingBanResult.rows[0].firstchangedtime;
@@ -258,7 +258,7 @@ export async function processAllModerationCommands(message,command,args,config,c
                         } else {
                             params = [individualUserIdToAddToBanDatabase, true, reasonForBanRegister, message.author.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
                         }
-                    console.log(params)
+                   
                     await cassandraclient.execute(query, params, { prepare: true }, await function (err) {
                         console.log(err);
                     //Inserted in the cluster
@@ -295,7 +295,7 @@ export async function processAllModerationCommands(message,command,args,config,c
         await cassandraclient.execute(lookuphowmanybannedusersquery)
         .then(async returnBanDatabaseAmount => {
             var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
-            console.log(typeof numberofrowsindatabase + numberofrowsindatabase)
+           
             numberOfBannedUsersInDatabase = numberofrowsindatabase;      
             
             if (!isDM) {
@@ -309,14 +309,13 @@ export async function processAllModerationCommands(message,command,args,config,c
         //console.log(fetchExistingSubscriptionResult)
         if(fetchExistingSubscriptionResult.rows.length === 0) {
             //entry hasn't happened before
-            console.log("new entry")
+            
             isNewEntry = true;
             firstchangedbyidfirststate = message.author.id;
             firstchangedtimefirststate =  TimeUuid.now();
             readExistingSubscriptionStatus = false;
         }
         else {
-            console.log("old entry")
             isNewEntry = false;
             firstchangedbyidfirststate = fetchExistingSubscriptionResult.rows[0].firstchangedbyid;
             firstchangedtimefirststate = fetchExistingSubscriptionResult.rows[0].firstchangedtime;
@@ -334,8 +333,6 @@ export async function processAllModerationCommands(message,command,args,config,c
         } else {
             autobanstatustext = "Off"
         }
-
-        console.log(`numberOfBannedUsersInDatabase ${numberOfBannedUsersInDatabase}`)
 
         //show autoban help page
         await message.reply({
@@ -362,7 +359,6 @@ export async function processAllModerationCommands(message,command,args,config,c
 
     if((!isDM)) {
         if (message.member.permissions.has("ADMINISTRATOR")) {
-            console.log("user has permissions to ban inside this guild")
                 if (args[0] === "yes" || args[0]==="on" || args[0] ==="true") {
                     var subscribeStateToWrite = true
                 }
@@ -404,7 +400,6 @@ export async function processAllModerationCommands(message,command,args,config,c
 
                     //after, go back and read the entire ban log to make sure everyone in the list is banned
                     await cassandraclient.execute("SELECT * FROM adoramoderation.banneduserlist WHERE banned = true ALLOW FILTERING;").then(async fetchAllBansResult => {
-                        console.log(fetchAllBansResult);
                         //for each user that is banned in the database
 
                         var listofusersbannedinindividualserver = await message.guild.fetchBans().catch();
@@ -434,7 +429,7 @@ export async function processAllModerationCommands(message,command,args,config,c
                                 toBanReason = toBanReason.replace(emptylinesregex, '');
 
                                 await message.guild.members.ban(banRowValue.banneduserid, {'reason': toBanReason})
-                                    .then(user => console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`))
+                                    .then(user => {/*console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`)*/})
                                     .catch({/*console.error*/});
                                 }
 
@@ -498,8 +493,6 @@ await cassandraclient.execute(queryForBanList, parametersForBanList, {prepare: t
     globallistOfBannableUsers = listOfBannableUsers;
 })
 
-console.log(`currentShardServerIDArray.length = ${currentShardServerIDArray.length}`)
-
 //each shard fetch it's servers it's able to ban the user on
 var queryForMatchingServers = ('SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid IN ? AND subscribed = ? ALLOW FILTERING;')
 
@@ -529,7 +522,6 @@ await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
            //console.log(matchingServerList.rows.length)
 
             //console.log(matchingServerList)
-    console.log(`${matchingServerList.rows.length} matching servers`)
     //.rows.length === 0
 
             //for each server that the shard client is able to ban on...
@@ -563,7 +555,7 @@ await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
                                     toBanReason = toBanReason.substring(0,511)
 
                       await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, {'reason': toBanReason})
-                        .then(user => console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`))
+                        .then(user => {}/*console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`)*/)
                         .catch(console.error);
                   }
                 })
