@@ -93,34 +93,29 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
 
             var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban WHERE subscribed= ? ALLOW FILTERING;"
             var parametersForSubscribedServers = [true]
-
-            await cassandraclient.execute(queryNumberOfSubscribedServers, parametersForSubscribedServers)
-            .then(async returnSubscribedServersCount => {
-              var subscribedServerCount = await returnSubscribedServersCount.rows[0].count.low
-              console.log(typeof subscribedServerCount + ": " + subscribedServerCount)
-
-
               var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
-            await cassandraclient.execute(lookuphowmanybannedusersquery)
-            .then(async returnBanDatabaseAmount => {
-                var numberofrowsindatabase = await returnBanDatabaseAmount.rows[0].count.low
-                console.log(typeof numberofrowsindatabase + numberofrowsindatabase)
                 //return numberofrowsindatabase;
 
                 const promises = [
                   client.shard.fetchClientValues('guilds.cache.size'),
-                  client.shard.broadcastEval('this.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)')
+                  client.shard.broadcastEval('this.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)'),
+                  cassandraclient.execute(queryNumberOfSubscribedServers, parametersForSubscribedServers),
+                  cassandraclient.execute(lookuphowmanybannedusersquery)
              ];
        
               return Promise.all(promises)
                   .then(results => {
                       const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
                       const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
+                      var returnSubscribedServersCount = results[2]
+                      var subscribedServerCount = returnSubscribedServersCount.rows[0].count.low
+                      var returnBanDatabaseAmount = results[3]
+                      var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
                       return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}\nNumber of Shards: ${client.shard.count}\nNumber of Bans in Database: ${numberofrowsindatabase}\nNumber of Servers Subscribed to Autoban: ${subscribedServerCount}`);
                   })
                   .catch(console.error);
-            })
-            })
+          
+            
 
 
                    
