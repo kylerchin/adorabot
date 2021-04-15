@@ -384,7 +384,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
     
           await updateDiscordBotsGG(client,config)
 
-          await logger.discordInfoLogger.info({type: "commandToAdora", Command: msg.content, msgObject: msg})
+          await logger.discordInfoLogger.info({type: "commandToAdora", Command: msg.content, msgObject: msg, msgObjectAuthorTag: msg.author.tag})
 
         }}
 }
