@@ -468,6 +468,8 @@ export async function processAllModerationCommands(message,command,args,config,c
         await message.reply("You are accessing this command in a DM. Only Administrators of the current guild can turn autoban on and off");
     }
         })
+
+        await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`)
     }
 }
 

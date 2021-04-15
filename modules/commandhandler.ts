@@ -53,7 +53,13 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             // Calculates ping between sending a message and editing it, giving a nice round-trip latency.
             // The second ping is an average latency between the bot and the websocket server (one-way, not round-trip)
             const pingReturn = await msg.channel.send("Ping?");
-            pingReturn.edit(`**펑!** Latency is ${pingReturn.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`);
+            pingReturn.edit(
+              {
+                "embed": {
+                  "description": `**펑!** Latency is ${pingReturn.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`
+                }}
+              
+              );
           }
 
           if (command === "info") {
