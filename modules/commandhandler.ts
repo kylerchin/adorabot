@@ -24,6 +24,7 @@ const request = require('request');
 const https = require('https')
 
 const translate = require('@vitalets/google-translate-api');
+import {logger} from './logger'
 
 export async function commandHandler(msg,client,config,cassandraclient,dogstatsd) {
 
@@ -31,7 +32,6 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
         if (!msg.author.bot) {
           console.log("prefix true")
           //log triggerprefix adorabot
-          
           //message legal, proceed kind user.
           //parse out args and command
 
@@ -279,8 +279,8 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
                 //video ID is not valid
     
                 // search youtube for term instead
-                console.log("searching for:" + searchYtString)
-    
+                //console.log("searching for:" + searchYtString)
+                logger.discordDebugLogger.debug({type: "searchStringForYouTube", searchYtString: searchYtString})
                 //const r = await yts( searchYtString )
     
                 //console.log(r)
@@ -293,8 +293,8 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
                     }
 
                     videoID = results.videos[0].id
-                    console.log(results.videos[0])
-                    console.log(videoID);
+                    logger.discordDebugLogger.debug({type: "searchStringForYouTube", firstResult: results.videos[0]})
+                    logger.discordDebugLogger.debug({type: "searchStringForYouTubevideoId", videoID: videoID});
     
                     sendYtCountsEmbed(videoID,msg,youtubeApiKeyRandomlyChosen)
     
@@ -383,6 +383,8 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
           await dogstatsd.increment('adorabot.triggerprefix');
     
           await updateDiscordBotsGG(client,config)
+
+          await logger.discordInfoLogger.info({type: "commandToAdora", Command: msg.content, msgObject: msg})
 
         }}
 }

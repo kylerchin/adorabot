@@ -2,6 +2,7 @@ var forEach = require("for-each")
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../config.json`);
+import {logger} from './logger'
 //let file = editJsonFile(`${__dirname}/config.json`);
 //Generate time with TimeUuid.now();
 const emptylinesregex = /\n/ig;
@@ -89,7 +90,7 @@ export async function unbanGuildMember(message) {
                 await forEach(arrayOfUserIdsToBan, async (banID) => {
                    /* console.log(banID)*/
                     await message.guild.members.unban(banID, {'reason': reasonForBanRegister})
-                    .then(async (user) => {/*console.log(`Unbanned ${user.username || user.id || user} from ${message.guild.name}`)*/
+                    .then(async (user) => {
                     await message.channel.send(`Unbanned ${user.username || user.id || user} from ${message.guild.name}`).catch()
                 }
                     )
@@ -429,15 +430,17 @@ export async function processAllModerationCommands(message,command,args,config,c
                                 toBanReason = toBanReason.replace(emptylinesregex, '');
 
                                 await message.guild.members.ban(banRowValue.banneduserid, {'reason': toBanReason})
-                                    .then(user => {/*console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`)*/})
-                                    .catch({/*console.error*/});
+                                    .then(async (user) => {
+                                        await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${message.guild.name}`)
+                                    })
+                                    .catch(async (error) => {await logger.discordWarnLogger.warn(error)});
                                 }
 
                                
                             })
                         
                     }
-                    ).catch(error => console.error(error));
+                    ).catch(async (error) => {await logger.discordWarnLogger.warn(error)});
                 } else {
                     if (subscribeStateToWrite === false) {
                         //await message.reply("This server is now unsubscribed to autobans! To turn autoban back on, type `a!autoban on`")
@@ -555,8 +558,8 @@ await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
                                     toBanReason = toBanReason.substring(0,511)
 
                       await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, {'reason': toBanReason})
-                        .then(user => {}/*console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`)*/)
-                        .catch(console.error);
+                        .then(async (user) => {await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`)})
+                        .catch(async (error) => {await logger.discordWarnLogger.warn(error)});
                   }
                 })
 

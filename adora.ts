@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 var client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'], intents: Discord.Intents.NON_PRIVILEGED, retryLimit: Infinity});
 const { config } = require('./config.json');
+import {logger} from './modules/logger'
 //const prefix = "shake ";
 //const token = process.env.BOT_TOKEN;
 //var fs = require('fs'); 
@@ -86,13 +87,18 @@ async function moderationCassandra() {
   await runOnStartup(cassandraclient, client)
 }
 
-client
-  .on("debug", console.log)
-  .on("warn", console.log)
+client.on("debug",async (info) => {
+  await logger.discordDebugLogger.debug(info);
+  //console.log(info)
+})
+client.on("warn",async (info) => {
+  await logger.discordWarnLogger.warn(info);
+})
 
 client.on('ready',async () => {
-  console.log(`Logged in as ${client.user.tag}!`);
-  console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
+  console.log(`Logged in as ${client.user.tag}!`)
+  await logger.discordInfoLogger.info(`Logged in as ${client.user.tag}!`);
+  await logger.discordInfoLogger.info(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
   
   await setPresenceForAdora();
 
@@ -107,6 +113,7 @@ client.on('ready',async () => {
 });
 
 client.on('rateLimit', async rateLimitInfo => {
+  await logger.discordWarnLogger.warn(rateLimitInfo, { clientEvent: 'rateLimit' });
  // console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
 })
 
