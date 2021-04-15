@@ -2,6 +2,13 @@ var axios = require('axios');
 var qs = require('qs');
 import {logger} from "./logger"
 
+var StatsD = require('hot-shots'),
+dogstatsd = new StatsD({
+    port: 8020,
+    globalTags: { env: process.env.NODE_ENV }
+});
+  
+
 export async function updateDiscordBotsGG(client,config) {
 
                 const promises = [
@@ -13,6 +20,10 @@ export async function updateDiscordBotsGG(client,config) {
                   .then(results => {
                       const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
                       const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
+
+                      dogstatsd.gauge('adorabot.totalstats.totalGuilds', totalGuilds);
+                      dogstatsd.gauge('adorabot.totalstats.totalMembers', totalMembers);
+                      dogstatsd.gauge('adorabot.totalstats.totalShards', client.shard.count);
                       //return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}\nNumber of Shards: ${client.shard.count}\nNumber of Bans in Database:${numberofrowsindatabase}`);
                       var data = qs.stringify({
                         'guildCount': totalGuilds,
