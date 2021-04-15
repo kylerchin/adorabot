@@ -56,7 +56,21 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
             pingReturn.edit(
               {
                 "embed": {
-                  "description": `**펑!** Latency is ${pingReturn.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`
+                  "description": `**펑!** If the Latency is significantly higher than the API Latency, the bot is likely ratelimited in this channel or guild.`,
+                  "fields": [
+                    {
+                      "name": "Shard #",
+                      "value": msg.guild.shardID
+                    },
+                    {
+                      "name": "Latency",
+                      "value": `\`${pingReturn.createdTimestamp - msg.createdTimestamp}ms\``
+                    },
+                    {
+                      "name": "API WebSocket Latency",
+                      "value": `\`${Math.round(client.ws.ping)}ms\``
+                    }
+                  ]
                 }}
               
               ).catch();

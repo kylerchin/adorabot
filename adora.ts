@@ -15,8 +15,11 @@ import {updateDiscordBotsGG} from "./modules/uploadStatsToBotsGg"
 //const dbots = new discordbots(config.clientid, config.discordbotsggapitoken)
 
 //datadog
-var StatsD = require('node-dogstatsd').StatsD;
-var dogstatsd = new StatsD();
+var StatsD = require('hot-shots'),
+dogstatsd = new StatsD({
+    port: 8020,
+    globalTags: { env: process.env.NODE_ENV }
+});
 
 var fsdateObj = new Date();
 var fsmonth;
@@ -39,7 +42,6 @@ const cassandraclient = new cassandra.Client({
   authProvider: new cassandra.auth
    .PlainTextAuthProvider(config.cassandra.plainTextUsername, config.cassandra.plainTextPassword)
 });
-
 
 client.everyServerRecheckBansOnThisShard = async () => {
   everyServerRecheckBans(cassandraclient, client);
@@ -88,17 +90,18 @@ async function moderationCassandra() {
 }
 
 client.on("debug",async (info) => {
-  await logger.discordDebugLogger.debug({clientEvent: "debug", debugInfo: info});
+  await logger.discordDebugLogger.debug({clientEvent: "debug", debugInfo: info, type: "clientdebug"});
   //console.log(info)
 })
 client.on("warn",async (info) => {
-  await logger.discordWarnLogger.warn({clientEvent: "warn", warnInfo: info});
+  await logger.discordWarnLogger.warn({clientEvent: "warn", warnInfo: info, type: "clientWarn"});
 })
 
 client.on('ready',async () => {
   console.log(`Logged in as ${client.user.tag}!`)
-  await logger.discordInfoLogger.info(`Logged in as ${client.user.tag}!`);
-  await logger.discordInfoLogger.info(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
+  await logger.discordInfoLogger.info(`Logged in as ${client.user.tag}!`, { type: 'clientReady'});
+  const howManyUsersFam = `Bot has started, with ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`
+  await logger.discordInfoLogger.info(howManyUsersFam, {type: 'clientReady'});
   
   await setPresenceForAdora();
 
@@ -118,15 +121,15 @@ client.on('rateLimit', async rateLimitInfo => {
 })
 
 client.on('guildCreate', async guild => {
-  await client.shard.broadcastEval('this.everyServerRecheckBansOnThisShard()');
   await updateDiscordBotsGG(client,config)
-  await logger.discordInfoLogger.info({message: `guild id ${guild.id} added to the bot`, type: "guildDelete", guildObject: guild})
+  await logger.discordInfoLogger.info({message: `guild id ${guild.id} added to the bot`, type: "guildCreate", guildObject: guild})
+  await client.shard.broadcastEval('this.everyServerRecheckBansOnThisShard()');
 })
 
 client.on('guildDelete', async guild => {
-  await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`);
   await updateDiscordBotsGG(client,config)
   await logger.discordInfoLogger.info({message: `guild id ${guild.id} removed from the bot`, type: "guildDelete", guildObject: guild})
+  await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`);
 })
 
 client.on('message', async message => {

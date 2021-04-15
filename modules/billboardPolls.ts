@@ -1,10 +1,4 @@
-const jsdom = require('jsdom');
-var dom = new jsdom.JSDOM();
-var window = dom.window;
-var document = window.document;
 
-var $ = require('jquery')(window);
-console.log('jquery version:', $.fn.jquery)
 const editJsonFile = require("edit-json-file");
 
 const forEach = require("for-each")
@@ -61,6 +55,14 @@ export function billboardVote(msg,args) {
 }
 
 export function billboardPollGetValue(msg,args) {
+
+  const jsdom = require('jsdom');
+  var dom = new jsdom.JSDOM();
+  var window = dom.window;
+  var document = window.document;
+  
+  var $ = require('jquery')(window);
+  console.log('jquery version:', $.fn.jquery)
 
   var pollsListFetch = billboardPollsDirectory.get()
 
