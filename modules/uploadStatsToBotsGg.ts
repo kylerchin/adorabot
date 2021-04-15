@@ -13,7 +13,7 @@ export async function updateDiscordBotsGG(client,config) {
 
                 const promises = [
                   client.shard.fetchClientValues('guilds.cache.size'),
-                  client.shard.broadcastEval('this.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)')
+                  client.shard.broadcastEval('this.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)'),
              ];
        
               return Promise.all(promises)
