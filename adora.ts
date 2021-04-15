@@ -88,11 +88,11 @@ async function moderationCassandra() {
 }
 
 client.on("debug",async (info) => {
-  await logger.discordDebugLogger.debug(info);
+  await logger.discordDebugLogger.debug({clientEvent: "debug", debugInfo: info});
   //console.log(info)
 })
 client.on("warn",async (info) => {
-  await logger.discordWarnLogger.warn(info);
+  await logger.discordWarnLogger.warn({clientEvent: "warn", warnInfo: info});
 })
 
 client.on('ready',async () => {
@@ -113,7 +113,7 @@ client.on('ready',async () => {
 });
 
 client.on('rateLimit', async rateLimitInfo => {
-  await logger.discordWarnLogger.warn(rateLimitInfo, { clientEvent: 'rateLimit' });
+  await logger.discordWarnLogger.warn({ clientEvent: 'rateLimit', rateLimitInfo: rateLimitInfo });
  // console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
 })
 

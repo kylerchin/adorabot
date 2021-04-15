@@ -558,8 +558,12 @@ await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
                                     toBanReason = toBanReason.substring(0,511)
 
                       await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, {'reason': toBanReason})
-                        .then(async (user) => {await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`)})
-                        .catch(async (error) => {await logger.discordWarnLogger.warn(error)});
+                        .then(async (user) => {
+                            await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`)})
+                        .catch(async (error) => {await logger.discordWarnLogger.warn({
+                            type: "banCheckerFailed",
+                            error: error
+                        })});
                   }
                 })
 
@@ -583,15 +587,21 @@ await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
 export async function runOnStartup(cassandraclient, client) {
     //This Function will automatically create the adoramoderation keyspace if it doesn't exist, otherwise, carry on
   await cassandraclient.execute("CREATE KEYSPACE IF NOT EXISTS adoramoderation WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy',  'datacenter1': 1  };")
-.then(result => {/*console.log(result)*/}).catch(error => console.error(error));
+.then(async result => {
+    await logger.discordDebugLogger.debug({type: "cassandraclient", result: result})
+    /*console.log(result)*/}).catch(error => console.error(error));
 
   //Goes inside adora moderation keyspace, makes the table "guildssubscribedtoautoban"
   await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.guildssubscribedtoautoban (serverid text PRIMARY KEY, subscribed boolean, lastchangedbyid text, lastchangedtime timeuuid, firstchangedbyid text, firstchangedtime timeuuid);")
-.then(result => {/*console.log(result)*/}).catch(error => console.error(error));
+.then(async result => {
+    await logger.discordDebugLogger.debug({type: "cassandraclient", result: result})
+    /*console.log(result)*/}).catch(error => console.error(error));
 
   //Goes inside adora moderation keyspace, makes the table "banneduserlist"
   await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.banneduserlist (banneduserid text PRIMARY KEY, banned boolean, reason text, lastchangedbyid text, lastchangedtime timeuuid, firstchangedbyid text, firstchangedtime timeuuid);")
-  .then(result => {/*console.log(result)*/}).catch(error => console.error(error));
+  .then(async result => {
+    await logger.discordDebugLogger.debug({type: "cassandraclient", result: result})
+}).catch(error => console.error(error));
 
   await everyServerRecheckBans(cassandraclient,client)
 }
