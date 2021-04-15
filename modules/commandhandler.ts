@@ -59,11 +59,11 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
                   "description": `**펑!** Latency is ${pingReturn.createdTimestamp - msg.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`
                 }}
               
-              );
+              ).catch();
           }
 
           if (command === "info") {
-            msg.reply("This command is deprecated, please use `a!botstats`")
+            msg.reply("This command is deprecated, please use `a!botstats`").catch()
           }
 
           if (command === "updatepresence") {
