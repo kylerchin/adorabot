@@ -40,7 +40,7 @@ export async function sendYtCountsEmbed(id,message,apikey) {
                 "color": 16711680,
                 "timestamp": Date.now(),
                 "footer": {
-                  "text": "Drink water uwu <3 #BLM #ACAB"
+                  "text": "Drink water uwu <3 #JusticeForGeorgeFloyd #BlackLivesMatter"
                 },
                 "thumbnail": {
                   "url": body.items[0].snippet.thumbnails.default.url

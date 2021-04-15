@@ -1,5 +1,6 @@
 var axios = require('axios');
 var qs = require('qs');
+import {logger} from "./logger"
 
 export async function updateDiscordBotsGG(client,config) {
 
@@ -30,14 +31,19 @@ export async function updateDiscordBotsGG(client,config) {
       };
       
       axios(uploadconfig)
-      .then(function (response) {
-        console.log(JSON.stringify(response.data));
+      .then(async (response) => {
+        //console.log(JSON.stringify(response.data));
+        await logger.discordDebugLogger.debug({type: "uploadStatsToBotsGg", response: response})
       })
-      .catch(function (error) {
-        console.log(error);
+      .catch(async (error) => {
+        //console.log(error);
+        await logger.discordWarnLogger.warn({type: "uploadStatsToBotsGg", error: error})
       });
                   })
-                  .catch(console.error);
+                  .catch(async (error) => {
+                    //console.log(error);
+                    await logger.discordWarnLogger.warn({type: "uploadStatsToBotsGg", error: error})
+                  });
               
     
 
