@@ -1,5 +1,6 @@
 const requestjson = require('request-json');
 import { storeYoutubeDataIntoDatabase } from "./storeYtStats"; 
+import {logger} from "./logger"
 const ytScraper = require("yt-scraper")
 // Exporting the class which will be 
 // used in another file 
@@ -18,10 +19,16 @@ export async function sendYtCountsEmbed(id,message,apikey) {
       
         youtubeclient.get(pathForYtRequest, async function(err, res, body) {
 
-          console.log(body)
+          //console.log(body)
 
-          console.log("body.items")
-          console.log(body.items)
+          //console.log("body.items")
+          //console.log(body.items)
+
+          await logger.discordDebugLogger.debug({
+            type: "ytclientvideorequest", 
+            body: body,
+            message: "Retrevied Youtube Video Information"
+          })
 
           const channelIdOfVideo = body.items[0].snippet.channelId
 
@@ -29,7 +36,12 @@ export async function sendYtCountsEmbed(id,message,apikey) {
 
         await  youtubeclient.get(pathForChannelOfVideoRequest, async function(channelErr, channelRes, channelBody) {
 
-          console.dir(body)
+          //console.dir(body)
+          await logger.discordDebugLogger.debug({
+            type: "ytclientchannelrequest", 
+            body: channelBody,
+            message: "Retrevied Youtube Channel Information"
+          })
 
           const videostats = body.items[0].statistics;
   
@@ -73,7 +85,7 @@ export async function sendYtCountsEmbed(id,message,apikey) {
               }
             }
   
-            await message.reply(embedYtStats)
+            await message.reply(embedYtStats).catch()
             
             
 

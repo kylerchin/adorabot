@@ -113,17 +113,20 @@ client.on('ready',async () => {
 });
 
 client.on('rateLimit', async rateLimitInfo => {
-  await logger.discordWarnLogger.warn({ clientEvent: 'rateLimit', rateLimitInfo: rateLimitInfo });
+  await logger.discordWarnLogger.warn({ clientEvent: 'rateLimit', rateLimitInfo: rateLimitInfo, type: 'rateLimit' });
  // console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
 })
 
 client.on('guildCreate', async guild => {
   await client.shard.broadcastEval('this.everyServerRecheckBansOnThisShard()');
   await updateDiscordBotsGG(client,config)
+  await logger.discordInfoLogger.info({message: `guild id ${guild.id} added to the bot`, type: "guildDelete", guildObject: guild})
 })
 
 client.on('guildDelete', async guild => {
   await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`);
+  await updateDiscordBotsGG(client,config)
+  await logger.discordInfoLogger.info({message: `guild id ${guild.id} removed from the bot`, type: "guildDelete", guildObject: guild})
 })
 
 client.on('message', async message => {
