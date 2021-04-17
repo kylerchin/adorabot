@@ -9,12 +9,17 @@ The current features include:
 
  
  - Displaying live Billboard Poll scores and vote links
+
+
 ![Screenshot from 2021-03-06 20-29-30](https://user-images.githubusercontent.com/7539174/110228991-b45de000-7eba-11eb-9b27-33929a96ca3f.png)
 
 
 - `a!autoban` Automatically bans user accounts known for raiding, racism, lgbtq+phobia, disruption of servers based on ban list reports. No extra configuration required, just `a!autoban on` and go!
+
+
 ![Autoban turning on](https://user-images.githubusercontent.com/7539174/111886597-1a9f3400-898c-11eb-9c68-46a8704d9e66.png)
 
+- Anti QR Phishing Feature: Automatically scans images for QR codes containing `discord.com/ra` and sends a warning message to the channel saying it is a phishing link and not to click on it.
 
 Features in development:
 - Graphing out Youtube and Spotify view counts into embeds with changable time
@@ -27,9 +32,9 @@ Features in development:
 - Member profiles / birthday / other information directory
 - Logging, anti-raid, verification, anti-spam, and small to large community safety features
 - Autoresponders, embeds, auto-react
-- Switching from storing everything in json to a highly compressed database in Cassandra, mapping CQL, creating a cluster and enabling the bot to be run off sharding
+- Anti QR Phishing block URL shorteners leading to `discord.com/ra` & ability to turn off Anti-qr code phishing.
  
-This bot is in beta, if you would like to contribute, open up an issue or Pull Request!
+If you would like to contribute, open up an issue or Pull Request!
 
 ## Development information
 
@@ -46,7 +51,7 @@ You need to install scylla db, you can add as many nodes to scale as you want, a
 Things that need to be added to maintain this:
 - Sharding needs to be upgraded to multi-host sharding. This means multiple computers in different locations should be able to host the bot.
 
-- The Youtube API needs to be swapped out with a custom scrapper to avoid API limits if the bot gets too popular, or we'll need to upgrade the accounds
+- The Youtube API needs to be swapped out with a custom scrapper to avoid API limits if the bot gets too popular, or we'll need to upgrade the accounts linked to the API keys
 
 ### Configuration File
 
