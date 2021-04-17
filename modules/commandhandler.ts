@@ -145,8 +145,8 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
                     "value": "Retrieve voting links for billboard polls, run command for a list of polls"
                   },
                   {
-                    "name": "`a!ytstats`",
-                    "value": "`a!ytstats <video link / search for a video>`: Realtime view counter for YouTube videos. \n Example: `a! ytstats fake love music video` or `a! ytstats https://www.youtube.com/watch?v=gdZLi9oWNZg`"
+                    "name": "`a!youtube`",
+                    "value": "`a!youtube <video link / search for a video>`: Realtime view counter for YouTube videos. \n Example: `a! youtube fake love music video` or `a! youtube https://www.youtube.com/watch?v=gdZLi9oWNZg`"
                   }
                 ]
               }
@@ -260,7 +260,7 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
 
           }
     
-          if (command === "youtubestats" || command === "ytstat" || command === "ytstats") {
+          if (command === "youtubestats" || command === "ytstat" || command === "ytstats" || command === "youtube") {
     
             const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
     
@@ -399,7 +399,8 @@ export async function commandHandler(msg,client,config,cassandraclient,dogstatsd
     
           await updateDiscordBotsGG(client,config)
 
-          await logger.discordInfoLogger.info({type: "commandToAdora", Command: msg.content, msgObject: msg, msgObjectAuthorTag: msg.author.tag})
+          await logger.discordInfoLogger.info({type: "commandToAdora", Command: msg.content, msgObject: msg, msgObjectAuthorTag: msg.author.tag, guildName: msg.guild.name, guildID: msg.guild.id
+        })
 
         }}
 }

@@ -85,7 +85,18 @@ export async function sendYtCountsEmbed(id,message,apikey) {
               }
             }
   
-            await message.reply(embedYtStats).catch()
+            await message.reply(embedYtStats).then(async (repliedMessage) => {
+              if(repliedMessage.guild.available) {
+                await logger.discordInfoLogger.info({type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, guildName: repliedMessage.guild.name, guildAnailable: repliedMessage.guild.available})
+              }
+              else {
+                await logger.discordInfoLogger.info({type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, guildAvailable: repliedMessage.guild.available})
+              }
+            }).catch(
+              async (sendMessageerror) => {
+                await logger.discordWarnLogger({type: "sendYoutubeEmbedFailed"}, sendMessageerror)
+              }
+            )
             
             
 

@@ -14,8 +14,7 @@ const manager = new ShardingManager('./adora.js', {
     // for ShardingManager options see:
     // https://discord.js.org/#/docs/main/v12/class/ShardingManager
     totalShards: 'auto',
-    token: config.token,
-    respawn: false
+    token: config.token
 });
 
 // Spawn your shards
