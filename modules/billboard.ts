@@ -7,6 +7,9 @@ export async function billboardChartsHelpPage(message,command,args) {
 }
 
 export async function billboardListChartsScrollable(message,command,args) {
+
+    var pages = []
+
     await listCharts(async (err, charts)=> {
         if (err) console.log(err);
         console.log(charts); // prints array of all charts
@@ -17,14 +20,10 @@ export async function billboardListChartsScrollable(message,command,args) {
         
         //message.channel.send(chartCode)
 
+        pages.push(chartCode)
+
         })
       });
-
-      let pages = [
-        'Page 1', // 0
-        'Page 2', // 1
-        'Page 3' // 2
-    ];
 
             let page = 1 
     
