@@ -10,6 +10,7 @@ import { appendFile } from 'fs';
 import { commandHandler } from "./modules/commandhandler"; 
 import { runOnStartup, everyServerRecheckBans } from "./modules/moderation";
 import {updateDiscordBotsGG} from "./modules/uploadStatsToBotsGg"
+import { onMessageForQR, onMessageUpdateForQR } from './modules/antiLoginQRCode';
 
 //const discordbots = require('discord.bots.gg')
 //const dbots = new discordbots(config.clientid, config.discordbotsggapitoken)
@@ -132,6 +133,10 @@ client.on('guildDelete', async guild => {
   await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`);
 })
 
+client.on('messageUpdate', async (oldMessage, newMessage) => {
+  await onMessageUpdateForQR(oldMessage, newMessage)
+})
+
 client.on('message', async message => {
 
   dogstatsd.increment('adorabot.client.message');
@@ -141,6 +146,8 @@ client.on('message', async message => {
     catch {
       console.log("Command failed");
     }
+
+    await onMessageForQR(message)
   //setPresenceForAdora();
 });
 
