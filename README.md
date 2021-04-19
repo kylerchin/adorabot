@@ -21,6 +21,9 @@ The current features include:
 
 - Anti QR Phishing Feature: Automatically scans images for QR codes containing `discord.com/ra` and sends a warning message to the channel saying it is a phishing link and not to click on it.
 
+![QR Phishing](https://user-images.githubusercontent.com/7539174/115170970-cbc1e880-a076-11eb-808d-194d51e9da45.png)
+
+
 Features in development:
 - Graphing out Youtube and Spotify view counts into embeds with changable time
 - Billboard, Gaon, and other music chart ranking into embeds
