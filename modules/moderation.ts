@@ -301,7 +301,7 @@ export async function processAllModerationCommands(message,command,args,config,c
             
             if (!isDM) {
                 //check if server is registered
-    const lookupexistingsubscriptionquery = 'SELECT serverid, subscribed, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime FROM adoramoderation.guildssubscribedtoautoban WHERE serverid = ?';
+    const lookupexistingsubscriptionquery = 'SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid = ?';
 
     var readExistingSubscriptionStatus : boolean = false;
 
@@ -433,7 +433,14 @@ export async function processAllModerationCommands(message,command,args,config,c
                                     .then(async (user) => {
                                         await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${message.guild.name}`)
                                     })
-                                    .catch(async (error) => {await logger.discordWarnLogger.warn(error)});
+                                    .catch(async (error) => {await logger.discordWarnLogger.warn(error)
+                                    
+                                    if (error.code === 10013) {
+                                        //this user is unknown
+                                        
+                                    }
+                                    }
+                                    );
                                 }
 
                                
