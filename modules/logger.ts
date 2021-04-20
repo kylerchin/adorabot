@@ -13,7 +13,8 @@ export const logger = {
     exitOnError: false,
     format: format.json(),
     transports: [
-        new transports.Http(httpTransportOptions)
+        new transports.Http(httpTransportOptions),
+	new transports.Console()
       ]
   }),
   discordWarnLogger: createLogger({
@@ -21,7 +22,8 @@ export const logger = {
     exitOnError: false,
     format: format.json(),
     transports: [
-        new transports.Http(httpTransportOptions)
+        new transports.Http(httpTransportOptions),
+	new transports.Console()
       ]
   }),
   discordInfoLogger: createLogger({
@@ -29,6 +31,7 @@ export const logger = {
     exitOnError: false,
     format: format.json(),
     transports: [
+	new transports.Console(),
         new transports.Http(httpTransportOptions)
       ]
   })
