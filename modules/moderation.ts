@@ -544,8 +544,8 @@ await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
                             eachBannableUserRow.firstchangedtime, 
                             true]
                            await cassandraclient.execute(queryForUnknownUser, paramsForUnknownUser)
-                           .then(async (user) => {
-                            await logger.discordDebugLogger.debug(`Marked ${eachBannableUserRow.banneduserid} as unknown`)})
+                           .then(async (cassandrclientmarkunknown) => {
+                            await logger.discordDebugLogger.debug(`Marked ${eachBannableUserRow.banneduserid} as unknown`, {type: cassandraclient, result: cassandrclientmarkunknown})})
                            .catch();
                         }
                     });

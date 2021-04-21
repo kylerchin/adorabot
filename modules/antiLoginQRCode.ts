@@ -9,7 +9,7 @@ process.on( 'unhandledRejection', console.error );
 export async function onMessageForQR( message ) {
     //console.log("onMessageForQR")
      if( await checkMessage( message ) )
-        await deleteMessage( message );
+        await handleMessage( message );
  
     return;
 };
@@ -21,7 +21,7 @@ export async function onMessageUpdateForQR( messageOld, messageNew ) {
     const message = messageNew.partial ? await messageNew.fetch( ) : messageNew;
  
     if( await checkMessage( message ) )
-        await deleteMessage( message );
+        await handleMessage( message );
  
     return;
 };
@@ -46,13 +46,14 @@ async function checkMessage( { attachments, author, embeds } ) {
  
  
 //~ Delete the message and notify the author...
-async function deleteMessage( message ) {
+async function handleMessage( message ) {
     const { author, channel } = message;
        
     await logger.discordInfoLogger.info({type: "foundScamQRCode", messageObject: message, guildName: message.guild.name})
 
     await Promise.all( [
         //message.delete( ).catch(),
+        message.react('⚠️'),
         //channel.send( `<@${ author.id }> - Our rules forbid the posting of quick response codes which are used to login.` ).catch()
         message.reply(
             {
