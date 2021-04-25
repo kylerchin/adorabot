@@ -289,22 +289,22 @@ export async function processAllModerationCommands(message, command, args, confi
 
                 message.reply({
                     "embed": {
-                      "title": "Ban Sync Starting",
-                      "description": "This will match your server's ban list manually with Adora's ban database. I'll let you know when it's done!",
-                      "footer": {
-                        "text": "I hope you're drinking enough water and taking care of yourself! Eat and go to sleep on time and be mindful!"
-                      },
-                  
-                      "fields": [
-                        {
-                          "name": "Don't wanna do this? Automate it!",
-                          "value": "Wanna automate this? Enable autoban by typing `a!autoban on`. When bans are automatically added by Adora's moderators, the bans will be automatically matched without you having to run any commands!"
-                        }
-                      ]
-                    }
-                  })
+                        "title": "Ban Sync Starting",
+                        "description": "This will match your server's ban list manually with Adora's ban database. I'll let you know when it's done!",
+                        "footer": {
+                            "text": "I hope you're drinking enough water and taking care of yourself! Eat and go to sleep on time and be mindful!"
+                        },
 
-                  if (message.guild.me.permissions.has("BAN_MEMBERS")) {
+                        "fields": [
+                            {
+                                "name": "Don't wanna do this? Automate it!",
+                                "value": "Wanna automate this? Enable autoban by typing `a!autoban on`. When bans are automatically added by Adora's moderators, the bans will be automatically matched without you having to run any commands!"
+                            }
+                        ]
+                    }
+                })
+
+                if (message.guild.me.permissions.has("BAN_MEMBERS")) {
 
                 } else {
                     message.reply("Adorabot needs BAN_MEMBERS permissions for this to work! \nPlease turn on Administrator in `Server Settings > Roles > Adora > Permissions > Administrator` and slide the switch for Administrator to the right.")
@@ -312,77 +312,78 @@ export async function processAllModerationCommands(message, command, args, confi
                 }
 
                 var individualservertodoeachban = message.guild
-            
+
                 var queryForBanList = "SELECT * FROM adoramoderation.banneduserlist WHERE banned = ? ALLOW FILTERING;"
                 var parametersForBanList = [true];
 
                 await cassandraclient.execute(queryForBanList, parametersForBanList)
-                .then(async globallistOfBannableUsers => {
-                    var fetchBanDatabase = await message.guild.fetchBans();
+                    .then(async globallistOfBannableUsers => {
+                        var fetchBanDatabase = await message.guild.fetchBans();
 
-                     //check if list of users has the user that we want to ban
-                await forEach(globallistOfBannableUsers.rows, async function (eachBannableUserRow) {
-                    var isUserBannedFromThisGuild = fetchBanDatabase.has(eachBannableUserRow.banneduserid)
-                    //  console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
+                        //check if list of users has the user that we want to ban
+                        await forEach(globallistOfBannableUsers.rows, async function (eachBannableUserRow) {
+                            var isUserBannedFromThisGuild = fetchBanDatabase.has(eachBannableUserRow.banneduserid)
+                            //  console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
 
-                    if (isUserBannedFromThisGuild) {
-                        //this user is already fuckin banned
-                    }
-                    else {
-
-                        if (eachBannableUserRow.unknownuser === true) {
-                            //unknown user, do absolutely fucking nothing
-                        } else {
-                            //THE BAN HAMMER STRIKES!
-
-                            var toBanReason: string;
-                            if (!eachBannableUserRow.reason || eachBannableUserRow.reason.length == 0) {
-                                toBanReason = "Banned by Adora's Automagical system via manual sync!"
-                            } else {
-                                toBanReason = `${eachBannableUserRow.reason} | Banned by Adora's Automagical system via manual sync!`
+                            if (isUserBannedFromThisGuild) {
+                                //this user is already fuckin banned
                             }
+                            else {
 
-                            //trim the reason text to 512 char just in case it fails because the reason is too long
-                            toBanReason = toBanReason.substring(0, 511)
+                                if (eachBannableUserRow.unknownuser === true) {
+                                    //unknown user, do absolutely fucking nothing
+                                } else {
+                                    //THE BAN HAMMER STRIKES!
 
-                            await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
-                                .then(async (user) => {
-                                    await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`)
-                                })
-                                .catch(async (error) => {
-                                    await logger.discordWarnLogger.warn({
-                                        type: "banCheckerFailed",
-                                        error: error
-                                    })
-
-                                    if (error.code === 10013) {
-                                        //this user is unknown
-                                        var queryForUnknownUser = "INSERT INTO adoramoderation.banneduserlist (banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime, unknownuser) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-                                        var paramsForUnknownUser = [eachBannableUserRow.banneduserid,
-                                        eachBannableUserRow.banned,
-                                        eachBannableUserRow.reason,
-                                        eachBannableUserRow.lastchangedbyid,
-                                        eachBannableUserRow.lastchangedtime,
-                                        eachBannableUserRow.firstchangedbyid,
-                                        eachBannableUserRow.firstchangedtime,
-                                            true]
-                                        await cassandraclient.execute(queryForUnknownUser, paramsForUnknownUser)
-                                            .then(async (cassandrclientmarkunknown) => {
-                                                await logger.discordDebugLogger.debug(`Marked ${eachBannableUserRow.banneduserid} as unknown`, { type: cassandraclient, result: cassandrclientmarkunknown })
-                                            })
-                                            .catch();
+                                    var toBanReason: string;
+                                    if (!eachBannableUserRow.reason || eachBannableUserRow.reason.length == 0) {
+                                        toBanReason = "Banned by Adora's Automagical system via manual sync!"
+                                    } else {
+                                        toBanReason = `${eachBannableUserRow.reason} | Banned by Adora's Automagical system via manual sync!`
                                     }
-                                });
-                        }
 
-                    }
-                })
+                                    //trim the reason text to 512 char just in case it fails because the reason is too long
+                                    toBanReason = toBanReason.substring(0, 511)
 
-                //ban process as finished, tell the user we're done.
-                await message.channel.send("✅ The manual ban sync has completed! ✅").catch()
-                })
+                                    await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
+                                        .then(async (user) => {
+                                            await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`)
+                                        })
+                                        .catch(async (error) => {
+                                            await logger.discordWarnLogger.warn({
+                                                type: "banCheckerFailed",
+                                                error: error
+                                            })
 
-        }}
+                                            if (error.code === 10013) {
+                                                //this user is unknown
+                                                var queryForUnknownUser = "INSERT INTO adoramoderation.banneduserlist (banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime, unknownuser) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+                                                var paramsForUnknownUser = [eachBannableUserRow.banneduserid,
+                                                eachBannableUserRow.banned,
+                                                eachBannableUserRow.reason,
+                                                eachBannableUserRow.lastchangedbyid,
+                                                eachBannableUserRow.lastchangedtime,
+                                                eachBannableUserRow.firstchangedbyid,
+                                                eachBannableUserRow.firstchangedtime,
+                                                    true]
+                                                await cassandraclient.execute(queryForUnknownUser, paramsForUnknownUser)
+                                                    .then(async (cassandrclientmarkunknown) => {
+                                                        await logger.discordDebugLogger.debug(`Marked ${eachBannableUserRow.banneduserid} as unknown`, { type: cassandraclient, result: cassandrclientmarkunknown })
+                                                    })
+                                                    .catch();
+                                            }
+                                        });
+                                }
+
+                            }
+                        })
+
+                        //ban process as finished, tell the user we're done.
+                        await message.channel.send("✅ The manual ban sync has completed! ✅").catch()
+                    })
+
+            }
+        }
     }
 
     if (command === "autoban") {
