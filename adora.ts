@@ -148,6 +148,8 @@ client.on('message', async message => {
     }
 
     await onMessageForQR(message)
+
+    await logger.discordSillyLogger.silly({type: "clientMessage", messageObject: message})
   //setPresenceForAdora();
 });
 
