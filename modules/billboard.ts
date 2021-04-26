@@ -14,26 +14,32 @@ export async function billboardListChartsScrollable(message,command,args) {
 
     await listCharts((err, charts)=> {
         if (err) console.log(err);
-        console.log(charts); // prints array of all charts
+       // console.log(charts); // prints array of all charts
 
         var currentPage:string = "";
         var currentPageStage:string = "";
 
 
-        forEach(charts, function (eachChart) {
+        forEach(charts, function (eachChart, key) {
         
         var chartCode = eachChart.url.replace("http://www.billboard.com/charts/", "")
         
         currentPageStage = currentPageStage + chartCode + "\n";
 
-        if(currentPageStage.length < 2000) {
+       // logger.discordInfoLogger.info("key is " + key + " array size is " + charts.length)
+
+        if(currentPageStage.length < 1000 && (key != 180-1)) {
             //write currentpagestage to currentpage
-           // logger.discordInfoLogger.info({type: "billboardChartListTest", message: "currentPageStage.length < 2000"})
+          // logger.discordInfoLogger.info({type: "billboardChartListTest", message: "currentPageStage.length < 2000"})
             currentPage = currentPageStage;
         } else {
+           
+           //if(key === ) {
+
+            //}
             currentPageStage = chartCode + "\n";
             pages.push("`"  + currentPage + "`")
-           // logger.discordInfoLogger.info({type: "billboardChartListTest", message: "currentPageStage.length >= 2000"})
+           //logger.discordInfoLogger.info({type: "billboardChartListTest", message: "currentPageStage.length >= 2000"})
         }
 
      //   logger.discordInfoLogger.info({type: "billboardChartListTest", pages: pages})
