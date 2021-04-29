@@ -222,6 +222,10 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
               {
                 "name": "I have an idea for a command or feedback!",
                 "value": "We'd love to hear it! Please join our support server and tell us! Run `a!invite` for the invite link to our Support & Suggestion Adorabot Discord Server"
+              },
+              {
+                "name": "Credits",
+                "value": "Developer: Kyler#9100\nAdmins: Moka\nThank you to all that contribute code, feedback, and ban reports! Y'all make this bot better so thanks for using it"
               }
             ]
           }
