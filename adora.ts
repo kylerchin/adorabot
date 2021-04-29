@@ -45,7 +45,13 @@ const cassandraclient = new cassandra.Client({
 });
 
 client.everyServerRecheckBansOnThisShard = async () => {
-  everyServerRecheckBans(cassandraclient, client);
+  everyServerRecheckBans(cassandraclient, client, false);
+  //3rd argument is if the function should recheck Unkown Bans
+}
+
+client.everyServerRecheckBansOnThisShardWithUnknownBans = async () => {
+  everyServerRecheckBans(cassandraclient, client, true);
+  //3rd argument is if the function should recheck Unkown Bans
 }
 
 client.setPresenceForAdora = async () => {
@@ -139,7 +145,6 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
 
 client.on('message', async message => {
 
-  dogstatsd.increment('adorabot.client.message');
   try {
     commandHandler(message,client,config,cassandraclient,dogstatsd)
   }
@@ -150,6 +155,7 @@ client.on('message', async message => {
     await onMessageForQR(message)
 
     await logger.discordSillyLogger.silly({type: "clientMessage", messageObject: message})
+    dogstatsd.increment('adorabot.client.message');
   //setPresenceForAdora();
 });
 
