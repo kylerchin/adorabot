@@ -43,13 +43,16 @@ export async function banGuildMember(message) {
                     console.log(banID)
                     if (message.guild.available) {
                         await message.guild.members.ban(banID, { 'reason': reasonForBanRegister })
-                        .then(async (user) => {/*console.log(`Banned ${user.username || user.id || user} from ${message.guild.name}`)*/
-                            await message.channel.send(`:ballot_box_with_check: Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
-                        }
-                        )
-                        .catch(error => {
-                            message.channel.send(`Failed to ban ${banID}`)
-                        });
+                            .then(async (user) => {
+                                logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
+
+                                //  await message.channel.send(`:ballot_box_with_check: Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
+
+                            }
+                            )
+                            .catch(error => {
+                                message.channel.send(`Failed to ban ${banID}`)
+                            });
                     }
                 })
             }
@@ -93,7 +96,7 @@ export async function unbanGuildMember(message) {
                     /* console.log(banID)*/
                     await message.guild.members.unban(banID, { 'reason': reasonForBanRegister })
                         .then(async (user) => {
-                            await message.channel.send(`Unbanned ${user.username || user.id || user} from ${message.guild.name}`).catch()
+                            await message.channel.send(`Unbanned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user }).catch()
                         }
                         )
                         .catch(error => {
@@ -178,10 +181,18 @@ export async function processAllModerationCommands(message, command, args, confi
         });
 
         if (isauthorizedtoaddbanstodatabase) {
-            await message.channel.send("You are authorized")
+            await message.channel.send(":unlock: You are authorized :unlock: ")
             await message.channel.send("Forcing Updating Ban List on All Guilds on All Shards")
+            await message.channel.send("Syntax: `a!updatebans` to run without unknown user check, \n `a!updatebans recheck` to recheck all previously marked unkown users")
             await message.channel.send("a!adoraban and a!autoban will also trigger this command automatically, so there's no need to run this after")
-            await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`)
+
+            if (args[0] === "recheck") {
+                await message.channel.send("Running with unknown user recheck...")
+                await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShardWithUnknownBans()`)
+            } else {
+                await message.channel.send("Running without unknown user recheck...")
+                await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`)
+            }
             //await message.reply("Finished!")
         }
     }
@@ -197,106 +208,106 @@ export async function processAllModerationCommands(message, command, args, confi
         await cassandraclient.execute(lookuphowmanybannedusersquery)
             .then(async returnBanDatabaseAmount => {
                 var initialnumberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
-            
+
                 var isauthorizedtoaddbanstodatabase: boolean = false;
 
-        var loadedConfigData = importconfigfile.get()
+                var loadedConfigData = importconfigfile.get()
 
-        /*        console.log(loadedConfigData) */
+                /*        console.log(loadedConfigData) */
 
-        forEach(loadedConfigData.config.allowedToBanUsers, function (value, key, array) {
-            if (value.userid === message.author.id) {
-                isauthorizedtoaddbanstodatabase = true;
-            } else {
+                forEach(loadedConfigData.config.allowedToBanUsers, function (value, key, array) {
+                    if (value.userid === message.author.id) {
+                        isauthorizedtoaddbanstodatabase = true;
+                    } else {
 
-            }
-        });
-
-        if (isauthorizedtoaddbanstodatabase) {
-            await message.reply("You are authorized")
-            //split message into list of userids and reason
-
-            //this line prevents accidental role mentions from being added
-            var roleMentionsRemoved = message.content.replace(/<@&(\d{18})>/g, '')
-
-            //transforms the user id list into a list to be banned
-            var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
-
-            var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*adoraban(\ )*)/g, '').trim().replace(emptylinesregex, "")
-            //apply the bans to the database
-            await message.channel.send(`Reason: ${reasonForBanRegister}`)
-
-            forEach(arrayOfUserIdsToBan, async function (individualUserIdToAddToBanDatabase, keyBan, arrayBan) {
-                //write bans to adoramoderation.banneduserlist
-                //banneduserid text PRIMARY KEY, banned boolean, reason text, lastchangedbyid text, lastchangedtime timeuuid, firstchangedbyid text, firstchangedtime timeuuid);
-
-                const lookupexistingbanquery = 'SELECT * FROM adoramoderation.banneduserlist WHERE banneduserid = ?';
-
-                var isBanRecordNew: boolean;
-                var banFirstChangedByIdInitialState;
-                var banFirstChangedTimeInitialState;
-
-                //lookup each user id in cassandra
-                await cassandraclient.execute(lookupexistingbanquery, [individualUserIdToAddToBanDatabase])
-                    .then(fetchExistingBanResult => {
-
-                        //is there a record matching it?
-                        if (fetchExistingBanResult.rows.length === 0) {
-                            //entry hasn't happened before
-                            /* console.log("new ban entry") */
-                            isBanRecordNew = true;
-                            banFirstChangedByIdInitialState = message.author.id;
-                            banFirstChangedTimeInitialState = TimeUuid.now();
-                        } else {
-                            /* console.log("not a new entry, existing record found") */
-                            isBanRecordNew = false;
-                            banFirstChangedByIdInitialState = fetchExistingBanResult.rows[0].firstchangedbyid;
-                            banFirstChangedTimeInitialState = fetchExistingBanResult.rows[0].firstchangedtime;
-                        }
-
-                    })
-
-                const query = 'INSERT INTO adoramoderation.banneduserlist (banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime) VALUES (?, ?, ?, ?, ?, ?, ?)';
-                var params;
-                if (isBanRecordNew) {
-                    params = [individualUserIdToAddToBanDatabase, true, reasonForBanRegister, banFirstChangedByIdInitialState, banFirstChangedTimeInitialState, banFirstChangedByIdInitialState, banFirstChangedTimeInitialState];
-                } else {
-                    params = [individualUserIdToAddToBanDatabase, true, reasonForBanRegister, message.author.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
-                }
-
-                await cassandraclient.execute(query, params, { prepare: true }, await function (err) {
-                    console.log(err);
-                    //Inserted in the cluster
+                    }
                 });
 
-                //now update every server
-                //await runBanStream(cassandraclient, client)
+                if (isauthorizedtoaddbanstodatabase) {
+                    await message.reply(":unlock: You are authorized :unlock: ")
+                    //split message into list of userids and reason
 
-                //instruct every server to run the ban stream
-                await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`)
-                //await everyServerRecheckBans(cassandraclient,client)
-            })
+                    //this line prevents accidental role mentions from being added
+                    var roleMentionsRemoved = message.content.replace(/<@&(\d{18})>/g, '')
 
-            await cassandraclient.execute(lookuphowmanybannedusersquery)
-            .then(async returnAfterBanDatabaseAmount => {
-                var afternumberofrowsindatabase = returnAfterBanDatabaseAmount.rows[0].count.low
+                    //transforms the user id list into a list to be banned
+                    var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
 
-                var messageToSendToChannelForConfirmation = `${initialnumberofrowsindatabase} initial rows\n${afternumberofrowsindatabase} after rows\n :white_check_mark: operation completed`
+                    var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*adoraban(\ )*)/g, '').trim().replace(emptylinesregex, "")
+                    //apply the bans to the database
+                    await message.channel.send(`Reason: ${reasonForBanRegister}`)
 
-                if (arrayOfUserIdsToBan) {
-                    messageToSendToChannelForConfirmation  = `Banning ${arrayOfUserIdsToBan.length} users.\n` + messageToSendToChannelForConfirmation 
+                    forEach(arrayOfUserIdsToBan, async function (individualUserIdToAddToBanDatabase, keyBan, arrayBan) {
+                        //write bans to adoramoderation.banneduserlist
+                        //banneduserid text PRIMARY KEY, banned boolean, reason text, lastchangedbyid text, lastchangedtime timeuuid, firstchangedbyid text, firstchangedtime timeuuid);
+
+                        const lookupexistingbanquery = 'SELECT * FROM adoramoderation.banneduserlist WHERE banneduserid = ?';
+
+                        var isBanRecordNew: boolean;
+                        var banFirstChangedByIdInitialState;
+                        var banFirstChangedTimeInitialState;
+
+                        //lookup each user id in cassandra
+                        await cassandraclient.execute(lookupexistingbanquery, [individualUserIdToAddToBanDatabase])
+                            .then(fetchExistingBanResult => {
+
+                                //is there a record matching it?
+                                if (fetchExistingBanResult.rows.length === 0) {
+                                    //entry hasn't happened before
+                                    /* console.log("new ban entry") */
+                                    isBanRecordNew = true;
+                                    banFirstChangedByIdInitialState = message.author.id;
+                                    banFirstChangedTimeInitialState = TimeUuid.now();
+                                } else {
+                                    /* console.log("not a new entry, existing record found") */
+                                    isBanRecordNew = false;
+                                    banFirstChangedByIdInitialState = fetchExistingBanResult.rows[0].firstchangedbyid;
+                                    banFirstChangedTimeInitialState = fetchExistingBanResult.rows[0].firstchangedtime;
+                                }
+
+                            })
+
+                        const query = 'INSERT INTO adoramoderation.banneduserlist (banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime) VALUES (?, ?, ?, ?, ?, ?, ?)';
+                        var params;
+                        if (isBanRecordNew) {
+                            params = [individualUserIdToAddToBanDatabase, true, reasonForBanRegister, banFirstChangedByIdInitialState, banFirstChangedTimeInitialState, banFirstChangedByIdInitialState, banFirstChangedTimeInitialState];
+                        } else {
+                            params = [individualUserIdToAddToBanDatabase, true, reasonForBanRegister, message.author.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
+                        }
+
+                        await cassandraclient.execute(query, params, { prepare: true }, await function (err) {
+                            console.log(err);
+                            //Inserted in the cluster
+                        });
+
+                        //now update every server
+                        //await runBanStream(cassandraclient, client)
+
+                        //instruct every server to run the ban stream
+                        await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`)
+                        //await everyServerRecheckBans(cassandraclient,client)
+                    })
+
+                    await cassandraclient.execute(lookuphowmanybannedusersquery)
+                        .then(async returnAfterBanDatabaseAmount => {
+                            var afternumberofrowsindatabase = returnAfterBanDatabaseAmount.rows[0].count.low
+
+                            var messageToSendToChannelForConfirmation = `${initialnumberofrowsindatabase} initial rows\n${afternumberofrowsindatabase} after rows\n :white_check_mark: operation completed`
+
+                            if (arrayOfUserIdsToBan) {
+                                messageToSendToChannelForConfirmation = `Banning ${arrayOfUserIdsToBan.length} users.\n` + messageToSendToChannelForConfirmation
+                            }
+
+                            message.channel.send(messageToSendToChannelForConfirmation)
+                        });
+                } else {
+                    message.reply(":closed_lock_with_key:  You don't have permission to do that! :closed_lock_with_key: ")
                 }
 
-                message.channel.send(messageToSendToChannelForConfirmation )
-            });
-        } else {
-            message.reply("You don't have permission to do that!")
-        }
-
             })
-        
 
-        
+
+
 
     }
 
@@ -347,68 +358,68 @@ export async function processAllModerationCommands(message, command, args, confi
                                 forEach(globallistOfBannableUsers.rows, function (eachBannableUserRow) {
                                     var isUserBannedFromThisGuild = fetchBanDatabase.has(eachBannableUserRow.banneduserid)
                                     //  console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
-    
+
                                     if (isUserBannedFromThisGuild) {
                                         //this user is already fuckin banned
                                     }
                                     else {
-    
+
                                         if (eachBannableUserRow.unknownuser === true) {
                                             //unknown user, do absolutely fucking nothing
                                         } else {
                                             //THE BAN HAMMER STRIKES!
-    
+
                                             var toBanReason: string;
                                             if (!eachBannableUserRow.reason || eachBannableUserRow.reason.length == 0) {
                                                 toBanReason = "Banned by Adora's Automagical system via manual sync!"
                                             } else {
                                                 toBanReason = `${eachBannableUserRow.reason} | Banned by Adora's Automagical system via manual sync!`
                                             }
-    
+
                                             //trim the reason text to 512 char just in case it fails because the reason is too long
                                             toBanReason = toBanReason.substring(0, 511)
                                             if (individualservertodoeachban.available) {
                                                 individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
-                                                .then((user) => {
-                                                    numberOfSuccessfulBansOnThisOperation = numberOfSuccessfulBansOnThisOperation + 1;
-                                                    logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`)
-                                                })
-                                                .catch(async (error) => {
-                                                    await logger.discordWarnLogger.warn({
-                                                        type: "banCheckerFailed",
-                                                        error: error
+                                                    .then((user) => {
+                                                        numberOfSuccessfulBansOnThisOperation = numberOfSuccessfulBansOnThisOperation + 1;
+                                                        logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`, { userObject: user })
                                                     })
-    
-                                                    if (error.code === 10013) {
-                                                        //this user is unknown
-                                                        var queryForUnknownUser = "INSERT INTO adoramoderation.banneduserlist (banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime, unknownuser) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-                                                        var paramsForUnknownUser = [eachBannableUserRow.banneduserid,
-                                                        eachBannableUserRow.banned,
-                                                        eachBannableUserRow.reason,
-                                                        eachBannableUserRow.lastchangedbyid,
-                                                        eachBannableUserRow.lastchangedtime,
-                                                        eachBannableUserRow.firstchangedbyid,
-                                                        eachBannableUserRow.firstchangedtime,
-                                                            true]
-                                                        await cassandraclient.execute(queryForUnknownUser, paramsForUnknownUser)
-                                                            .then(async (cassandrclientmarkunknown) => {
-                                                                await logger.discordDebugLogger.debug(`Marked ${eachBannableUserRow.banneduserid} as unknown`, { type: cassandraclient, result: cassandrclientmarkunknown })
-                                                            })
-                                                            .catch();
-                                                    }
-                                                });
-                                            } 
-                                            
+                                                    .catch(async (error) => {
+                                                        await logger.discordWarnLogger.warn({
+                                                            type: "banCheckerFailed",
+                                                            error: error
+                                                        })
+
+                                                        if (error.code === 10013) {
+                                                            //this user is unknown
+                                                            var queryForUnknownUser = "INSERT INTO adoramoderation.banneduserlist (banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime, unknownuser) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+                                                            var paramsForUnknownUser = [eachBannableUserRow.banneduserid,
+                                                            eachBannableUserRow.banned,
+                                                            eachBannableUserRow.reason,
+                                                            eachBannableUserRow.lastchangedbyid,
+                                                            eachBannableUserRow.lastchangedtime,
+                                                            eachBannableUserRow.firstchangedbyid,
+                                                            eachBannableUserRow.firstchangedtime,
+                                                                true]
+                                                            await cassandraclient.execute(queryForUnknownUser, paramsForUnknownUser)
+                                                                .then(async (cassandrclientmarkunknown) => {
+                                                                    await logger.discordDebugLogger.debug(`Marked ${eachBannableUserRow.banneduserid} as unknown`, { type: cassandraclient, result: cassandrclientmarkunknown })
+                                                                })
+                                                                .catch();
+                                                        }
+                                                    });
+                                            }
+
                                         }
-    
+
                                     }
                                 })
-    
+
                                 //ban process as finished, tell the user we're done.
                                 //message.channel.send(`✅ The manual ban sync has completed!✅ \n ✅ ${numberOfSuccessfulBansOnThisOperation} bans added successfully ✅`).catch()
                             }).catch()
                         }
-                        
+
 
                     })
 
@@ -519,7 +530,7 @@ export async function processAllModerationCommands(message, command, args, confi
                                 await message.reply(
                                     {
                                         "embed": {
-                                            "description": " ╭₊˚ʚ[🍰]ɞ・[This server is now subscribed to autobans!]\n ╰₊˚ʚ[🍩]ɞ・[To turn it off, type `a!autoban off`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
+                                            "description": " ╭₊˚ʚ[🍰]ɞ・[This server is now subscribed to autobans!]\n╰₊˚ʚ[🍩]ɞ・[To turn it off, type `a!autoban off`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
                                             "image": {
                                                 "url": "https://user-images.githubusercontent.com/7539174/111216153-49369c80-8591-11eb-8eaf-0a0f13bf875c.png"
                                             }
@@ -567,7 +578,7 @@ export async function processAllModerationCommands(message, command, args, confi
     }
 }
 
-export async function everyServerRecheckBans(cassandraclient, client) {
+export async function everyServerRecheckBans(cassandraclient, client, recheckUnkownBan) {
     //for every server subscribed
     //fetch the ban list for the server
 
@@ -642,7 +653,7 @@ export async function everyServerRecheckBans(cassandraclient, client) {
                     }
                     else {
 
-                        if (eachBannableUserRow.unknownuser === true) {
+                        if (eachBannableUserRow.unknownuser === true && recheckUnkownBan === false) {
                             //unknown user, do absolutely fucking nothing
                         } else {
                             //THE BAN HAMMER STRIKES!
@@ -660,7 +671,7 @@ export async function everyServerRecheckBans(cassandraclient, client) {
                             if (individualservertodoeachban.available) {
                                 await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
                                     .then(async (user) => {
-                                        await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`)
+                                        await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`, { userObject: user, banReason: toBanReason, type: "recheckBansAddBanSuccessful"})
                                     })
                                     .catch(async (error) => {
                                         await logger.discordWarnLogger.warn({
@@ -731,5 +742,5 @@ export async function runOnStartup(cassandraclient, client) {
             await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
         }).catch(error => console.error(error));
 
-    await everyServerRecheckBans(cassandraclient, client)
+    await everyServerRecheckBans(cassandraclient, client, false)
 }
