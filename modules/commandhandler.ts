@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-import { sendYtCountsEmbed } from "./sendYtEmbed";
 import { verboseDiscordLog } from "./verboseDiscordLog";
 import { billboardVote, billboardPollGetValue } from "./billboardPolls";
 import { editProfile, fetchProfile } from "./userProfile";
@@ -8,6 +7,7 @@ import { geniusLyrics } from "./genius"
 import { billboardCharts } from "./billboard"
 import { processAllModerationCommands, howManyUsersInBanDatabase } from "./moderation"
 import { updateDiscordBotsGG } from "./uploadStatsToBotsGg"
+import {youtubeVideoStats} from "./youtube"
 const wiktionary = require('wiktionary')
 const isUrl = require("is-url");
 const scrapeyoutube = require('scrape-youtube').default;
@@ -25,6 +25,7 @@ const https = require('https')
 
 const translate = require('@vitalets/google-translate-api');
 import { logger } from './logger'
+import { ping } from "./ping";
 
 export async function commandHandler(msg, client, config, cassandraclient, dogstatsd) {
 
@@ -52,55 +53,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
       console.log("Command is " + command)
 
       if (command === "ping") {
-        // Calculates ping between sending a message and editing it, giving a nice round-trip latency.
-        // The second ping is an average latency between the bot and the websocket server (one-way, not round-trip)
-        const pingReturn = await msg.channel.send("Ping?");
-
-        var pingEmbedResponse;
-
-        if (isDM) {
-          pingEmbedResponse = {
-            "embed": {
-              "description": `**펑!** If the Latency is significantly higher than the API Latency, the bot is likely ratelimited in this channel or guild.`,
-              "fields": [
-                {
-                  "name": "Shard #",
-                  "value": "DMs"
-                },
-                {
-                  "name": "Latency",
-                  "value": `\`${pingReturn.createdTimestamp - msg.createdTimestamp}ms\``
-                },
-                {
-                  "name": "API WebSocket Latency",
-                  "value": `\`${Math.round(client.ws.ping)}ms\``
-                }
-              ]
-            }
-          }
-        } else {
-          pingEmbedResponse = {
-            "embed": {
-              "description": `**펑!** If the Latency is significantly higher than the API Latency, the bot is likely ratelimited in this channel or guild.`,
-              "fields": [
-                {
-                  "name": "Shard #",
-                  "value": msg.guild.shardID
-                },
-                {
-                  "name": "Latency",
-                  "value": `\`${pingReturn.createdTimestamp - msg.createdTimestamp}ms\``
-                },
-                {
-                  "name": "API WebSocket Latency",
-                  "value": `\`${Math.round(client.ws.ping)}ms\``
-                }
-              ]
-            }
-          }
-        }
-        
-        pingReturn.edit(pingEmbedResponse).catch();
+       await ping(msg,client);
       }
 
       if (command === "info") {
@@ -173,7 +126,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
               },
               {
                 "name": "`a!youtube`",
-                "value": "`a!youtube <video link / search for a video>`: Realtime view counter for YouTube videos. \n Example: `a! youtube fake love music video` or `a! youtube https://www.youtube.com/watch?v=gdZLi9oWNZg`"
+                "value": "`a!youtube <video link / search for a video>`: Realtime view counter for YouTube videos. \n Example: `a! youtube fake love music video` or `a! youtube https://www.youtube.com/watch?v=gdZLi9oWNZg`, run `a!youtube` for more information"
               }
             ]
           }
@@ -291,62 +244,9 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
 
       }
 
-      if (command === "youtubestats" || command === "ytstat" || command === "ytstats" || command === "youtube") {
+      if (command === "youtubestats" || command === "ytstat" || command === "ytstats" || command === "youtube" || command === "yt") {
 
-        const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
-
-        var videoID = "dQw4w9WgXcQ"
-        if (isUrl(args[0])) {
-          // Valid url
-          if (args[0].includes("youtu.be/")) {
-            var precurser = args[0].replace("youtu.be/", "www.youtube.com/watch?v=")
-          } else {
-            var precurser = args[0]
-          }
-          videoID = getQueryParam('v', precurser)
-          sendYtCountsEmbed(videoID, msg, youtubeApiKeyRandomlyChosen)
-        } else {
-          // Invalid url
-
-          console.log("invalid url")
-
-          const searchYtString = msg.content.replace("a!", "").replace(command, "").trim()
-
-          /*
-          //check if video ID is valid without accessing the youtube API
-          var requestToYouTubeOembed = 'https://www.youtube.com/watch?v=' + searchYtString
-          await request(requestToYouTubeOembed, async function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-            console.log("URL is OK") // Print the google web page.
-            videoID = getQueryParam('v', 'https://www.youtube.com/watch?v=' + searchYtString)
-            console.log(videoID + " is the videoID")
-            sendYtCountsEmbed(videoID,msg,youtubeApiKeyRandomlyChosen)
-          }  else {*/
-          //video ID is not valid
-
-          // search youtube for term instead
-          //console.log("searching for:" + searchYtString)
-          logger.discordDebugLogger.debug({ type: "searchStringForYouTube", searchYtString: searchYtString })
-          //const r = await yts( searchYtString )
-
-          //console.log(r)
-
-          await scrapeyoutube.search(searchYtString).then(results => {
-            // Unless you specify a type, it will only return 'video' results
-
-            if (results.videos.length <= 0) {
-              msg.reply("I couldn't find any videos matching that term!")
-            }
-
-            videoID = results.videos[0].id
-            logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: results.videos[0] })
-            logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
-
-            sendYtCountsEmbed(videoID, msg, youtubeApiKeyRandomlyChosen)
-
-          });
-          //}
-        }
+        await youtubeVideoStats(msg,command,client,config,args)
 
 
 
@@ -450,3 +350,5 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
     }
   }
 }
+
+
