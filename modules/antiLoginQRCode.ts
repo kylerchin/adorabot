@@ -2,12 +2,15 @@ const Jimp = require('jimp');
 const jsQR = require('jsqr');
 const request = require('request-promise-native');
 import { logger } from './logger';
+const discordScamRegex = new RegExp('discord(app)?\.com/ra(/)?', 'g');
 
 process.on('unhandledRejection', console.error);
 
 
 export async function onMessageForQR(message) {
     //console.log("onMessageForQR")
+    await plainURLDiscordScamChecker(message)
+
     if (await checkMessage(message))
         await handleMessage(message);
 
@@ -19,6 +22,8 @@ export async function onMessageForQR(message) {
 
 export async function onMessageUpdateForQR(messageOld, messageNew) {
     const message = messageNew.partial ? await messageNew.fetch() : messageNew;
+
+    await plainURLDiscordScamChecker(message)
 
     if (await checkMessage(message))
         await handleMessage(message);
@@ -43,7 +48,20 @@ async function checkMessage({ attachments, author, embeds }) {
     return checkBitmaps(bitmaps);
 }
 
-
+async function plainURLDiscordScamChecker(message) {
+    if (message.content.match(discordScamRegex)) {
+        await Promise.all([
+        message.react('⚠️'),
+        message.reply({
+            "embed": {
+                "title": ":warning: Warning! This is a dangerous link that can hack your discord account! :warning: ",
+                "description": "The link above is a Discord Login link, which if scanned, can allow an attacker to login and take over your account. Often scammers will pretend the qr codes are free nitro or other gifts. DO NOT SCAN IT!"
+            }
+        })
+    ]);
+        await logger.discordInfoLogger.info({ type: "foundScamLink", messageObject: message, guildName: message.guild.name })
+    }
+}
 
 //~ Delete the message and notify the author...
 async function handleMessage(message) {
@@ -101,7 +119,6 @@ function checkBitmaps(bitmaps) {
     return bitmaps.some(bitmap => {
         const results = jsQR(bitmap.data, bitmap.width, bitmap.height);
 
-        const discordScamRegex = new RegExp('discord(app)?\.com/ra/', 'g');
         return !!(results && (results.data.match(discordScamRegex)));
     });
 }
