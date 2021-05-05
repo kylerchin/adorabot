@@ -2,7 +2,7 @@ const Jimp = require('jimp');
 const jsQR = require('jsqr');
 const request = require('request-promise-native');
 import { logger } from './logger';
-const discordScamRegex = new RegExp('discord(app)?\.com/ra(/)?', 'g');
+const discordScamRegex = new RegExp('(ptb|canary)?discord(app)?\.com\/ra(\/)?', 'g');
 
 process.on('unhandledRejection', console.error);
 
