@@ -143,6 +143,23 @@ client.on('messageUpdate', async (oldMessage, newMessage) => {
   await onMessageUpdateForQR(oldMessage, newMessage)
 })
 
+client.on('guildBanAdd', async (guild, user) => {
+  await logger.discordDebugLogger.debug({
+    type: "clientGuildBanAdd",
+    guild: guild,
+    user: user
+  });
+})
+
+client.on('guildBanRemove', async (guild, user) => {
+  await logger.discordDebugLogger.debug({
+    type: "clientGuildBanRemove",
+    guild: guild,
+    user: user
+  });
+})
+
+
 client.on('message', async message => {
 
   try {

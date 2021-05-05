@@ -107,5 +107,20 @@ export async function billboardCharts(message,command,args) {
     
     if(args[0] === "list" || args[0] === "listchart" || args[0] === "listcharts" || args[0] === 'charts') {
         billboardListChartsScrollable(message,command,args)
+    } else {
+        getChart(args[0], (err, chart) => {
+            if (err) console.log(err);
+            message.channel.send(chart.week) // prints the week of the chart in the date format YYYY-MM-DD
+            //message.channel.send(chart.previousWeek.url) // prints the URL of the previous week's chart
+            //message.channel.send(chart.previousWeek.date) // prints the date of the previous week's chart in the date format YYYY-MM-DD
+            //message.channel.send(chart.nextWeek.url) // prints the URL of the next week's chart
+            //message.channel.send(chart.nextWeek.date) // prints the date of the next week's chart in the date format YYYY-MM-DD
+            logger.discordInfoLogger.info(chart.songs, {type: "billboard-top-100-testing"}); // prints array of top 100 songs for week of August 27, 2016
+           // message.channel.send(chart.songs[3]); // prints song with rank: 4 for week of August 27, 2016
+            //message.channel.send(chart.songs[0].title); // prints title of top song for week of August 27, 2016
+            //message.channel.send(chart.songs[0].artist); // prints artist of top songs for week of August 27, 2016
+            //message.channel.send(chart.songs[0].rank) // prints rank of top song (1) for week of August 27, 2016
+            //message.channel.send(chart.songs[0].cover) // prints URL for Billboard cover image of top song for week of August 27, 2016
+          });
     }
 }

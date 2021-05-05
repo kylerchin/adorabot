@@ -671,7 +671,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                             if (individualservertodoeachban.available) {
                                 await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
                                     .then(async (user) => {
-                                        await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`, { userObject: user, banReason: toBanReason, type: "recheckBansAddBanSuccessful"})
+                                        await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`, { userObject: user, banReason: toBanReason, individualservertodoeachban: individualservertodoeachban, type: "recheckBansAddBanSuccessful"})
                                     })
                                     .catch(async (error) => {
                                         await logger.discordWarnLogger.warn({
