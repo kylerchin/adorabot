@@ -2,25 +2,29 @@
 	"config": {
 		"prefix": "a! ",
 		"cassandra": {
-			"contactPoints": [ "172.17.0.3" ],
+			"contactPoints": [ "172.17.0.1" ],
 			"localDataCenter": "datacenter1",
-			"plainTextUsername": "developer",
-			"plainTextPassword": "password"
+			"plainTextUsername": "cassandra",
+			"plainTextPassword": "cassandra"
 		},
+		"datadogapi": "dfafdasdffafasfsfafasfsfafasfsfd",
 		"spplaycountlibrespotapi": "https://api.t4ils.dev",
-		"token": "DISCORD-TOKEN",
-		"googlecloudprojectid": "googlecloudprojectname",
+		"discordbotlisttoken": "DiscordBotList Token",
+		"geniusapitoken": "Genius API token",
+		"token": "Discord Token",
+		"discordbotsggapitoken": "",
+		"googlecloudprojectid": "ipurpleyou",
 		"googlecloudkeyFilename": "./keyfile.json",
-		"verboseChannel": "discord channel for verbose output",
-		"youtubeApiKeys": ["apikey1","apikey2"],
+		"verboseChannel": "channelid",
+		"youtubeApiKeys": ["a","b"],
 		"allowedToBanUsers": {
-			"yeonjun": {
-				"userid" : "628372877382828438",
-				"adorareference": "yeonjun main account"
+			"namjoon": {
+				"userid" : "discord user id",
+				"adorareference": "namjoon main account"
 			},
-			"kai": {
-				"userid" : "542371578324638239",
-				"adorareference": "yeonjun main account"
+			"jimin": {
+				"userid" : "jimin user id",
+				"adorareference": "jimin user main account"
 			}
 		}
 	}
