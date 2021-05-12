@@ -189,7 +189,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
         msg.channel.send("")
       }
 
-      if (command === "inviteme" || command === "invite") {
+      if (command === "inviteme" || command === "invite" || command === "inviter") {
         msg.reply("Here's the invite link! It's an honor to help you :) \n https://discord.bots.gg/bots/737046643974733845\nHere's our support server for announcements and questions! https://discord.gg/Dgvm3kt")
       }
 
