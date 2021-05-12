@@ -109,6 +109,8 @@ export async function billboardCharts(message,command,args) {
         billboardListChartsScrollable(message,command,args)
     } else {
         getChart(args[0], (err, chart) => {
+            console.log(chart)
+            console.log(chart.songs)
             if (err) console.log(err);
             message.channel.send(chart.week) // prints the week of the chart in the date format YYYY-MM-DD
             //message.channel.send(chart.previousWeek.url) // prints the URL of the previous week's chart
