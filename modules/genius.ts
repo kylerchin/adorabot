@@ -17,11 +17,14 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
 			$('div[class="lyrics"]').each((i, elem) => {
 				if($(elem).text().length !== 0) {
                     let snippet = $(elem).html()
-                    .replace(/<br>/g, '\n')
+                    .replace(/<br><br>/g, 'AdorabotTwoLine00x00')
+                    .replace(/<br>/g, 'AdorabotOneLine00x00')
                     .replace(/\*/g, '\\*')
                     .replace(/<\/? *i[^>]*>/g, '*')
                     .replace(/<\/? *b*>/g, '**')
                     .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '')
+                    .replace(/AdorabotTwoLine00x00/g, '\n\n')
+                    .replace(/AdorabotOneLine00x00/g, '\n')
                    // .replace(/\n\n\n/g, '\n')
                     .replace(/\n\n\n/g, '\n');
                     console.log($(elem).html() + " => " + snippet)
