@@ -230,8 +230,19 @@ export async function processAllModerationCommands(message, command, args, confi
                     //this line prevents accidental role mentions from being added
                     var roleMentionsRemoved = message.content.replace(/<@&(\d{18})>/g, '')
 
+
+                    // don't put in attachment links into the fuckin ban list
+                    var attachments = message.attachments
+                    var urlsInMessage = []
+
+                    var removedMessageAttachmentURLsFromContent = roleMentionsRemoved
+
+                    forEach(attachments, (attach) => {
+                        urlsInMessage.push(attach.url)
+                        removedMessageAttachmentURLsFromContent = removedMessageAttachmentURLsFromContent.replaceAll(attach.url, "")
+                    })
                     //transforms the user id list into a list to be banned
-                    var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
+                    var arrayOfUserIdsToBan = removedMessageAttachmentURLsFromContent.match(/(?<!\d)\d{18}(?!\d)/g);
 
                     var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*adoraban(\ )*)/g, '').trim().replace(emptylinesregex, "")
                     //apply the bans to the database
