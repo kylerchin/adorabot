@@ -171,7 +171,15 @@ client.on('message', async message => {
 
     await onMessageForQR(message)
 
-    await logger.discordSillyLogger.silly({type: "clientMessage", messageObject: message})
+    var clientMessageToUploadToDatadog
+
+    if (message.guild.available) {
+        clientMessageToUploadToDatadog = {type: "clientMessage", messageObject: message, guildName: message.guild.name}
+    } else {
+        clientMessageToUploadToDatadog = {type: "clientMessage", messageObject: message}
+    }
+
+    await logger.discordSillyLogger.silly(clientMessageToUploadToDatadog);
     dogstatsd.increment('adorabot.client.message');
   //setPresenceForAdora();
 });
