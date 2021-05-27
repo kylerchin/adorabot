@@ -517,7 +517,25 @@ export async function processAllModerationCommands(message, command, args, confi
                 }
 
                 if ((!isDM)) {
-                    if (message.member.permissions.has("ADMINISTRATOR")) {
+
+                    //also allow adorabot admins to change this
+                    var isauthorizedtoaddbanstodatabase: boolean = false;
+
+                    var loadedConfigData = importconfigfile.get()
+            
+                    /*  console.log(loadedConfigData) */
+            
+                    forEach(loadedConfigData.config.allowedToBanUsers, function (value, key, array) {
+                        if (value.userid === message.author.id) {
+                            isauthorizedtoaddbanstodatabase = true;
+                        } else {
+            
+                        }
+                    });
+
+                    //is the user sending this command either an admin of the server or an admin of the Adorabot system?
+                    if (message.member.permissions.has("ADMINISTRATOR") || isauthorizedtoaddbanstodatabase) {
+                        //has permissions
                         if (args[0] === "yes" || args[0] === "on" || args[0] === "true") {
                             var subscribeStateToWrite = true
                         }
