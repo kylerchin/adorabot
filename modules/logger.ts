@@ -42,5 +42,14 @@ export const logger = {
     transports: [
       new transports.Http(httpTransportOptions)
     ]
+  }),
+  discordErrorLogger: createLogger({
+    level: 'error',
+    exitOnError: false,
+    format: format.json(),
+    transports: [
+      new transports.Console(),
+      new transports.Http(httpTransportOptions)
+    ]
   })
 }
