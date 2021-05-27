@@ -18,10 +18,12 @@ const manager = new ShardingManager('./adora.js', {
 });
 
 // Spawn your shards
-manager.spawn();
+manager.spawn().catch(async (error) => {
+    await logger.discordErrorLogger.error({type: "shardCreateError", error: error});
+});
 
 // Emitted when a shard is created
 manager.on('shardCreate',async (shard) => {
     console.log(`Shard ${shard.id} launched`);
-    await logger.discordInfoLogger.info({type: "shardCreate", shard: shard});
+    logger.discordInfoLogger.info({type: "shardCreate", shard: shard});
 });
