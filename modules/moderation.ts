@@ -7,6 +7,8 @@ import { logger } from './logger'
 //Generate time with TimeUuid.now();
 const emptylinesregex = /\n/ig;
 
+var unknownuserlocalarray: Array<any> = []
+
 const userIDsRegex = /^(?:<@\D?)?(\d+)(?:>)?\s*,?\s*/;
 
 const userReg = RegExp(/<@!?(\d+)>/);
@@ -679,36 +681,44 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                             //trim the reason text to 512 char just in case it fails because the reason is too long
                             toBanReason = toBanReason.substring(0, 511)
 
-                            if (individualservertodoeachban.available) {
-                                await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
-                                    .then(async (user) => {
-                                        await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`, { userObject: user, banReason: toBanReason, individualservertodoeachban: individualservertodoeachban, type: "recheckBansAddBanSuccessful"})
-                                    })
-                                    .catch(async (error) => {
-                                        await logger.discordWarnLogger.warn({
-                                            type: "banCheckerFailed",
-                                            error: error
+                            //if the cache of unknown users includes that banned user, don't do anything
+                            if (unknownuserlocalarray.includes(eachBannableUserRow.banneduserid)) {}
+                            else {
+                                //always check if the guild is avaliable before doing this
+                                if (individualservertodoeachban.available) {
+                                    await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
+                                        .then(async (user) => {
+                                            await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`, { userObject: user, banReason: toBanReason, individualservertodoeachban: individualservertodoeachban, type: "recheckBansAddBanSuccessful"})
                                         })
+                                        .catch(async (error) => {
+                                            await logger.discordWarnLogger.warn({
+                                                type: "banCheckerFailed",
+                                                error: error
+                                            })
 
-                                        if (error.code === 10013) {
-                                            //this user is unknown
-                                            var queryForUnknownUser = "INSERT INTO adoramoderation.banneduserlist (banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime, unknownuser) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-                                            var paramsForUnknownUser = [eachBannableUserRow.banneduserid,
-                                            eachBannableUserRow.banned,
-                                            eachBannableUserRow.reason,
-                                            eachBannableUserRow.lastchangedbyid,
-                                            eachBannableUserRow.lastchangedtime,
-                                            eachBannableUserRow.firstchangedbyid,
-                                            eachBannableUserRow.firstchangedtime,
-                                                true]
-                                            await cassandraclient.execute(queryForUnknownUser, paramsForUnknownUser)
-                                                .then(async (cassandrclientmarkunknown) => {
-                                                    await logger.discordDebugLogger.debug(`Marked ${eachBannableUserRow.banneduserid} as unknown`, { type: cassandraclient, result: cassandrclientmarkunknown })
-                                                })
-                                                .catch();
-                                        }
-                                    });
+                                            if (error.code === 10013) {
+                                                //this user is unknown
+                                                unknownuserlocalarray.push(eachBannableUserRow.banneduserid)
+                                                //push data to cassandra
+                                                var queryForUnknownUser = "INSERT INTO adoramoderation.banneduserlist (banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime, unknownuser) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+                                                var paramsForUnknownUser = [eachBannableUserRow.banneduserid,
+                                                eachBannableUserRow.banned,
+                                                eachBannableUserRow.reason,
+                                                eachBannableUserRow.lastchangedbyid,
+                                                eachBannableUserRow.lastchangedtime,
+                                                eachBannableUserRow.firstchangedbyid,
+                                                eachBannableUserRow.firstchangedtime,
+                                                    true]
+                                                await cassandraclient.execute(queryForUnknownUser, paramsForUnknownUser)
+                                                    .then(async (cassandrclientmarkunknown) => {
+                                                        logger.discordDebugLogger.debug(`Marked ${eachBannableUserRow.banneduserid} as unknown`, { type: cassandraclient, result: cassandrclientmarkunknown })
+                                                    })
+                                                    .catch();
+                                            }
+                                        });
+                                }
                             }
+                            
 
                         }
 
