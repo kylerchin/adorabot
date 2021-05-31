@@ -13,8 +13,16 @@ const userIDsRegex = /^(?:<@\D?)?(\d+)(?:>)?\s*,?\s*/;
 
 const userReg = RegExp(/<@!?(\d+)>/);
 
-export async function banGuildMember(message) {
+export async function banGuildMember(message,command,args) {
     //check if user trying to do the command has permissions
+
+    var isPurgeBan:boolean;
+
+    if (command === "ban") {
+        isPurgeBan = false;
+    } else {
+        isPurgeBan = true;
+    }
 
     const isDM: boolean = message.guild === null;
 
@@ -41,10 +49,34 @@ export async function banGuildMember(message) {
                 //apply the bans to the database
                 await message.channel.send(`Reason: ${reasonForBanRegister}`)
 
-                await forEach(arrayOfUserIdsToBan, async (banID) => {
+                var banOptionsObject: any;
+
+                if (isPurgeBan) {
+                banOptionsObject = {days: 7, 'reason': reasonForBanRegister }
+                } else 
+                {
+                banOptionsObject = {'reason': reasonForBanRegister }
+                }
+
+                const arrayOfBanPromisesMapped = arrayOfUserIdsToBan.map(banID => message.guild.members.ban(banID, banOptionsObject));
+
+                console.log(arrayOfBanPromisesMapped)
+
+                Promise.all(arrayOfBanPromisesMapped).then(values => {
+                    console.log(values); // [3, 1337, "foo"]
+                    forEach(values, async (promisecontent) => {
+                        console.log(promisecontent)
+                       // logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
+                    })
+                  });
+
+                //Loop through array
+               /* await forEach(arrayOfUserIdsToBan, async (banID) => {
                     console.log(banID)
                     if (message.guild.available) {
-                        await message.guild.members.ban(banID, { 'reason': reasonForBanRegister })
+                        if (isPurgeBan) {
+                                // ban a guild member
+                                await message.guild.members.ban(banID, {days: 7, 'reason': reasonForBanRegister })
                             .then(async (user) => {
                                 logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
 
@@ -55,8 +87,22 @@ export async function banGuildMember(message) {
                             .catch(error => {
                                 message.channel.send(`Failed to ban ${banID}`)
                             });
+
+                        } else {
+                            await message.guild.members.ban(banID, { 'reason': reasonForBanRegister })
+                            .then(async (user) => {
+                                logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
+
+                                //  await message.channel.send(`:ballot_box_with_check: Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
+
+                            }
+                            )
+                            .catch(error => {
+                                message.channel.send(`Failed to ban ${banID}`)
+                            });
+                        }
                     }
-                })
+                })*/
             }
 
         } else {
@@ -128,8 +174,8 @@ export async function processAllModerationCommands(message, command, args, confi
 
     const isDM: boolean = message.guild === null;
 
-    if (command === "ban") {
-        await banGuildMember(message)
+    if (command === "ban" || command === 'banpurge' || command === "purgeban") {
+        await banGuildMember(message,command,args)
         await message.reply({
             "embed": {
                 "description": "Are you banning someone because they are raiding, putting NSFW, etc?\n" +
