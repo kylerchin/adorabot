@@ -18,7 +18,7 @@ import { onMessageForQR, onMessageUpdateForQR } from './modules/antiLoginQRCode'
 //datadog
 var StatsD = require('hot-shots'),
 dogstatsd = new StatsD({
-    port: 8020,
+    port: 8125,
     globalTags: { env: process.env.NODE_ENV }
 });
 
