@@ -145,6 +145,10 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
                 "value": "a!ban can ban as many users via mention or user ids with an optional reason"
               },
               {
+                "name": "`a!banpurge (mentions/userids) [reason]`",
+                "value": "Same thing as `a!ban` but also deletes all the users messages. Good for raids."
+              },
+              {
                 "name": "`a!unban (mentions/userids) [reason]`",
                 "value": "Unban as many users via mention or user ids with an optional reason"
               },
