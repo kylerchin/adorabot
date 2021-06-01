@@ -59,7 +59,7 @@ var uploaddiscordbotlistconfig = {
 
 await axios(uploaddiscordbotlistconfig)
       .then(async (response) => {
-        await logger.discordDebugLogger.debug({type: "uploadStatsToDiscordBotList", response: response})
+       // await logger.discordDebugLogger.debug({type: "uploadStatsToDiscordBotList", response: response})
       }).catch(
         async (error) => {
           //console.log(error);
@@ -70,7 +70,7 @@ await axios(uploaddiscordbotlistconfig)
 await axios(uploadconfig)
 .then(async (response) => {
 //console.log(JSON.stringify(response.data));
-await logger.discordDebugLogger.debug({type: "uploadStatsToBotsGg", response: response})
+//await logger.discordDebugLogger.debug({type: "uploadStatsToBotsGg", response: response})
 })
 .catch(async (error) => {
 //console.log(error);
