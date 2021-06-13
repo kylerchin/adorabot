@@ -42,12 +42,12 @@ export async function banGuildMember(message,command,args) {
                 message.reply("The correct format is `a!ban (Mentions/UserIDs) [reason]")
             } else {
                 if (arrayOfUserIdsToBan) {
-                    await message.channel.send(`Banning ${arrayOfUserIdsToBan.length} users.`)
+                    message.channel.send(`Banning ${arrayOfUserIdsToBan.length} users.`)
                 }
 
                 var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*ban(\ )*)/g, '').trim().replace(emptylinesregex, "")
                 //apply the bans to the database
-                await message.channel.send(`Reason: ${reasonForBanRegister}`)
+                message.channel.send(`Reason: ${reasonForBanRegister}`)
 
                 var banOptionsObject: any;
 
