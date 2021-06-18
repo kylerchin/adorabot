@@ -28,7 +28,7 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
                    // .replace(/\n\n\n/g, '\n')
                     .replace(/\n\n\n/g, '\n');
                     console.log($(elem).html() + " => " + snippet)
-					lyrics += $('<textarea/>').html(snippet).text().trim() + '\n\n';
+					lyrics += $('[data-scrolltrigger-pin]').html(snippet).text().trim() + '\n\n';
 				}
     	})
 		}
