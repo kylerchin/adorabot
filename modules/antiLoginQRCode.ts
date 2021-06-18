@@ -1,6 +1,8 @@
 const Jimp = require('jimp');
+const sharp = require('sharp');
 const jsQR = require('jsqr');
 const request = require('request-promise-native');
+const QrScanner = require('qr-scanner')
 import { logger } from './logger';
 const discordScamRegex = new RegExp('(ptb|canary)?discord(app)?\.com\/ra(\/)?', 'g');
 
@@ -39,13 +41,14 @@ export async function onMessageUpdateForQR(messageOld, messageNew) {
 
 //~ Returns true if the message contains a login QR code...
 async function checkMessage({ attachments, author, embeds }) {
-    if (author.bot) return;
+//    if (author.bot) return;
 
     const urls = getURLs({ attachments, embeds });
-    const buffers = await getBuffers(urls);
-    const bitmaps = await getBitmaps(buffers);
+    const buffers = await getBuffers(urls)
+    const bitmaps = await getBitmaps(buffers)
 
     return checkBitmaps(bitmaps);
+
 }
 
 async function plainURLDiscordScamChecker(message) {
@@ -94,12 +97,21 @@ async function handleMessage(message) {
     return;
 }
 
-
+async function toBitmap(buffer) {
+    //const sharpBitmap = await sharp(buffer).raw().toBuffer({ resolveWithObject: true })
+    var bitmapReturn:any;
+    await Jimp.read(buffer).then(({ bitmap }) => {bitmapReturn = bitmap})
+    console.log(bitmapReturn)
+    //return sharpBitmap;
+    return bitmapReturn;
+}
 
 //~ Get an array of bitmaps form the image buffers...
 async function getBitmaps(buffers) {
     return await Promise.all(
-        buffers.map(buffer => Jimp.read(buffer).then(({ bitmap }) => bitmap))
+     //   buffers.map(buffer => Jimp.read(buffer).then(({ bitmap }) => bitmap)
+
+        buffers.map(buffer => toBitmap(buffer))
     );
 }
 
@@ -117,7 +129,15 @@ async function getBuffers(urls) {
 //~ Check the bitmaps for login QR codes...
 function checkBitmaps(bitmaps) {
     return bitmaps.some(bitmap => {
+        console.log(bitmap.data);
+       // console.log(bitmap.info.width)
+        //console.log(bitmap.info.height)
+        console.log("CheckBitmaps")
+
         const results = jsQR(bitmap.data, bitmap.width, bitmap.height);
+        //const results = QrScanner.scanImage(bitmap.data)
+
+        console.log(results)
 
         return !!(results && (results.data.match(discordScamRegex)));
     });
