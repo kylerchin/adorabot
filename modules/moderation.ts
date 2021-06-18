@@ -1,4 +1,7 @@
+var _ = require('lodash');
 var forEach = require("for-each")
+// at the top of your file
+const Discord = require('discord.js');
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../config.json`);
@@ -193,7 +196,7 @@ export async function processAllModerationCommands(message, command, args, confi
         message.reply(`${__dirname}`)
     }
 
-    if (command === "inspectuser") {
+    if (command === "inspectuser" || command ==='inspect') {
 
         //transforms the user id list into a list to be banned
         //this line prevents accidental role mentions from being added
@@ -203,12 +206,55 @@ export async function processAllModerationCommands(message, command, args, confi
 
 
         forEach(arrayOfUserIdsToLookup, async function (individualUserId, key, array) {
+              // inside a command, event listener, etc.
+            var embed:any = {}
+            var discordUser:any = {};
+
+            embed.description = `Inspection of \`${individualUserId}\` completed.`
+            _.set(embed, 'author.name', individualUserId)
+            _.set(embed, 'fields[0].name',"Adora Global Banlist")
+
+            await client.users.fetch(individualUserId, true, true).then(async (user) => {discordUser['user'] = user;
+        }).catch((fetcherror) => {discordUser['error'] = fetcherror});
+
             await cassandraclient.execute("SELECT * FROM adoramoderation.banneduserlist WHERE banneduserid = ?", [individualUserId])
                 .then(fetchExistingBanResult => {
+                    console.log(fetchExistingBanResult.rows)
                     if (fetchExistingBanResult.rows.length === 0) {
-                        //new ban
+                        //the id isnt in the database
+                        discordUser["idInBanDatabase"] = false;
+                        _.set(embed, 'fields[0].value',"Not in Database")
+                    } else {
+                        discordUser["idInBanDatabase"] = true;
+                       
+                        if(fetchExistingBanResult.rows[0].banned === true) {
+                            _.set(embed, 'fields[0].value',"Banned: " + fetchExistingBanResult.rows[0].reason.trim())
+                        } else {
+                            _.set(embed, 'fields[0].value',"Not Banned")
+                        }
+                        
                     }
                 });
+
+            if (discordUser.user) {
+                //embed.thumbnail.url = await discordUser.user.displayAvatarURL();
+                var avatarURL = await discordUser.user.displayAvatarURL();
+                _.set(embed, 'thumbnail.url', avatarURL);
+                _.set(embed, 'title', await discordUser.user.tag)
+                _.set(embed, 'fields[1].name',"Account Created At")
+                _.set(embed, 'fields[1].value',await discordUser.user.createdAt)
+            }
+
+            if (discordUser.error) {
+                console.log(discordUser.error)
+                if (discordUser.error.code === 10013) {
+                    _.set(embed, 'title', "Unknown user")
+                }
+            }
+
+            console.log(discordUser.user)
+            console.log(embed)
+            message.channel.send({embed: embed})
         });
     }
 
