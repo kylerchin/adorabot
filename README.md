@@ -23,6 +23,9 @@ The current features include:
 
 ![QR Phishing](https://user-images.githubusercontent.com/7539174/115170970-cbc1e880-a076-11eb-808d-194d51e9da45.png)
 
+- Inspect any user(s) using ID or mention. Runs with `a!inspect (userids)`
+
+![Inspect User Command](https://user-images.githubusercontent.com/7539174/122634035-bb3ae800-d090-11eb-8b78-1113a95f9fc6.png)
 
 Features in development:
 - Graphing out Youtube and Spotify view counts into embeds with changable time
