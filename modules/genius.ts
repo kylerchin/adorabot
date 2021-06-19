@@ -1,44 +1,48 @@
 const encodeUrl = require('encodeurl')
+// Load the full build.
+var _ = require('lodash');
 const axios = require('axios')
 const cio = require('cheerio-without-node-native');
+const Discord = require('discord.js');
+import {decode} from 'html-entities';
 
 export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
-    try {
-        //Attempts fetching of URL but in try / catch block so nothing explodes
         //stores resulting data into a variable
         let { data } = await axios.get(geniusSongUrl);
         //Cherio inerpretation of HTML contents
         const $ = cio.load(data);
         //find lyrics inside div element, trim off whitespace
         //let lyrics = $('div[class="lyrics"]').text().trim();
-        if (true) {
+
             console.log("section apples")
 			var lyrics = ''
-			$('div[class="lyrics"]').each((i, elem) => {
+
+            $('[data-scrolltrigger-pin]').each((i, elem) => {
 				if($(elem).text().length !== 0) {
-                    let snippet = $(elem).html()
+                    let snippet = decode($(elem).html()
                     .replace(/<br><br>/g, 'AdorabotTwoLine00x00')
                     .replace(/<br>/g, 'AdorabotOneLine00x00')
                     .replace(/\*/g, '\\*')
                     .replace(/<\/? *i[^>]*>/g, '*')
-                    .replace(/<\/? *b*>/g, '**')
+                    .replace(/<\/b><b>/g,"")
+                    .replace(/<\/?b*>/g, '**')
                     .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '')
                     .replace(/AdorabotTwoLine00x00/g, '\n\n')
                     .replace(/AdorabotOneLine00x00/g, '\n')
                    // .replace(/\n\n\n/g, '\n')
-                    .replace(/\n\n\n/g, '\n');
-                    console.log($(elem).html() + " => " + snippet)
-					lyrics += $('[data-scrolltrigger-pin]').html(snippet).text().trim() + '\n\n';
+                    .replace(/\n\n\n/g, '\n'));
+                 //   console.log($(elem).html() + " => " + snippet)
+				//	lyrics = lyrics + $('[data-scrolltrigger-pin]').html(snippet).trim();
+                    lyrics += snippet + "\n\n";
 				}
     	})
-		}
+
+	
+    	
 		if (!lyrics) {return null};
 		return lyrics.trim();
 
-    } catch {
-        console.log("Ooops fucked up"
-        )
-    }
+    
 }
 
 export async function geniusLyrics(message,args,config) {
@@ -79,7 +83,28 @@ export async function geniusLyrics(message,args,config) {
         } else {
             //found something
             var songLyricsHTML = await geniusSongUrlHTMLExtract(response.data.response.hits[0].result.url);
-            console.log(songLyricsHTML)
+            //console.log(songLyricsHTML)
+
+            var arrayOfTexts = await Discord.splitMessage(songLyricsHTML);
+
+            console.log(arrayOfTexts)
+
+            const arrayOfEmbeds = await arrayOfTexts.map(text => {
+                return {
+                    "description": text
+                };
+            })
+
+            _.set(arrayOfEmbeds, '[0].title', response.data.response.hits[0].result.title_with_featured)
+            _.set(arrayOfEmbeds, '[0].author.name', response.data.response.hits[0].result.primary_artist.name)
+            _.set(arrayOfEmbeds, '[0].thumbnail.url', response.data.response.hits[0].result.song_art_image_url)
+            _.set(arrayOfEmbeds, '[0].author.icon_url', response.data.response.hits[0].result.primary_artist.image_url)
+            const lastItem = arrayOfEmbeds[arrayOfEmbeds.length - 1]
+            _.set(lastItem, 'footer.text', `Powered by Genius | ${response.data.response.hits[0].result.stats.pageviews} pageviews`)
+
+            arrayOfEmbeds.forEach(embed => {
+                message.channel.send({embed: embed})
+            })
 
             try {
                 message.channel.send(songLyricsHTML)

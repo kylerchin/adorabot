@@ -6,7 +6,7 @@ import { banGuildMember } from "./moderation";
 import { geniusLyrics } from "./genius"
 import { billboardCharts } from "./billboard"
 import { processAllModerationCommands, howManyUsersInBanDatabase } from "./moderation"
-import { updateDiscordBotsGG } from "./uploadStatsToBotsGg"
+import { updateDiscordBotsGG, updateDatadogCount } from "./uploadStatsToBotsGg"
 import {youtubeVideoStats} from "./youtube"
 const wiktionary = require('wiktionary')
 const isUrl = require("is-url");
@@ -127,6 +127,10 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
               {
                 "name": "`a!youtube`",
                 "value": "`a!youtube <video link / search for a video>`: Realtime view counter for YouTube videos. \n Example: `a! youtube fake love music video` or `a! youtube https://www.youtube.com/watch?v=gdZLi9oWNZg`, run `a!youtube` for more information\nAlias: `a!yt`"
+              },
+              {
+                "name": "`a!lyrics [Search Term]`",
+                "value": "Shows lyrics of a song from Genius"
               }
             ]
           }
@@ -155,6 +159,10 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
               {
                 "name": "`a!wrongfulban`",
                 "value": "Report wrongful bans applied by the Adora system and we'll investigate and unban as quickly as we can."
+              },
+              {
+                "name": "`a!inspect  (mentions/userids)`",
+                "value": "Shows info of user like Flags, Account creation time, Banlist status, and icon!"
               }
             ]
           }
@@ -194,11 +202,11 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
       }
 
       if (command === "inviteme" || command === "invite" || command === "inviter") {
-        msg.reply("Here's the invite link! It's an honor to help you :) \n https://discord.bots.gg/bots/737046643974733845\nHere's our support server for announcements and questions! https://discord.gg/Dgvm3kt")
+        msg.reply("Here's the invite link! It's an honor to help you :) \n https://discord.bots.gg/bots/737046643974733845\nHere's our support server for announcements and questions! https://discord.gg/3h6dpyzHk7")
       }
 
       if (command === "billboard") {
-        await billboardCharts(msg, command, args)
+        await billboardCharts(msg, command, args,client)
       }
 
       if (command === "gaon" || command === "goan") {
