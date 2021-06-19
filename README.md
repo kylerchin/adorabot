@@ -3,6 +3,8 @@
 Adora bot is a general purpose bot aimed at Kpop Discord Servers. 
 You can add it to your server by using this link:  https://discord.com/api/oauth2/authorize?client_id=737046643974733845&permissions=8&scope=bot
 
+[![Discord Bots top.gg link and embed](https://top.gg/api/widget/737046643974733845.svg)](https://top.gg/bot/737046643974733845)
+
 The current features include:
  - Displaying the current YouTube View / Live & Dislike / Comment count in a discord embed
  ![YtStats Command Example with Dyanmite BTS music Video](https://user-images.githubusercontent.com/7539174/101548716-36dd0f00-3961-11eb-86c7-cebae7d43f9a.png)
@@ -21,11 +23,19 @@ The current features include:
 
 - Anti QR Phishing Feature: Automatically scans images for QR codes containing `discord.com/ra` and sends a warning message to the channel saying it is a phishing link and not to click on it.
 
+
 ![QR Phishing](https://user-images.githubusercontent.com/7539174/115170970-cbc1e880-a076-11eb-808d-194d51e9da45.png)
 
 - Inspect any user(s) using ID or mention. Runs with `a!inspect (userids)`
 
+
 ![Inspect User Command](https://user-images.githubusercontent.com/7539174/122634035-bb3ae800-d090-11eb-8b78-1113a95f9fc6.png)
+
+- Lyrics from Genius.com. Runs with `a!lyrics (searchterm)`
+
+
+![Lyrics](https://user-images.githubusercontent.com/7539174/122634243-e7a33400-d091-11eb-9cf3-e9ca403aa5fc.png)
+
 
 Features in development:
 - Graphing out Youtube and Spotify view counts into embeds with changable time
@@ -41,6 +51,7 @@ Features in development:
 - Anti QR Phishing block URL shorteners leading to `discord.com/ra` & ability to turn off Anti-qr code phishing.
  
 If you would like to contribute, open up an issue or Pull Request!
+Github: https://github.com/kylerchin/adorabot/
 
 ## Development information
 
