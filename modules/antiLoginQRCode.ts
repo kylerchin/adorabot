@@ -129,15 +129,15 @@ async function getBuffers(urls) {
 //~ Check the bitmaps for login QR codes...
 function checkBitmaps(bitmaps) {
     return bitmaps.some(bitmap => {
-        console.log(bitmap.data);
+       // console.log(bitmap.data);
        // console.log(bitmap.info.width)
         //console.log(bitmap.info.height)
-        console.log("CheckBitmaps")
+       // console.log("CheckBitmaps")
 
         const results = jsQR(bitmap.data, bitmap.width, bitmap.height);
         //const results = QrScanner.scanImage(bitmap.data)
 
-        console.log(results)
+        //console.log(results)
 
         return !!(results && (results.data.match(discordScamRegex)));
     });

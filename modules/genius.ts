@@ -61,7 +61,7 @@ export async function geniusLyrics(message,args,config) {
         message.reply("Command: `a!lyrics <search>`")
     } else {
 
-        message.channel.send(`Searching for: \`${geniusQuery}\``)
+        message.channel.send(`Searching for: \`${geniusQuery}\` :mag_right:`)
 
     var geniusQueryUrlEncoded = encodeUrl(geniusQuery)
 
@@ -106,11 +106,7 @@ export async function geniusLyrics(message,args,config) {
                 message.channel.send({embed: embed})
             })
 
-            try {
-                message.channel.send(songLyricsHTML)
-            } catch (geniusmessagefailederror) {
-                console.error(geniusmessagefailederror)
-            }
+    
             
         }
     } else {

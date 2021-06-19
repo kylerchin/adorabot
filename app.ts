@@ -7,7 +7,34 @@
 const { ShardingManager } = require('discord.js');
 const { config } = require('./config.json');
 import {} from "./adora"; 
-import {logger} from './modules/logger'
+import {logger,tracer} from './modules/logger'
+
+//import "dd-trace/init";
+/*
+Sentry.init({
+    dsn: config.sentry.dsn,
+  
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0,
+  });
+  
+  const transaction = Sentry.startTransaction({
+    op: "test",
+    name: "My First Test Transaction",
+  });
+  
+  setTimeout(() => {
+    try {
+      throw new Error;
+    } catch (e) {
+      Sentry.captureException(e);
+    } finally {
+      transaction.finish();
+    }
+  }, 99);*/
+  
 
 // Create your ShardingManger instance
 const manager = new ShardingManager('./adora.js', {

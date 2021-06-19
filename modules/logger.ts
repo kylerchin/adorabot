@@ -1,6 +1,10 @@
 const { createLogger, format, transports, winstonconfig } = require('winston');
 const { config } = require('./../config.json');
 
+export const tracer = require('dd-trace').init({
+  logInjection: true
+});
+
 const httpTransportOptions = {
   host: 'http-intake.logs.datadoghq.com',
   path: `/v1/input/${config.datadogapi}?ddsource=nodejs&service=adora`,

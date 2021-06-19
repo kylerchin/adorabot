@@ -100,7 +100,7 @@ export async function billboardListChartsScrollable(message,command,args) {
       
 }
 
-export async function billboardCharts(message,command,args) {
+export async function billboardCharts(message,command,args,client) {
     if(args.length < 1) {
         await billboardChartsHelpPage(message,command,args)
     }
@@ -108,11 +108,43 @@ export async function billboardCharts(message,command,args) {
     if(args[0] === "list" || args[0] === "listchart" || args[0] === "listcharts" || args[0] === 'charts') {
         billboardListChartsScrollable(message,command,args)
     } else {
-        getChart(args[0], (err, chart) => {
+        getChart(args[0], async (err, chart) => {
             console.log(chart)
             console.log(chart.songs)
             if (err) console.log(err);
-            message.channel.send(chart.week) // prints the week of the chart in the date format YYYY-MM-DD
+            //message.channel.send(chart.week)
+            
+            const webhooks = await message.channel.fetchWebhooks();
+            const webhooksArray = webhooks.array();
+            console.log(webhooks)
+
+            var webhookToUse;
+            if (webhooksArray === 0) {
+                //no webhooks, make one
+                await message.channel.createWebhook('Adora', {
+                    avatar: client.user.displayAvatarURL(),
+                })
+                    .then(webhook => {console.log(`Created webhook ${webhook}`);
+                    webhookToUse = webhook;
+                })
+                    .catch(console.error);
+            } else {
+                webhookToUse = await webhooks.first();
+            }
+
+            const embed = new Discord.MessageEmbed()
+            .setTitle('Webhooks')
+            .setColor('#0099ff');
+
+            console.log(webhookToUse)
+
+            await webhookToUse.send('Adora Webhook', {
+                username: 'Adora Bot',
+                avatarURL: 'client.user.displayAvatarURL()',
+                embeds: [embed],
+            });
+
+            // prints the week of the chart in the date format YYYY-MM-DD
             //message.channel.send(chart.previousWeek.url) // prints the URL of the previous week's chart
             //message.channel.send(chart.previousWeek.date) // prints the date of the previous week's chart in the date format YYYY-MM-DD
             //message.channel.send(chart.nextWeek.url) // prints the URL of the next week's chart

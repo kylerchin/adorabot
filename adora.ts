@@ -1,16 +1,21 @@
 const Discord = require('discord.js');
-var client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'], intents: Discord.Intents.NON_PRIVILEGED, retryLimit: Infinity});
+var client = new Discord.Client(
+  { 
+    partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
+    intents: Discord.Intents.NON_PRIVILEGED, retryLimit: Infinity
+  });
 const { config } = require('./config.json');
-import {logger} from './modules/logger'
+import {logger,tracer} from './modules/logger'
 //const prefix = "shake ";
 //const token = process.env.BOT_TOKEN;
 //var fs = require('fs'); 
 import { appendFile } from 'fs';
-
 import { commandHandler } from "./modules/commandhandler"; 
 import { runOnStartup, everyServerRecheckBans } from "./modules/moderation";
-import {updateDiscordBotsGG} from "./modules/uploadStatsToBotsGg"
 import { onMessageForQR, onMessageUpdateForQR } from './modules/antiLoginQRCode';
+import { updateDiscordBotsGG, updateDatadogCount } from "./modules/uploadStatsToBotsGg"
+
+//import "dd-trace/init";
 
 //const discordbots = require('discord.bots.gg')
 //const dbots = new discordbots(config.clientid, config.discordbotsggapitoken)
@@ -128,15 +133,17 @@ client.on('rateLimit', async rateLimitInfo => {
 })
 
 client.on('guildCreate', async guild => {
-  await updateDiscordBotsGG(client,config)
+  updateDiscordBotsGG(client,config)
   await logger.discordInfoLogger.info({message: `guild id ${guild.id} added to the bot`, type: "guildCreate", guildObject: guild})
   await client.shard.broadcastEval('this.everyServerRecheckBansOnThisShard()');
+  updateDatadogCount(client,config)
 })
 
 client.on('guildDelete', async guild => {
-  await updateDiscordBotsGG(client,config)
+  updateDiscordBotsGG(client,config)
   await logger.discordInfoLogger.info({message: `guild id ${guild.id} removed from the bot`, type: "guildDelete", guildObject: guild})
   await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`);
+  updateDatadogCount(client,config)
 })
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
@@ -164,6 +171,7 @@ client.on('message', async message => {
 
   try {
     commandHandler(message,client,config,cassandraclient,dogstatsd)
+    //updateDatadogCount(client,config)
   }
     catch {
       console.log("Command failed");
@@ -171,15 +179,16 @@ client.on('message', async message => {
 
     await onMessageForQR(message)
 
-    var clientMessageToUploadToDatadog
+    //var clientMessageToUploadToDatadog
 
+    /*
     if (message.guild.available) {
         clientMessageToUploadToDatadog = {type: "clientMessage", messageObject: message, guildName: message.guild.name}
     } else {
         clientMessageToUploadToDatadog = {type: "clientMessage", messageObject: message}
-    }
+    }*/
 
-    await logger.discordSillyLogger.silly(clientMessageToUploadToDatadog);
+    //await logger.discordSillyLogger.silly(clientMessageToUploadToDatadog);
     dogstatsd.increment('adorabot.client.message');
   //setPresenceForAdora();
 });
