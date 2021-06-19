@@ -228,7 +228,10 @@ export async function processAllModerationCommands(message, command, args, confi
                         discordUser["idInBanDatabase"] = true;
                        
                         if(fetchExistingBanResult.rows[0].banned === true) {
-                            _.set(embed, 'fields[0].value',"Banned: " + fetchExistingBanResult.rows[0].reason.trim())
+                            //console.log(fetchExistingBanResult.rows[0].reason.lastchangedtime)
+                            var timeUuidLastChanged =  new TimeUuid(fetchExistingBanResult.rows[0].reason.lastchangedtime)
+                            var timeOfBan = timeUuidLastChanged.getDate();
+                            _.set(embed, 'fields[0].value',"Banned: " + fetchExistingBanResult.rows[0].reason.trim() + "\nTime of ban: " + timeOfBan)
                         } else {
                             _.set(embed, 'fields[0].value',"Not Banned")
                         }
@@ -243,6 +246,22 @@ export async function processAllModerationCommands(message, command, args, confi
                 _.set(embed, 'title', await discordUser.user.tag)
                 _.set(embed, 'fields[1].name',"Account Created At")
                 _.set(embed, 'fields[1].value',await discordUser.user.createdAt)
+
+                var avatarURLString = `\nAvatarURL: \`${avatarURL}\``
+
+                embed.description = embed.description + avatarURLString;
+
+                var flagsArray = await discordUser.user.flags.toArray()
+
+                console.log(flagsArray)
+
+                _.set(embed, 'fields[2].name',"Flags")
+                if(flagsArray.length === 0) {
+                    _.set(embed, 'fields[2].value', "No flags set.")
+                } else {
+                    _.set(embed, 'fields[2].value', flagsArray.join("\n"))
+                }
+                
             }
 
             if (discordUser.error) {
