@@ -230,7 +230,7 @@ export async function processAllModerationCommands(message, command, args, confi
                         if(fetchExistingBanResult.rows[0].banned === true) {
                             //console.log(fetchExistingBanResult.rows[0].reason.lastchangedtime)
                             var timeUuidLastChanged =  new TimeUuid(fetchExistingBanResult.rows[0].reason.lastchangedtime)
-                            var timeOfBan = timeUuidLastChanged.getDate();
+                            var timeOfBan = timeUuidLastChanged.getDate().toString();
                             _.set(embed, 'fields[0].value',"Banned: " + fetchExistingBanResult.rows[0].reason.trim() + "\nTime of ban: " + timeOfBan)
                         } else {
                             _.set(embed, 'fields[0].value',"Not Banned")
@@ -245,7 +245,7 @@ export async function processAllModerationCommands(message, command, args, confi
                 _.set(embed, 'thumbnail.url', avatarURL);
                 _.set(embed, 'title', await discordUser.user.tag)
                 _.set(embed, 'fields[1].name',"Account Created At")
-                _.set(embed, 'fields[1].value',await discordUser.user.createdAt)
+                _.set(embed, 'fields[1].value',await discordUser.user.createdAt.toString())
 
                 var avatarURLString = `\nAvatarURL: \`${avatarURL}\``
 
@@ -444,7 +444,7 @@ export async function processAllModerationCommands(message, command, args, confi
             if (message.member.permissions.has("ADMINISTRATOR")) {
 
                 message.reply({
-                    "embed": {
+                    "embeds": [{
                         "title": "Ban Sync Starting",
                         "description": "This will match your server's ban list manually with Adora's ban database.",
                         "footer": {
@@ -457,7 +457,7 @@ export async function processAllModerationCommands(message, command, args, confi
                                 "value": "Wanna automate this? Enable autoban by typing `a!autoban on`. When bans are automatically added by Adora's moderators, the bans will be automatically matched without you having to run any commands!"
                             }
                         ]
-                    }
+                    }]
                 })
 
                 if (message.guild.me.permissions.has("BAN_MEMBERS")) {
@@ -607,7 +607,7 @@ export async function processAllModerationCommands(message, command, args, confi
                     //show autoban help page
                     await message.reply({
                         "content": "Usage: `a!autoban on/off`",
-                        "embed": {
+                        "embeds": [{
                             "title": "Autoban Feature",
                             "image": {
                                 "url": "https://user-images.githubusercontent.com/7539174/111216262-6ff4d300-8591-11eb-902c-a25e1595730c.png"
@@ -623,7 +623,7 @@ export async function processAllModerationCommands(message, command, args, confi
                                     "value": `${numberOfBannedUsersInDatabase} and growing!`
                                 }
                             ]
-                        }
+                        }]
                     })
                 }
 
@@ -671,12 +671,12 @@ export async function processAllModerationCommands(message, command, args, confi
                             if (subscribeStateToWrite === true) {
                                 await message.reply(
                                     {
-                                        "embed": {
+                                        "embeds": [{
                                             "description": " ╭₊˚ʚ[🍰]ɞ・[This server is now subscribed to autobans!]\n╰₊˚ʚ[🍩]ɞ・[To turn it off, type `a!autoban off`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
                                             "image": {
                                                 "url": "https://user-images.githubusercontent.com/7539174/111216153-49369c80-8591-11eb-8eaf-0a0f13bf875c.png"
                                             }
-                                        }
+                                        }]
                                     }
                                 ).catch()
 
@@ -694,12 +694,12 @@ export async function processAllModerationCommands(message, command, args, confi
                                     //await message.reply("This server is now unsubscribed to autobans! To turn autoban back on, type `a!autoban on`")
                                     await message.reply(
                                         {
-                                            "embed": {
+                                            "embeds": [{
                                                 "description": " ╭₊˚ʚ[:herb:]ɞ・[This server is now unsubscribed to autobans!] \n ﹕˚₊  ❀ ꒱⋅** :warning: You're no longer protected from known raiders from entering your safe space :warning: ** ๑˚₊⊹ \n╰₊˚ʚ[:fish_cake:]ɞ・[To turn autoban back on, type `a!autoban on`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
                                                 "image": {
                                                     "url": "https://user-images.githubusercontent.com/7539174/111224943-5b6a0800-859c-11eb-90bc-8806a51fd681.jpg"
                                                 }
-                                            }
+                                            }]
                                         }
                                     ).catch()
                                 }
