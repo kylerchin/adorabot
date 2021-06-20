@@ -34,7 +34,7 @@ export async function ping(message,client) {
               "fields": [
                 {
                   "name": "Shard #",
-                  "value": message.guild.shardID
+                  "value": message.guild.shardID.toString()
                 },
                 {
                   "name": "Latency",
