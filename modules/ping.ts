@@ -9,7 +9,7 @@ export async function ping(message,client) {
 
         if (isDM) {
           pingEmbedResponse = {
-            "embed": {
+            "embeds": [{
               "description": `**펑!** If the Latency is significantly higher than the API Latency, the bot is likely ratelimited in this channel or guild.`,
               "fields": [
                 {
@@ -25,11 +25,11 @@ export async function ping(message,client) {
                   "value": `\`${Math.round(client.ws.ping)}ms\``
                 }
               ]
-            }
+            }]
           }
         } else {
           pingEmbedResponse = {
-            "embed": {
+            "embeds": [{
               "description": `**펑!** If the Latency is significantly higher than the API Latency, the bot is likely ratelimited in this channel or guild.`,
               "fields": [
                 {
@@ -45,7 +45,7 @@ export async function ping(message,client) {
                   "value": `\`${Math.round(client.ws.ping)}ms\``
                 }
               ]
-            }
+            }]
           }
         }
         

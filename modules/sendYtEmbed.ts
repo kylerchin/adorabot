@@ -45,8 +45,8 @@ export async function sendYtCountsEmbed(id,message,apikey) {
 
           const videostats = body.items[0].statistics;
   
-            const embedYtStats = {
-              "embed": {
+            const embedYtStats = 
+              {
                 "url": "https://youtube.com/watch?v=" + body.items[0].id,
                 "description": "*" + channelBody.items[0].snippet.title + "*\n" + "https://youtu.be/" + body.items[0].id,
                 "color": 16711680,
@@ -83,9 +83,9 @@ export async function sendYtCountsEmbed(id,message,apikey) {
                   }
                 ]
               }
-            }
+            
   
-            await message.reply(embedYtStats).then(async (repliedMessage) => {
+            await message.reply({embeds: [embedYtStats]}).then(async (repliedMessage) => {
               if(repliedMessage.guild.available) {
                 await logger.discordInfoLogger.info({type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, guildName: repliedMessage.guild.name, guildAnailable: repliedMessage.guild.available})
               }

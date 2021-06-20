@@ -56,10 +56,10 @@ async function plainURLDiscordScamChecker(message) {
         await Promise.all([
         message.react('⚠️'),
         message.reply({
-            "embed": {
+            "embeds": [{
                 "title": ":warning: Warning! This is a dangerous link that can hack your discord account! :warning: ",
                 "description": "The link above is a Discord Login link, which if scanned, can allow an attacker to login and take over your account. Often scammers will pretend the qr codes are free nitro or other gifts. DO NOT SCAN IT!"
-            }
+            }]
         })
     ]);
         await logger.discordInfoLogger.info({ type: "foundScamLink", messageObject: message, guildName: message.guild.name })
@@ -78,10 +78,10 @@ async function handleMessage(message) {
         //channel.send( `<@${ author.id }> - Our rules forbid the posting of quick response codes which are used to login.` ).catch()
         message.reply(
             {
-                "embed": {
+                "embeds": [{
                     "title": ":warning: Warning! This is a dangerous QR code that can hack your discord account! :warning: ",
                     "description": "The QR code above contains a Discord Login link, which if scanned, can allow an attacker to login and take over your account. Often scammers will pretend the qr codes are free nitro or other gifts. DO NOT SCAN IT!"
-                }
+                }]
             }
         ).then(
             async (sentWarningMessageScamQRCOde) => {

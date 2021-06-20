@@ -12,7 +12,7 @@ export async function updateDatadogCount(client,config) {
   if(true) {
     const promises = [
       client.shard.fetchClientValues('guilds.cache.size'),
-      client.shard.broadcastEval('this.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)')
+      client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0))
  ];
 
   return Promise.all(promises)
@@ -34,7 +34,7 @@ export async function updateDiscordBotsGG(client,config) {
   if(true) {
     const promises = [
       client.shard.fetchClientValues('guilds.cache.size'),
-      client.shard.broadcastEval('this.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)')
+      client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0))
  ];
 
   return Promise.all(promises)

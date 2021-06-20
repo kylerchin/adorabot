@@ -273,7 +273,7 @@ export async function processAllModerationCommands(message, command, args, confi
 
             console.log(discordUser.user)
             console.log(embed)
-            message.channel.send({embed: embed})
+            message.channel.send({embeds: [embed]})
         });
     }
 
@@ -301,10 +301,10 @@ export async function processAllModerationCommands(message, command, args, confi
 
             if (args[0] === "recheck") {
                 await message.channel.send("Running with unknown user recheck...")
-                await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShardWithUnknownBans()`)
+                await client.shard.broadcastEval(client => client.everyServerRecheckBansOnThisShardWithUnknownBans())
             } else {
                 await message.channel.send("Running without unknown user recheck...")
-                await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`)
+                await client.shard.broadcastEval(client => client.everyServerRecheckBansOnThisShard())
             }
             //await message.reply("Finished!")
         }
@@ -408,7 +408,7 @@ export async function processAllModerationCommands(message, command, args, confi
                         //await runBanStream(cassandraclient, client)
 
                         //instruct every server to run the ban stream
-                        await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`)
+                        await client.shard.broadcastEval(client => client.everyServerRecheckBansOnThisShard())
                         //await everyServerRecheckBans(cassandraclient,client)
                     })
 
@@ -716,7 +716,7 @@ export async function processAllModerationCommands(message, command, args, confi
                 }
             })
 
-        await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`)
+        await client.shard.broadcastEval(client => client.everyServerRecheckBansOnThisShard())
     }
 }
 
@@ -783,7 +783,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
 
                 //console.log(individualservertodoeachban)
 
-                var listofusersbannedinindividualserver = await individualservertodoeachban.fetchBans();
+                var listofusersbannedinindividualserver = await individualservertodoeachban.bans.fetch();
 
                 //check if list of users has the user that we want to ban
                 forEach(globallistOfBannableUsers.rows, async function (eachBannableUserRow) {

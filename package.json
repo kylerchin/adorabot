@@ -56,6 +56,7 @@
     "random-mobile": "^1.0.2",
     "randomstring": "^1.1.5",
     "request-json": "^0.6.5",
+    "request-promise-native": "^1.0.9",
     "scrape-youtube": "^2.0.7",
     "sharp": "^0.28.3",
     "unique-random": "^3.0.0",

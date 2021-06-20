@@ -103,7 +103,7 @@ export async function geniusLyrics(message,args,config) {
             _.set(lastItem, 'footer.text', `Powered by Genius | ${response.data.response.hits[0].result.stats.pageviews} pageviews`)
 
             arrayOfEmbeds.forEach(embed => {
-                message.channel.send({embed: embed})
+                message.channel.send({embeds: [embed]})
             })
 
     

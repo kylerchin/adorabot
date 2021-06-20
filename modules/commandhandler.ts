@@ -63,7 +63,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
       if (command === "updatepresence") {
         await msg.channel.send('updating presence...')
         await client.setPresenceForAdora()
-        await client.shard.broadcastEval('this.setPresenceForAdora()')
+        await client.shard.broadcastEval(client => client.setPresenceForAdora())
         await msg.channel.send('done!')
       }
 
@@ -78,7 +78,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
 
         const promises = [
           client.shard.fetchClientValues('guilds.cache.size'),
-          client.shard.broadcastEval('this.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)'),
+          client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)),
           cassandraclient.execute(queryNumberOfSubscribedServers, parametersForSubscribedServers),
           cassandraclient.execute(lookuphowmanybannedusersquery)
         ];
@@ -112,7 +112,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
       if (command === "help") {
         msg.channel.send("**Adora Commands**").catch(console.error());;
         msg.channel.send({
-          "embed": {
+          "embeds": [{
             "title": "Help Page 1 of 3 - Music Charts & Statistics",
             "description": "Access live information across music charts and platforms",
             "fields": [
@@ -133,10 +133,10 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
                 "value": "Shows lyrics of a song from Genius"
               }
             ]
-          }
+          }]
         }).catch(console.error());;
         msg.channel.send({
-          "embed": {
+          "embeds": [{
             "title": "Help Page 2 of 3 - Moderation",
             "description": "Make protecting your community easier!",
             "fields": [
@@ -165,10 +165,10 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
                 "value": "Shows info of user like Flags, Account creation time, Banlist status, and icon!"
               }
             ]
-          }
+          }]
         }).catch(console.error());
         msg.channel.send({
-          "embed": {
+          "embeds": [{
             "title": "Help Page 3 of 3 - Adora",
             "description": "General tools and access!",
             "fields": [
@@ -193,7 +193,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
                 "value": "Developer: Kyler#9100\nAdmins: Moka\nThank you to all that contribute code, feedback, and ban reports! Y'all make this bot better so thanks for using it"
               }
             ]
-          }
+          }]
         }).catch(console.error());
       }
 
@@ -202,7 +202,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
       }
 
       if (command === "inviteme" || command === "invite" || command === "inviter") {
-        msg.reply("Here's the invite link! It's an honor to help you :) \n https://discord.bots.gg/bots/737046643974733845\nHere's our support server for announcements and questions! https://discord.gg/3h6dpyzHk7")
+        msg.reply("Here's the invite link! It's an honor to help you :) \n https://discord.com/api/oauth2/authorize?client_id=737046643974733845&permissions=8&scope=bot\nHere's our support server for announcements and questions! Subscribe to the announcements channel for updates. https://discord.gg/3h6dpyzHk7\nRemember to run `a!help` for the list of commands!")
       }
 
       if (command === "billboard") {
@@ -218,7 +218,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
           .setFooter(`Page ${page} of ${pages.length}`)
           .setDescription(pages[page - 1])
 
-        msg.channel.send({ embed }).then(msgGaonEmbed => {
+        msg.channel.send({ embeds: [embed] }).then(msgGaonEmbed => {
           msgGaonEmbed.react('⬅').then(r => {
             msgGaonEmbed.react('➡')
 
