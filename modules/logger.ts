@@ -57,3 +57,5 @@ export const logger = {
     ]
   })
 }
+
+export const span = tracer.scope().active()
