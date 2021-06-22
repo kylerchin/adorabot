@@ -5,6 +5,9 @@ const axios = require('axios')
 const cio = require('cheerio-without-node-native');
 const Discord = require('discord.js');
 import {decode} from 'html-entities';
+import { logger,tracer,span } from './logger';
+import { asyncForEach } from './util';
+const forEach = require("for-each")
 
 export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
         //stores resulting data into a variable
@@ -14,7 +17,6 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
         //find lyrics inside div element, trim off whitespace
         //let lyrics = $('div[class="lyrics"]').text().trim();
 
-            console.log("section apples")
 			var lyrics = ''
 
             $('[data-scrolltrigger-pin]').each((i, elem) => {
@@ -61,7 +63,7 @@ export async function geniusLyrics(message,args,config) {
         message.reply("Command: `a!lyrics <search>`")
     } else {
 
-        message.channel.send(`Searching for: \`${geniusQuery}\` :mag_right:`)
+       var searchingForQueryMessage = message.channel.send(`Searching for: \`${geniusQuery}\` :mag_right:`)
 
     var geniusQueryUrlEncoded = encodeUrl(geniusQuery)
 
@@ -95,18 +97,73 @@ export async function geniusLyrics(message,args,config) {
                 };
             })
 
-            _.set(arrayOfEmbeds, '[0].title', response.data.response.hits[0].result.title_with_featured)
-            _.set(arrayOfEmbeds, '[0].author.name', response.data.response.hits[0].result.primary_artist.name)
+            _.set(arrayOfEmbeds, '[0].title', response.data.response.hits[0].result.title_with_featured.substring(0, 255))
+            _.set(arrayOfEmbeds, '[0].author.name', response.data.response.hits[0].result.primary_artist.name.substring(0, 255))
             _.set(arrayOfEmbeds, '[0].thumbnail.url', response.data.response.hits[0].result.song_art_image_url)
             _.set(arrayOfEmbeds, '[0].author.icon_url', response.data.response.hits[0].result.primary_artist.image_url)
             const lastItem = arrayOfEmbeds[arrayOfEmbeds.length - 1]
             _.set(lastItem, 'footer.text', `Powered by Genius | ${response.data.response.hits[0].result.stats.pageviews} pageviews`)
 
-            arrayOfEmbeds.forEach(embed => {
-                message.channel.send({embeds: [embed]})
+            //Get Color as Hex String from Genius API response, remove the hashtag
+            const extractHex = response.data.response.hits[0].result.song_art_primary_color.replace(/#/g, '')
+
+            //Add 0x and give it to parse int
+            const colorNumber = parseInt("0x" + extractHex)
+
+            console.log(colorNumber)
+
+            //For every array, set the color
+            arrayOfEmbeds.map(eachEmbed => eachEmbed.color = colorNumber)
+
+            var lyricsRequester = message.author.id;
+
+            var arrayOfMessagesSentForLyrics:Array<any> = [];
+            //arrayOfMessagesSentForLyrics.push(searchingForQueryMessage)
+        
+            await asyncForEach(arrayOfEmbeds, async (embed) => {
+                var messageObject = await message.channel.send({embeds: [embed]})
+                arrayOfMessagesSentForLyrics.push(messageObject)
             })
 
+                console.log(arrayOfMessagesSentForLyrics)
+
+                //Basically, if the user clicks on the trash can, it deletes the embeds
+                //console.log(arrayOfMessagesSentForLyrics[arrayOfEmbeds.length - 1])
+                var lastMessageToListenTo = await arrayOfMessagesSentForLyrics[arrayOfEmbeds.length - 1]
+                await lastMessageToListenTo.react("🗑")
     
+                // Create a reaction collector
+                //reaction.emoji.name === '🗑' && user.id === lyricsRequester
+                const filter = (reaction, user) => {
+                    console.log(reaction)
+                    console.log(user)
+                    if(user.id === lyricsRequester && reaction.emoji.name === "🗑") {
+                        console.log("delete this message, trash icon clicked")
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                const collector = lastMessageToListenTo.createReactionCollector(filter);
+                collector.on('collect', async (r) => {
+                    console.log("YUH DELETE THIS")
+                    //const reaction = collected.first()
+
+                    arrayOfMessagesSentForLyrics.forEach(async (eachMessageSentForLyrics) => {
+                        console.log("delete msg")
+                        console.log(eachMessageSentForLyrics)
+                        eachMessageSentForLyrics.delete()
+                    })
+                    console.log(searchingForQueryMessage)
+                    searchingForQueryMessage.delete()
+                    logger.discordInfoLogger.info(r);
+                    
+                    logger.discordInfoLogger.info(`Collected ${r.emoji.name}`)});
+                collector.on('end', collected => logger.discordInfoLogger.info(`Collected ${collected.size} items`));
+
+                
+            
             
         }
     } else {
