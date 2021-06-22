@@ -1,6 +1,6 @@
 var axios = require('axios');
 var qs = require('qs');
-import {logger} from "./logger"
+import {logger,tracer,span} from "./logger"
 
 var StatsD = require('hot-shots'),
 dogstatsd = new StatsD({
@@ -8,11 +8,17 @@ dogstatsd = new StatsD({
     globalTags: { env: process.env.NODE_ENV }
 });
   
-export async function updateDatadogCount(client,config) {
+export async function updateDatadogCount(client,config,cassandraclient) {
+  var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban WHERE subscribed= ? ALLOW FILTERING;"
+        var parametersForSubscribedServers = [true]
+        var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
+
   if(true) {
     const promises = [
       client.shard.fetchClientValues('guilds.cache.size'),
-      client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0))
+      client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)),
+      cassandraclient.execute(queryNumberOfSubscribedServers, parametersForSubscribedServers),
+      cassandraclient.execute(lookuphowmanybannedusersquery)
  ];
 
   return Promise.all(promises)
