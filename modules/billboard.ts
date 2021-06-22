@@ -62,16 +62,20 @@ async function sendChartScrollable(chart,message,err) {
     message.channel.send({embeds: groupedEmbeds[pageCounter]}).then(messageBillboardEmbed => {
         console.log("finished part 1")
         messageBillboardEmbed.react('⬅').then( r => {
-          messageBillboardEmbed.react('➡')
-          console.log("finished part 1")
+          messageBillboardEmbed.react('➡').then( r => {
+            messageBillboardEmbed.react("🗑")
+
+            console.log("finished part 1")
 
           // Filters
           const backwardsFilter = (reaction, user) => reaction.emoji.name === '⬅' && user.id === message.author.id
           const forwardsFilter = (reaction, user) => reaction.emoji.name === '➡' && user.id === message.author.id
+          const deleteFilter = (reaction, user) => reaction.emoji.name === '🗑' && user.id === message.author.id
 
           const timeOfTimer = 60*60*1000
           const backwards = messageBillboardEmbed.createReactionCollector(backwardsFilter, {timer: timeOfTimer})
           const forwards = messageBillboardEmbed.createReactionCollector(forwardsFilter, {timer: timeOfTimer})
+          const deleteCollector = messageBillboardEmbed.createReactionCollector(deleteFilter, {timer: timeOfTimer})
 
           backwards.on('collect', (r, u) => {
               if (pageCounter === 0) {
@@ -92,6 +96,12 @@ async function sendChartScrollable(chart,message,err) {
               messageBillboardEmbed.edit({embeds: groupedEmbeds[pageCounter]})
               r.users.remove(r.users.cache.filter(u => u === message.author).first())
           })
+
+          deleteCollector.on('collect', (r, u) => {
+            messageBillboardEmbed.delete()
+          })
+          })
+          
         })
       })
         
