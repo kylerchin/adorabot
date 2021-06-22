@@ -24,7 +24,7 @@ const request = require('request');
 const https = require('https')
 
 const translate = require('@vitalets/google-translate-api');
-import { logger } from './logger'
+import { logger,tracer,span } from './logger'
 import { ping } from "./ping";
 
 export async function commandHandler(msg, client, config, cassandraclient, dogstatsd) {
@@ -110,10 +110,11 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
       }
 
       if (command === "help") {
-        msg.channel.send("**Adora Commands**").catch(console.error());;
+        //msg.channel.send("**Adora Commands**").catch(console.error());;
         msg.channel.send({
+          "content": "**Adora Commands**",
           "embeds": [{
-            "title": "Help Page 1 of 3 - Music Charts & Statistics",
+            "title": "Help - Music Charts & Statistics",
             "description": "Access live information across music charts and platforms",
             "fields": [
               {
@@ -133,11 +134,9 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
                 "value": "Shows lyrics of a song from Genius"
               }
             ]
-          }]
-        }).catch(console.error());;
-        msg.channel.send({
-          "embeds": [{
-            "title": "Help Page 2 of 3 - Moderation",
+          },
+          {
+            "title": "Help - Moderation",
             "description": "Make protecting your community easier!",
             "fields": [
               {
@@ -165,11 +164,9 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
                 "value": "Shows info of user like Flags, Account creation time, Banlist status, and icon!"
               }
             ]
-          }]
-        }).catch(console.error());
-        msg.channel.send({
-          "embeds": [{
-            "title": "Help Page 3 of 3 - Adora",
+          },
+          {
+            "title": "Help - Adora",
             "description": "General tools and access!",
             "fields": [
               {
@@ -357,7 +354,8 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
         }
       }
 
-      await logger.discordInfoLogger.info(commandToAdoraInfo)
+      const loggedCommand = await logger.discordInfoLogger.info(commandToAdoraInfo)
+      tracer.inject(span, 'log', loggedCommand)
 
     }
   }
