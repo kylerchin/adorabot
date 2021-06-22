@@ -118,6 +118,10 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
             "description": "Access live information across music charts and platforms",
             "fields": [
               {
+                "name": "`a!billboard`",
+                "value": "View latest & historical Billboard Charts, run `a!billboard` for more info"
+              },
+              {
                 "name": "`a!bbp`",
                 "value": "View statistics for billboard polls, run command for more info"
               },
