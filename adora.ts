@@ -5,7 +5,7 @@ var client = new Discord.Client(
     intents: Discord.Intents.NON_PRIVILEGED, retryLimit: Infinity
   });
 const { config } = require('./config.json');
-import {logger,tracer} from './modules/logger'
+import {logger,tracer,span} from './modules/logger'
 //const prefix = "shake ";
 //const token = process.env.BOT_TOKEN;
 //var fs = require('fs'); 
@@ -102,11 +102,13 @@ async function moderationCassandra() {
 }
 
 client.on("debug",async (info) => {
-  await logger.discordDebugLogger.debug({clientEvent: "debug", debugInfo: info, type: "clientdebug"});
+  const logDebug = await logger.discordDebugLogger.debug({clientEvent: "debug", debugInfo: info, type: "clientdebug"});
+  tracer.inject(span,'log',logDebug)
   //console.log(info)
 })
 client.on("warn",async (info) => {
-  await logger.discordWarnLogger.warn({clientEvent: "warn", warnInfo: info, type: "clientWarn"});
+  const logWarn = await logger.discordWarnLogger.warn({clientEvent: "warn", warnInfo: info, type: "clientWarn"});
+  tracer.inject(span,'log',logWarn)
 })
 
 client.on('ready',async () => {
