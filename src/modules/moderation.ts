@@ -40,7 +40,12 @@ export async function banGuildMember(message,command,args) {
             var roleMentionsRemoved = message.content.replace(/<@&(\d{18})>/g, '')
 
             //transforms the user id list into a list to be banned
-            var arrayOfUserIdsToBan = uniq(roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g));
+            var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
+            console.log("before unique")
+            console.log(arrayOfUserIdsToBan)
+            var arrayOfUserIdsToBan = uniq(arrayOfUserIdsToBan)
+            console.log("after unique")
+            console.log(arrayOfUserIdsToBan)
 
             if (arrayOfUserIdsToBan.length === 0) {
                 message.reply("The correct format is `a!ban (Mentions/UserIDs) [reason]")
@@ -203,7 +208,7 @@ export async function processAllModerationCommands(message, command, args, confi
         //this line prevents accidental role mentions from being added
         var roleMentionsRemoved = message.content.replace(/<@&(\d{18})>/g, '')
 
-        var arrayOfUserIdsToLookup = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
+        var arrayOfUserIdsToLookup = uniq(roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g));
 
 
         forEach(arrayOfUserIdsToLookup, async function (individualUserId, key, array) {
