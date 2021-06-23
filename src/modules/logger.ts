@@ -1,5 +1,5 @@
 const { createLogger, format, transports, winstonconfig } = require('winston');
-const { config } = require('./../config.json');
+const { config } = require('./../../config.json');
 
 export const tracer = require('dd-trace').init({
   logInjection: true
