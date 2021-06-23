@@ -22,7 +22,7 @@ async function createDatabases() {
     }).catch(error => console.error(error));
 
      //Goes inside adoravotes keyspace, makes the table "votes"
-     await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoravotes.votes (time timeuuid PRIMARY KEY, voteservice string, userid text);")
+     await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoravotes.votes (time timeuuid PRIMARY KEY, voteservice text, userid text);")
      .then(async result => {
          await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
          /*console.log(result)*/
