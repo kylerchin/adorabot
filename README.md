@@ -74,6 +74,14 @@ Things that need to be added to maintain this:
 
 The system uses `config.json` to access the api keys to access youtube, genius, the Scylla database, etc. You will need to copy it over from the example file `example.config.json` to set up this bot or it will not work.
 
+### Configuring SSL Keys via certbot
+
+https://certbot.eff.org/lets-encrypt/ubuntufocal-nginx#wildcard 
+
+Install via snap with cloudflare program
+
+```sudo certbot certonly --dns-cloudflare --dns-cloudflare-credentials ~/.secrets/certbot/cloudflare.ini  -d api.adora.yk3music.com```
+
 ### Compiling
 
 When you make changes to the software, you'll first need to recompile to update the javascript to run. This is because you code in TypeScript and then compile to Javascript. This elimates a lot of problems that would break the bot during production and such. 
