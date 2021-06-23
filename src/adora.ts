@@ -4,7 +4,7 @@ var client = new Discord.Client(
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
     intents: Discord.Intents.NON_PRIVILEGED, retryLimit: Infinity
   });
-const { config } = require('./config.json');
+const { config } = require('./../config.json');
 import {logger,tracer,span} from './modules/logger'
 //const prefix = "shake ";
 //const token = process.env.BOT_TOKEN;

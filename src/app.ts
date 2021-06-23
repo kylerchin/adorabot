@@ -5,7 +5,7 @@
 
 // Include discord.js ShardingManger
 const { ShardingManager } = require('discord.js');
-const { config } = require('./config.json');
+const { config } = require('./../config.json');
 import {} from "./adora"; 
 import {logger,tracer} from './modules/logger'
 
@@ -37,7 +37,7 @@ Sentry.init({
   
 
 // Create your ShardingManger instance
-const manager = new ShardingManager('./adora.js', {
+const manager = new ShardingManager('./dist/adora.js', {
     // for ShardingManager options see:
     // https://discord.js.org/#/docs/main/v12/class/ShardingManager
     totalShards: 'auto',
