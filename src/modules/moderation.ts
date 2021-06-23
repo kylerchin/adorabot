@@ -6,6 +6,7 @@ const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../config.json`);
 import { logger } from './logger'
+import {uniq} from './util'
 //let file = editJsonFile(`${__dirname}/config.json`);
 //Generate time with TimeUuid.now();
 const emptylinesregex = /\n/ig;
@@ -39,7 +40,7 @@ export async function banGuildMember(message,command,args) {
             var roleMentionsRemoved = message.content.replace(/<@&(\d{18})>/g, '')
 
             //transforms the user id list into a list to be banned
-            var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
+            var arrayOfUserIdsToBan = uniq(roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g));
 
             if (arrayOfUserIdsToBan.length === 0) {
                 message.reply("The correct format is `a!ban (Mentions/UserIDs) [reason]")
@@ -130,7 +131,7 @@ export async function unbanGuildMember(message) {
             var roleMentionsRemoved = message.content.replace(/<@&(\d{18})>/g, '')
 
             //transforms the user id list into a list to be banned
-            var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
+            var arrayOfUserIdsToBan = uniq(roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g));
 
             if (arrayOfUserIdsToBan.length === 0) {
                 message.reply("The correct format is `a!unban (Mentions/UserIDs) [reason]")
@@ -355,7 +356,7 @@ export async function processAllModerationCommands(message, command, args, confi
                         removedMessageAttachmentURLsFromContent = removedMessageAttachmentURLsFromContent.replaceAll(attach.url, "")
                     })
                     //transforms the user id list into a list to be banned
-                    var arrayOfUserIdsToBan = removedMessageAttachmentURLsFromContent.match(/(?<!\d)\d{18}(?!\d)/g);
+                    var arrayOfUserIdsToBan = uniq(removedMessageAttachmentURLsFromContent.match(/(?<!\d)\d{18}(?!\d)/g));
 
                     var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*adoraban(\ )*)/g, '').trim().replace(emptylinesregex, "")
                     //apply the bans to the database

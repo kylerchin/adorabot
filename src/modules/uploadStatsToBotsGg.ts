@@ -25,10 +25,16 @@ export async function updateDatadogCount(client,config,cassandraclient) {
       .then(async (results) => {
           const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
           const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
+          var returnSubscribedServersCount = results[2]
+          var subscribedServerCount = returnSubscribedServersCount.rows[0].count.low
+          var returnBanDatabaseAmount = results[3]
+          var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
 
           dogstatsd.gauge('adorabot.totalstats.totalGuilds', totalGuilds);
           dogstatsd.gauge('adorabot.totalstats.totalMembers', totalMembers);
           dogstatsd.gauge('adorabot.totalstats.totalShards', client.shard.count);
+          dogstatsd.gauge('adorabot.totalstats.subscribedBanList', subscribedServerCount)
+          dogstatsd.gauge('adorabot.totalstats.adoraBanned', numberofrowsindatabase)
           //return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}\nNumber of Shards: ${client.shard.count}\nNumber of Bans in Database:${numberofrowsindatabase}`);
 
   })

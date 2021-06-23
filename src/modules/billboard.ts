@@ -5,7 +5,7 @@ var forEach = require("for-each")
 const Discord = require('discord.js');
 var _ = require('lodash')
 
-async function sendChartScrollable(chart,message,err) {
+async function sendChartScrollable(chart,message,err,chartCode) {
     console.log(chart)
     console.log(chart.songs)
     if (err) console.log(err);
@@ -59,7 +59,9 @@ async function sendChartScrollable(chart,message,err) {
     })
 
     var pageCounter = 0;
-    message.channel.send({embeds: groupedEmbeds[pageCounter]}).then(messageBillboardEmbed => {
+    message.channel.send({
+      "content": `${chartCode} Chart | ${chart.week}`,
+      embeds: groupedEmbeds[pageCounter]}).then(messageBillboardEmbed => {
         console.log("finished part 1")
         messageBillboardEmbed.react('⬅').then( r => {
           messageBillboardEmbed.react('➡').then( r => {
@@ -192,7 +194,10 @@ export async function billboardListChartsScrollable(message,command,args) {
           .setDescription(pages[page-1])
           .setTitle("Billboard List of Charts")
   
-          message.channel.send({embeds: [embed]}).then(messageBillboardEmbed => {
+          var messageToSendBillboard = {
+            embeds: [embed]}
+
+          message.channel.send(messageToSendBillboard).then(messageBillboardEmbed => {
             messageBillboardEmbed.react('⬅').then( r => {
               messageBillboardEmbed.react('➡')
   
@@ -245,11 +250,11 @@ export async function billboardCharts(message,command,args,client) {
     } else {
         if(args[1]) {
             getChart(args[0], args[1], async (err, chart) => {
-                sendChartScrollable(chart,message,err)
+                sendChartScrollable(chart,message,err,args[0])
               });
         } else {
             getChart(args[0], async (err, chart) => {
-                sendChartScrollable(chart,message,err)
+                sendChartScrollable(chart,message,err,args[0])
               });
         }
     }

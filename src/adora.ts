@@ -138,14 +138,14 @@ client.on('guildCreate', async guild => {
   updateDiscordBotsGG(client,config)
   await logger.discordInfoLogger.info({message: `guild id ${guild.id} added to the bot`, type: "guildCreate", guildObject: guild})
   await client.shard.broadcastEval('this.everyServerRecheckBansOnThisShard()');
-  updateDatadogCount(client,config)
+  updateDatadogCount(client,config,cassandraclient)
 })
 
 client.on('guildDelete', async guild => {
   updateDiscordBotsGG(client,config)
   await logger.discordInfoLogger.info({message: `guild id ${guild.id} removed from the bot`, type: "guildDelete", guildObject: guild})
   await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`);
-  updateDatadogCount(client,config)
+  updateDatadogCount(client,config,cassandraclient)
 })
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
@@ -172,7 +172,12 @@ client.on('guildBanRemove', async (guild, user) => {
 client.on('message', async message => {
 
   try {
-    commandHandler(message,client,config,cassandraclient,dogstatsd)
+    tracer.trace('clientMessage', () => {
+      //const logTrace = logger.info(body);
+      //const traceId = logTrace.dd.trace_id;
+      commandHandler(message,client,config,cassandraclient,dogstatsd)
+      // here we are in the context for a trace that has been activated on the scope by tracer.trace
+    })
     //updateDatadogCount(client,config)
   }
     catch {

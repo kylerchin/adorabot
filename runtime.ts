@@ -1,7 +1,7 @@
 
 const requestjson = require('request-json');
 const editJsonFile = require("edit-json-file");
-import { storeYoutubeDataIntoDatabase } from "./modules/storeYtStats"; 
+import { storeYoutubeDataIntoDatabase } from "./src/modules/storeYtStats"; 
 
 const { prefix, token, youtubeApiKeys, googlecloudprojectid, googlecloudkeyFilename } = require('./config.json');
 

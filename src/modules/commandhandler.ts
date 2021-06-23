@@ -105,6 +105,10 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
         fetchProfile(client, msg, args, cassandraclient)
       }
 
+      if (command === "datadog") {
+        updateDatadogCount(client,config,cassandraclient)
+      }
+
       if (command === "editbio") {
         editProfile(client, msg, args, cassandraclient)
       }
