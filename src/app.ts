@@ -8,6 +8,9 @@ const { ShardingManager } = require('discord.js');
 const { config } = require('./../config.json');
 import {} from "./adora"; 
 import {logger,tracer} from './modules/logger'
+import {keepAlive} from './server'
+
+keepAlive()
 
 //import "dd-trace/init";
 /*
