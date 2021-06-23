@@ -13,10 +13,9 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
         //stores resulting data into a variable
         
         
-            // here we are in the context for a trace that has been activated on the scope by tracer.trace
-        let { data } = tracer.trace('geniusFetchPage', async () => {
-            return await axios.get(geniusSongUrl);
-        })
+          
+        let { data } = await axios.get(geniusSongUrl);
+        
         //Cherio inerpretation of HTML contents
         const $ = cio.load(data);
         //find lyrics inside div element, trim off whitespace
