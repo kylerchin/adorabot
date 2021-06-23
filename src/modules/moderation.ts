@@ -4,7 +4,7 @@ var forEach = require("for-each")
 const Discord = require('discord.js');
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const editJsonFile = require("edit-json-file");
-var importconfigfile = editJsonFile(`${__dirname}/../config.json`);
+var importconfigfile = editJsonFile(`${__dirname}/../../config.json`);
 import { logger } from './logger'
 import {uniq} from './util'
 //let file = editJsonFile(`${__dirname}/config.json`);
