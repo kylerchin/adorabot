@@ -106,6 +106,7 @@ export async function geniusLyrics(message,args,config) {
             _.set(arrayOfEmbeds, '[0].title', response.data.response.hits[0].result.title_with_featured.substring(0, 255))
             _.set(arrayOfEmbeds, '[0].author.name', response.data.response.hits[0].result.primary_artist.name.substring(0, 255))
             _.set(arrayOfEmbeds, '[0].thumbnail.url', response.data.response.hits[0].result.song_art_image_url)
+            _.set(arrayOfEmbeds, '[0].url', response.data.response.hits[0].result.url)
             _.set(arrayOfEmbeds, '[0].author.icon_url', response.data.response.hits[0].result.primary_artist.image_url)
             const lastItem = arrayOfEmbeds[arrayOfEmbeds.length - 1]
             _.set(lastItem, 'footer.text', `Powered by Genius | ${response.data.response.hits[0].result.stats.pageviews} pageviews`)
