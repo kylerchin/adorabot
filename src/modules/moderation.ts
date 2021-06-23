@@ -41,10 +41,8 @@ export async function banGuildMember(message,command,args) {
 
             //transforms the user id list into a list to be banned
             var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
-            console.log("before unique")
-            console.log(arrayOfUserIdsToBan)
+            //remove any duplicates from the array
             var arrayOfUserIdsToBan = uniq(arrayOfUserIdsToBan)
-            console.log("after unique")
             console.log(arrayOfUserIdsToBan)
 
             if (arrayOfUserIdsToBan.length === 0) {

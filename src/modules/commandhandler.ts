@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+//import * as Discord from 'discord.js'
 import { verboseDiscordLog } from "./verboseDiscordLog";
 import { billboardVote, billboardPollGetValue } from "./billboardPolls";
 import { editProfile, fetchProfile } from "./userProfile";
@@ -20,7 +21,6 @@ const editJsonFile = require("edit-json-file");
 const yts = require('yt-search')
 const requestjson = require('request-json');
 const request = require('request');
-
 const https = require('https')
 
 const translate = require('@vitalets/google-translate-api');
