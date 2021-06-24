@@ -4,8 +4,9 @@ const { listCharts,getChart } = require('billboard-top-100');
 var forEach = require("for-each")
 const Discord = require('discord.js');
 var _ = require('lodash')
+import {Message} from 'discord.js'
 
-async function sendChartScrollable(chart,message,err,chartCode) {
+async function sendChartScrollable(chart,message: Message,err,chartCode) {
     console.log(chart)
     console.log(chart.songs)
     if (err) console.log(err);
@@ -75,9 +76,9 @@ async function sendChartScrollable(chart,message,err,chartCode) {
           const deleteFilter = (reaction, user) => reaction.emoji.name === '🗑' && user.id === message.author.id
 
           const timeOfTimer = 60*60*1000
-          const backwards = messageBillboardEmbed.createReactionCollector(backwardsFilter, {timer: timeOfTimer})
-          const forwards = messageBillboardEmbed.createReactionCollector(forwardsFilter, {timer: timeOfTimer})
-          const deleteCollector = messageBillboardEmbed.createReactionCollector(deleteFilter, {timer: timeOfTimer})
+          const backwards = messageBillboardEmbed.createReactionCollector(backwardsFilter, {time: timeOfTimer})
+          const forwards = messageBillboardEmbed.createReactionCollector(forwardsFilter, {time: timeOfTimer})
+          const deleteCollector = messageBillboardEmbed.createReactionCollector(deleteFilter, {time: timeOfTimer})
 
           backwards.on('collect', (r, u) => {
               if (pageCounter === 0) {
@@ -158,7 +159,7 @@ export async function billboardListChartsScrollable(message,command,args) {
 
        // logger.discordInfoLogger.info("key is " + key + " array size is " + charts.length)
 
-        if(currentPageStage.length < 1000 && (key != 180-1)) {
+        if(currentPageStage.length < 1000 && (key != charts.length-1)) {
             //write currentpagestage to currentpage
           // logger.discordInfoLogger.info({type: "billboardChartListTest", message: "currentPageStage.length < 2000"})
             currentPage = currentPageStage;
@@ -197,7 +198,7 @@ export async function billboardListChartsScrollable(message,command,args) {
           var messageToSendBillboard = {
             embeds: [embed]}
 
-          message.channel.send(messageToSendBillboard).then(messageBillboardEmbed => {
+          message.channel.send(messageToSendBillboard).then((messageBillboardEmbed: Message) => {
             messageBillboardEmbed.react('⬅').then( r => {
               messageBillboardEmbed.react('➡')
   
@@ -206,8 +207,8 @@ export async function billboardListChartsScrollable(message,command,args) {
               const forwardsFilter = (reaction, user) => reaction.emoji.name === '➡' && user.id === message.author.id
   
               const timeOfTimer = 60*60*1000
-              const backwards = messageBillboardEmbed.createReactionCollector(backwardsFilter, {timer: timeOfTimer})
-              const forwards = messageBillboardEmbed.createReactionCollector(forwardsFilter, {timer: timeOfTimer})
+              const backwards = messageBillboardEmbed.createReactionCollector(backwardsFilter, {time: timeOfTimer})
+              const forwards = messageBillboardEmbed.createReactionCollector(forwardsFilter, {time: timeOfTimer})
   
               backwards.on('collect', (r, u) => {
                   if (page === 1) {
