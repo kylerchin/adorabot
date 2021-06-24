@@ -8,6 +8,7 @@ var importconfigfile = editJsonFile(`${__dirname}/../../config.json`);
 import { inspect } from './inspect';
 import { logger } from './logger'
 import {uniq} from './util'
+import {Message} from 'discord.js'
 //let file = editJsonFile(`${__dirname}/config.json`);
 //Generate time with TimeUuid.now();
 const emptylinesregex = /\n/ig;
@@ -120,7 +121,7 @@ export async function banGuildMember(message,command,args) {
 
 }
 
-export async function unbanGuildMember(message) {
+export async function unbanGuildMember(message:Message) {
     //check if user trying to do the command has permissions
 
     const isDM: boolean = message.guild === null;

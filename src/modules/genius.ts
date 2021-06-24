@@ -8,6 +8,7 @@ import {decode} from 'html-entities';
 import { logger,tracer,span } from './logger';
 import { asyncForEach } from './util';
 const forEach = require("for-each")
+import {Message} from 'discord.js'
 
 export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
         //stores resulting data into a variable
@@ -51,7 +52,7 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
     
 }
 
-export async function geniusLyrics(message,args,config) {
+export async function geniusLyrics(message:Message,args,config) {
 
     // Set config defaults when creating the instance
     const geniusinstance = axios.create({
