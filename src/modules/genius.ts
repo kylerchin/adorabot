@@ -67,7 +67,9 @@ export async function geniusLyrics(message,args,config) {
         message.reply("Command: `a!lyrics <search>`")
     } else {
 
-       var searchingForQueryMessage = message.channel.send(`Searching for: \`${geniusQuery}\` :mag_right:`)
+        var searchingForQueryMessage;
+
+       message.channel.send(`Searching for: \`${geniusQuery}\` :mag_right:`).then((searchingQueryAlert) => { searchingForQueryMessage = searchingQueryAlert})
 
     var geniusQueryUrlEncoded = encodeUrl(geniusQuery)
 
@@ -163,7 +165,8 @@ export async function geniusLyrics(message,args,config) {
                         eachMessageSentForLyrics.delete()
                     })
                     console.log(searchingForQueryMessage)
-                    searchingForQueryMessage.delete()
+                    try {searchingForQueryMessage.delete()} catch{}
+                    
                     logger.discordInfoLogger.info(r);
                     
                     logger.discordInfoLogger.info(`Collected ${r.emoji.name}`)});
