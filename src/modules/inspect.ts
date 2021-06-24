@@ -2,6 +2,7 @@ import {uniq} from './util'
 var _ = require('lodash');
 var forEach = require("for-each")
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
+import {logger} from './logger'
 
 interface inspectFunction {
     message: any;
@@ -11,6 +12,8 @@ interface inspectFunction {
 }
 
 export function inspect(args:inspectFunction) {
+    
+    logger.discordInfoLogger.info(`Inspect responding to ${args.message.id}`)
 
         //transforms the user id list into a list to be banned
         //this line prevents accidental role mentions from being added
