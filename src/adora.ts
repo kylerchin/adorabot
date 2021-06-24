@@ -14,7 +14,7 @@ import { commandHandler } from "./modules/commandhandler";
 import { runOnStartup, everyServerRecheckBans } from "./modules/moderation";
 import { onMessageForQR, onMessageUpdateForQR } from './modules/antiLoginQRCode';
 import { updateDiscordBotsGG, updateDatadogCount } from "./modules/uploadStatsToBotsGg"
-
+import { Message } from 'discord.js'
 //import "dd-trace/init";
 
 //const discordbots = require('discord.bots.gg')
@@ -169,7 +169,7 @@ client.on('guildBanRemove', async (guild, user) => {
 })
 
 
-client.on('message', async message => {
+client.on('message', async (message:Message) => {
 
   try {
     tracer.trace('clientMessage', () => {
