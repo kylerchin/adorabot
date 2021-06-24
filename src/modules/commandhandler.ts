@@ -9,6 +9,7 @@ import { billboardCharts } from "./billboard"
 import { processAllModerationCommands, howManyUsersInBanDatabase } from "./moderation"
 import { updateDiscordBotsGG, updateDatadogCount } from "./uploadStatsToBotsGg"
 import {youtubeVideoStats} from "./youtube"
+import {sendVoteLinks,showTopVoters} from "./vote"
 const wiktionary = require('wiktionary')
 const isUrl = require("is-url");
 const scrapeyoutube = require('scrape-youtube').default;
@@ -107,6 +108,14 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
 
       if (command === "datadog") {
         updateDatadogCount(client,config,cassandraclient)
+      }
+
+      if (command === "vote") {
+        sendVoteLinks(msg)
+      }
+
+      if (command === "votes") {
+        showTopVoters({cassandraclient,message: msg,client})
       }
 
       if (command === "editbio") {
