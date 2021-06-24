@@ -8,11 +8,11 @@ const TimeUuid = require('cassandra-driver').types.TimeUuid;
 
 const Topgg = require("@top-gg/sdk")
 
+import {logger,tracer,span} from './modules/logger'
+
 const https = require('https');
 const http = require('http');
 const webhook = new Topgg.Webhook(config.topgg.auth)
-
-import {logger} from './modules/logger'
 
 async function createDatabases() {
     await cassandraclient.execute("CREATE KEYSPACE IF NOT EXISTS adoravotes WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy',  'datacenter1': 1  };")
@@ -60,14 +60,14 @@ app.all('/topgg', webhook.listener(async (vote) => {
 
     const query = 'INSERT INTO adoravotes.votes (time, voteservice, userid) VALUES (?, ?, ?)';
     var params;
-        params = [TimeUuid.now(), "topgg", 'vote.user'];
+        params = [TimeUuid.now(), "topgg", vote.user];
 
     console.log(vote)
   
     await cassandraclient.execute(query, params, { prepare: true }, await function (err) {
         console.log(err);
         //Inserted in the cluster
-        logger.discordInfoLogger("Inserted Vote from Top.gg into database", {"type": "VoteWebhookDatabase"})
+        logger.discordInfoLogger.info("Inserted Vote from Top.gg into database", {"type": "VoteWebhookDatabase"})
     });
 
     // You can also throw an error to the listener callback in order to resend the webhook after a few seconds
