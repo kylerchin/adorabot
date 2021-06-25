@@ -124,7 +124,8 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
       }
 
       if (command === "help") {
-        helpDirectory({message: msg,command,args})
+        helpDirectory({message: msg,
+          command,args})
       }
 
       if (command === "translate") {
