@@ -134,6 +134,10 @@ export async function billboardChartsHelpPage(message,command,args) {
           {
             "name": "Getting latest Chart information",
             "value": "`a!bilboard <chart> [optional YYYY-MM-DD]`\nFor example, `a!billboard hot-100` will get the latest Hot-100 songs.\n`a!billboard billboard-korea-100` will get the latest Hot Korean songs.\n`a!billboard hot-100 2016-08-27` retrieves the Hot-100 chart from Aug 27, 2016."
+          },
+          {
+            "name": "Alias",
+            "value": "`a!bb` is the same command as `a!billboard`"
           }
         ]
       }]})

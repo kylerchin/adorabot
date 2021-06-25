@@ -136,7 +136,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
         msg.reply("Here's the invite link! It's an honor to help you :) \n https://discord.com/api/oauth2/authorize?client_id=737046643974733845&permissions=8&scope=bot\nHere's our support server for announcements and questions! Subscribe to the announcements channel for updates. https://discord.gg/3h6dpyzHk7\nRemember to run `a!help` for the list of commands!")
       }
 
-      if (command === "billboard") {
+      if (command === "billboard" || command === "bb") {
         await billboardCharts(msg, command, args,client)
       }
 

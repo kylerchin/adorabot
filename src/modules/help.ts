@@ -17,7 +17,7 @@ export function helpDirectory(helpDirArgs: helpDirArgs) {
           "fields": [
             {
               "name": "`a!billboard`",
-              "value": "View latest & historical Billboard Charts, run `a!billboard` for more info"
+              "value": "View latest & historical Billboard Charts, run `a!billboard` for more info\nAlias: `a!bb`"
             },
             {
               "name": "`a!bbp`",
