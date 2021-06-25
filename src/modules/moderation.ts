@@ -44,7 +44,7 @@ export async function banGuildMember(message,command,args) {
             //transforms the user id list into a list to be banned
             var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
             //remove any duplicates from the array
-            var arrayOfUserIdsToBan = uniq(arrayOfUserIdsToBan)
+            arrayOfUserIdsToBan = uniq(arrayOfUserIdsToBan)
             console.log(arrayOfUserIdsToBan)
 
             if (arrayOfUserIdsToBan.length === 0) {
@@ -151,9 +151,9 @@ export async function unbanGuildMember(message:Message) {
 
                 await forEach(arrayOfUserIdsToBan, async (banID) => {
                     /* console.log(banID)*/
-                    await message.guild.members.unban(banID, { 'reason': reasonForBanRegister })
+                    await message.guild.members.unban(banID, reasonForBanRegister)
                         .then(async (user) => {
-                            await message.channel.send(`Unbanned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user }).catch()
+                            await logger.discordDebugLogger.debug(`Unbanned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user }).catch()
                         }
                         )
                         .catch(error => {
@@ -435,7 +435,7 @@ export async function processAllModerationCommands(message, command, args, confi
                                                 individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
                                                     .then((user) => {
                                                         numberOfSuccessfulBansOnThisOperation = numberOfSuccessfulBansOnThisOperation + 1;
-                                                        logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`, { userObject: user })
+                                                        logger.discordDebugLogger.debug({ message: `Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`, userObject: user })
                                                     })
                                                     .catch(async (error) => {
                                                         await logger.discordWarnLogger.warn({
