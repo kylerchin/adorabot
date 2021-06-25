@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var forEach = require('for-each')
 import { Message } from 'discord.js'
+var Discord = require('discord.js')
 
 //stolen from https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
 function sortObject(obj) {
@@ -66,7 +67,14 @@ export async function showTopVoters(voteArgs:showTopVotersArgs) {
 if(_.size(leaderboard) === 0) {
     voteArgs.message.reply("No one has voted yet! Try voting with `a!vote`")
 } else {
+    console.log("presorted")
+    console.log(leaderboard)
     var sortedLeaderboard = sortObject(leaderboard);
+    console.log("post-sorted")
+    console.log(sortedLeaderboard)
+
+    //reverse the order os it's most votes at tehe top
+    sortedLeaderboard = sortedLeaderboard.reverse()
 
     //sortedLeaderboard = sortedLeaderboard.slice(0, 100);
 
@@ -105,7 +113,7 @@ if(_.size(leaderboard) === 0) {
        //     "description": `${eachUser.votes} Votes`
         //}
 
-        return `\`#${index+1}\` \`${eachUser.votes} votes\` ${eachUser.user.username}`
+        return `\`#${index+1}\`|\`${eachUser.votes} votes\` ${eachUser.user.username}`
         
     })
 
@@ -113,10 +121,11 @@ if(_.size(leaderboard) === 0) {
         console.log("second promise")
         var currentPage:string = "";
     var currentPageStage:string = "";
-    var pages = []
+    var pages:Array<string> = []
 
     console.log(sortedFormatedRows)
-    forEach(sortedFormatedRows, function (eachFormattedRow, key) {
+
+    /*forEach(sortedFormatedRows, function (eachFormattedRow, indexOfRow) {
         console.log(eachFormattedRow)
         currentPageStage = currentPageStage + eachFormattedRow + "\n";
 
@@ -125,11 +134,10 @@ if(_.size(leaderboard) === 0) {
 
         // logger.discordInfoLogger.info("key is " + key + " array size is " + charts.length)
     
-         if(currentPageStage.length < 1000 && (key != sortedFormatedRows.length-1)) {
+         if(currentPageStage.length > 1500 || (indexOfRow != sortedFormatedRows.length-1)) {
              //write currentpagestage to currentpage
            // logger.discordInfoLogger.info({type: "billboardChartListTest", message: "currentPageStage.length < 2000"})
-             currentPage = currentPageStage;
-             console.log("firstblok")
+            
          } else {
             console.log("Last block")
             //if(key === ) {
@@ -140,7 +148,9 @@ if(_.size(leaderboard) === 0) {
             //logger.discordInfoLogger.info({type: "billboardChartListTest", message: "currentPageStage.length >= 2000"})
          }    
 
-        });
+        });*/
+
+        pages = Discord.splitMessage(sortedFormatedRows.join("\n"), {maxLength: 1500})
 
         console.log(pages)
 
@@ -158,6 +168,7 @@ if(_.size(leaderboard) === 0) {
 
         console.log('pageEmbedArray')
         console.log(pageEmbedArray)
+        //console.log(pageEmbedArray[0].embeds)
 
         var pageCounter = 0;
 
