@@ -3,7 +3,7 @@ export async function ping(message,client) {
     const isDM: boolean = message.guild === null;
      // Calculates ping between sending a message and editing it, giving a nice round-trip latency.
         // The second ping is an average latency between the bot and the websocket server (one-way, not round-trip)
-        const pingReturn = await message.channel.send("Ping?");
+        const pingReturn = await message.reply("Ping?");
 
         var pingEmbedResponse;
 
