@@ -10,7 +10,7 @@ import {} from "./adora";
 import {logger,tracer} from './modules/logger'
 import {keepAlive} from './server'
 
-keepAlive()
+//keepAlive()
 
 //import "dd-trace/init";
 /*
