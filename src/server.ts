@@ -35,6 +35,18 @@ async function createDatabases() {
 
 }
 
+async function addNewVote(userid,service) {
+  const query = 'INSERT INTO adoravotes.votes (time, voteservice, userid) VALUES (?, ?, ?)';
+  var params;
+      params = [TimeUuid.now(), service, userid];
+
+  await cassandraclient.execute(query, params, { prepare: true }, await function (err) {
+      console.log(err);
+      //Inserted in the cluster
+      //logger.discordInfoLogger.info("Inserted Vote from Top.gg into database", {"type": "VoteWebhookDatabase"})
+  });
+}
+
 const cassandraclient = new cassandra.Client({
   contactPoints: config.cassandra.contactPoints,
   localDataCenter: config.cassandra.localDataCenter,
@@ -84,17 +96,11 @@ app.all('/discordbotlist',async (req, res) => {
         console.log("authenticated")
 
     const reqjson = req.body;
-    logger.discordInfoLogger(reqjson, {type: "discordbotlistvotewebhook"})
+    try {logger.discordInfoLogger.info(reqjson, {type: "discordbotlistvotewebhook"})} 
+    catch {}
+    
 
-    const query = 'INSERT INTO adoravotes.votes (time, voteservice, userid) VALUES (?, ?, ?)';
-    var params;
-        params = [TimeUuid.now(), "discordbotlist", reqjson.id];
-  
-    await cassandraclient.execute(query, params, { prepare: true }, await function (err) {
-        console.log(err);
-        //Inserted in the cluster
-        //logger.discordInfoLogger.info("Inserted Vote from Top.gg into database", {"type": "VoteWebhookDatabase"})
-    });
+    await addNewVote(reqjson.id,"discordbotlist")
         		//https://api.adora.yk3music.com:3000/discordbotlist
           
     res.write('OK');
@@ -109,17 +115,7 @@ app.all('/topgg', webhook.listener(async (vote) => {
     // vote will be your vote object, e.g
     console.log(vote.user) // 395526710101278721 < user who voted\
 
-    const query = 'INSERT INTO adoravotes.votes (time, voteservice, userid) VALUES (?, ?, ?)';
-    var params;
-        params = [TimeUuid.now(), "topgg", vote.user];
-
-    console.log(vote)
-  
-    await cassandraclient.execute(query, params, { prepare: true }, await function (err) {
-        console.log(err);
-        //Inserted in the cluster
-        logger.discordInfoLogger.info("Inserted Vote from Top.gg into database", {"type": "VoteWebhookDatabase"})
-    });
+    await addNewVote(vote.user,"topgg")
 
     // You can also throw an error to the listener callback in order to resend the webhook after a few seconds
   }));
