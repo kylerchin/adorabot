@@ -20,7 +20,7 @@ function sortObject(obj) {
 }
 
 export function sendVoteLinks(message: Message) {
-    message.reply("Vote at https://top.gg/bot/737046643974733845/vote\nTop Voters are viewed with `a!votes`")
+    message.reply("Voting sites, each site earns 1 vote:\nTop.gg: https://top.gg/bot/737046643974733845/vote\nDiscord Bot List: https://discordbotlist.com/bots/adora-ahelp/upvote\nTop Voters are viewed with `a!votes`")
 }
 
 interface showTopVotersArgs {

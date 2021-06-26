@@ -8,7 +8,12 @@ const TimeUuid = require('cassandra-driver').types.TimeUuid;
 
 const Topgg = require("@top-gg/sdk")
 
+import { assignWith } from 'lodash';
 import {logger,tracer,span} from './modules/logger'
+
+// Parse JSON bodies for this app. Make sure you put
+// `app.use(express.json())` **before** your route handlers!
+app.use(express.json());
 
 const https = require('https');
 const http = require('http');
@@ -49,10 +54,56 @@ app.all('/', (req, res) => {
 
   console.log(req.body)
 
-  res.write('<link href="https://fonts.googleapis.com/css?family=Roboto Condensed" rel="stylesheet"> <style> body {font-family: "Roboto Condensed";font-size: 22px;} </style><p>Hosting Active</p>');
+ // res.write('<link href="https://fonts.googleapis.com/css?family=Roboto Condensed" rel="stylesheet"> <style> body {font-family: "Roboto Condensed";font-size: 22px;} </style><p>Hosting Active</p>');
 
-  res.end();
+  //res.end();
+  res.status(200).send('okay');
 });
+
+app.all('/discordbotlist',async (req, res) => {
+    res.setHeader('Content-Type', 'text/html');
+  
+    console.log(req)
+
+    console.log(req.body)
+
+
+  // Grab the "Authorization" header.
+  var auth = req.get("authorization");
+
+  // On the first request, the "Authorization" header won't exist, so we'll set a Response
+  // header that prompts the browser to ask for a username and password.
+  if (!auth) {
+    res.set("WWW-Authenticate", "Basic realm=\"Authorization Required\"");
+    // If the user cancels the dialog, or enters the password wrong too many times,
+    // show the Access Restricted error message.
+    return res.status(401).send("Authorization Required");
+  } else {
+      console.log(auth)
+    if(auth === config.discordbotlist.auth) {
+        console.log("authenticated")
+
+    const reqjson = req.body;
+    logger.discordInfoLogger(reqjson, {type: "discordbotlistvotewebhook"})
+
+    const query = 'INSERT INTO adoravotes.votes (time, voteservice, userid) VALUES (?, ?, ?)';
+    var params;
+        params = [TimeUuid.now(), "discordbotlist", reqjson.id];
+  
+    await cassandraclient.execute(query, params, { prepare: true }, await function (err) {
+        console.log(err);
+        //Inserted in the cluster
+        //logger.discordInfoLogger.info("Inserted Vote from Top.gg into database", {"type": "VoteWebhookDatabase"})
+    });
+        		//https://api.adora.yk3music.com:3000/discordbotlist
+          
+    res.write('OK');
+  
+    res.end();
+    }
+  }
+
+  });
 
 app.all('/topgg', webhook.listener(async (vote) => {
     // vote will be your vote object, e.g
