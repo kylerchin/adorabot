@@ -205,8 +205,6 @@ export async function billboardListChartsScrollable(message,command,args) {
             embeds: [embed]}
 
           message.channel.send(messageToSendBillboard).then((messageBillboardEmbed: Message) => {
-            messageBillboardEmbed.react('⬅').then( r => {
-              messageBillboardEmbed.react('➡')
   
               // Filters
               const backwardsFilter = (reaction, user) => reaction.emoji.name === '⬅' && user.id === message.author.id
@@ -239,7 +237,11 @@ export async function billboardListChartsScrollable(message,command,args) {
                   messageBillboardEmbed.edit({embeds: [embed]})
                   r.users.remove(r.users.cache.filter(u => u === message.author).first())
               })
-            })
+            
+
+              messageBillboardEmbed.react('⬅').then( r => {
+                messageBillboardEmbed.react('➡')
+              })
           })
     });
     

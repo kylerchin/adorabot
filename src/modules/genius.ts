@@ -160,9 +160,6 @@ export async function geniusLyrics(message:Message,args,config) {
                 //Basically, if the user clicks on the trash can, it deletes the embeds
                 //console.log(arrayOfMessagesSentForLyrics[arrayOfEmbeds.length - 1])
                 var lastMessageToListenTo = await arrayOfMessagesSentForLyrics[arrayOfEmbeds.length - 1]
-                lastMessageToListenTo.react("🗑").then((reaction) => {
-                    lastMessageToListenTo.react('❓')
-                })
     
                 // Create a reaction collector
                 //reaction.emoji.name === '🗑' && user.id === lyricsRequester
@@ -219,7 +216,9 @@ export async function geniusLyrics(message:Message,args,config) {
                     
                     logger.discordInfoLogger.info(`Collected ${r.emoji.name}`)})
             
-            
+                    lastMessageToListenTo.react("🗑").then((reaction) => {
+                        lastMessageToListenTo.react('❓')
+                    })
         }
     } else {
         message.reply("Something went wrong! Try again in a bit? Ooop-")
