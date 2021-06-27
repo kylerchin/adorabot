@@ -64,9 +64,7 @@ async function sendChartScrollable(chart,message: Message,err,chartCode) {
       "content": `${chartCode} Chart | ${chart.week}`,
       embeds: groupedEmbeds[pageCounter]}).then(messageBillboardEmbed => {
         console.log("finished part 1")
-        messageBillboardEmbed.react('⬅').then( r => {
-          messageBillboardEmbed.react('➡').then( r => {
-            messageBillboardEmbed.react("🗑")
+    
 
             console.log("finished part 1")
 
@@ -103,9 +101,13 @@ async function sendChartScrollable(chart,message: Message,err,chartCode) {
           deleteCollector.on('collect', (r, u) => {
             messageBillboardEmbed.delete()
           })
-          })
           
-        })
+          messageBillboardEmbed.react('⬅').then( r => {
+            messageBillboardEmbed.react('➡').then( r => {
+              messageBillboardEmbed.react("🗑")
+            })
+          })
+
       })
         
 
