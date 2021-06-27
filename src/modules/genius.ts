@@ -52,13 +52,33 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
     
 }
 
+export async function geniusShowOtherSongs(response,message: Message) {
+    logger.discordInfoLogger.info("type of response.data.response.hits is " + typeof response.data.response.hits)
+    var embedsArrayUngroomed = response.data.response.hits.map((hit) => {
+        return {
+            "title": hit.result.title,
+            "author": {
+                "name" : hit.result.primary_artist.name.substring(0, 255),
+                "icon_url": hit.result.primary_artist.image_url
+            },
+            "thumbnail": {
+                "url": hit.result.song_art_image_url
+            }
+        }
+    })
+
+    var groupedEmbeds = _.chunk(embedsArrayUngroomed, 10);
+    
+    message.reply({"embeds": groupedEmbeds[0], "content": "run `a!lyrics <song name>` to fetch the correct one! If that fails, try `a!lyrics <artist name> <song name>`"})
+}
+
 export async function geniusLyrics(message:Message,args,config) {
 
     // Set config defaults when creating the instance
     const geniusinstance = axios.create({
         baseURL: 'https://api.genius.com',
         headers: {
-            'Authorization': "Bearer" + config.geniusapitoken
+            'Authorization': "Bearer " + config.geniusapitoken
         }
     });
     
@@ -74,7 +94,7 @@ export async function geniusLyrics(message:Message,args,config) {
 
     var geniusQueryUrlEncoded = encodeUrl(geniusQuery)
 
-    var searchString = "/search" + "?access_token=" + config.geniusapitoken + "&" + "q=" + geniusQueryUrlEncoded
+    var searchString = "/search" + "?" + "q=" + geniusQueryUrlEncoded
     // Make a request for a user with a given ID
     geniusinstance.get(searchString)
     .then( async function (response) {
@@ -112,7 +132,7 @@ export async function geniusLyrics(message:Message,args,config) {
             _.set(arrayOfEmbeds, '[0].url', response.data.response.hits[0].result.url)
             _.set(arrayOfEmbeds, '[0].author.icon_url', response.data.response.hits[0].result.primary_artist.image_url)
             const lastItem = arrayOfEmbeds[arrayOfEmbeds.length - 1]
-            _.set(lastItem, 'footer.text', `Powered by Genius | ${response.data.response.hits[0].result.stats.pageviews} pageviews`)
+            _.set(lastItem, 'footer.text', `Powered by Genius | ${response.data.response.hits[0].result.stats.pageviews} pageviews.\nWrong song? Click ❓ to see other song options.`)
 
             //Get Color as Hex String from Genius API response, remove the hashtag
             const extractHex = response.data.response.hits[0].result.song_art_primary_color.replace(/#/g, '')
@@ -140,11 +160,13 @@ export async function geniusLyrics(message:Message,args,config) {
                 //Basically, if the user clicks on the trash can, it deletes the embeds
                 //console.log(arrayOfMessagesSentForLyrics[arrayOfEmbeds.length - 1])
                 var lastMessageToListenTo = await arrayOfMessagesSentForLyrics[arrayOfEmbeds.length - 1]
-                await lastMessageToListenTo.react("🗑")
+                lastMessageToListenTo.react("🗑").then((reaction) => {
+                    lastMessageToListenTo.react('❓')
+                })
     
                 // Create a reaction collector
                 //reaction.emoji.name === '🗑' && user.id === lyricsRequester
-                const filter = (reaction, user) => {
+                const deleteFilter = (reaction, user) => {
                     console.log(reaction)
                     console.log(user)
                     if(user.id === lyricsRequester && reaction.emoji.name === "🗑") {
@@ -155,8 +177,22 @@ export async function geniusLyrics(message:Message,args,config) {
                     }
                 }
 
-                const collector = lastMessageToListenTo.createReactionCollector(filter);
-                collector.on('collect', async (r) => {
+                // Create a reaction collector
+                //reaction.emoji.name === '🗑' && user.id === lyricsRequester
+                const showOtherResultsFilter = (reaction, user) => {
+                    console.log(reaction)
+                    console.log(user)
+                    if(user.id === lyricsRequester && reaction.emoji.name === "❓") {
+                        console.log("respond with other results")
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                const deleteCollector = lastMessageToListenTo.createReactionCollector(deleteFilter);
+                const otherResultsCollector = lastMessageToListenTo.createReactionCollector(showOtherResultsFilter);
+                deleteCollector.on('collect', async (r) => {
                     console.log("YUH DELETE THIS")
                     //const reaction = collected.first()
 
@@ -171,9 +207,17 @@ export async function geniusLyrics(message:Message,args,config) {
                     logger.discordInfoLogger.info(r);
                     
                     logger.discordInfoLogger.info(`Collected ${r.emoji.name}`)});
-                collector.on('end', collected => logger.discordInfoLogger.info(`Collected ${collected.size} items`));
+                deleteCollector.on('end', collected => logger.discordInfoLogger.info(`Collected ${collected.size} items`));
 
-                
+                otherResultsCollector.on('collect',  async (r) => {
+                    console.log("show similar results")
+                    //const reaction = collected.first()
+
+                    geniusShowOtherSongs(response,message)
+                    
+                    logger.discordInfoLogger.info(r);
+                    
+                    logger.discordInfoLogger.info(`Collected ${r.emoji.name}`)})
             
             
         }
