@@ -14,15 +14,18 @@ export async function ping(message,client) {
               "fields": [
                 {
                   "name": "Shard #",
-                  "value": "DMs"
+                  "value": "DMs",
+                  "inline": "true"
                 },
                 {
                   "name": "Latency",
-                  "value": `\`${pingReturn.createdTimestamp - message.createdTimestamp}ms\``
+                  "value": `\`${pingReturn.createdTimestamp - message.createdTimestamp}ms\``,
+                  "inline": "true"
                 },
                 {
                   "name": "API WebSocket Latency",
-                  "value": `\`${Math.round(client.ws.ping)}ms\``
+                  "value": `\`${Math.round(client.ws.ping)}ms\``,
+                  "inline": "true"
                 }
               ]
             }]
@@ -34,15 +37,18 @@ export async function ping(message,client) {
               "fields": [
                 {
                   "name": "Shard #",
-                  "value": message.guild.shardID.toString()
+                  "value": message.guild.shardID.toString(),
+                  "inline": "true"
                 },
                 {
                   "name": "Latency",
-                  "value": `\`${pingReturn.createdTimestamp - message.createdTimestamp}ms\``
+                  "value": `\`${pingReturn.createdTimestamp - message.createdTimestamp}ms\``,
+                  "inline": "true"
                 },
                 {
                   "name": "API WebSocket Latency",
-                  "value": `\`${Math.round(client.ws.ping)}ms\``
+                  "value": `\`${Math.round(client.ws.ping)}ms\``,
+                  "inline": "true"
                 }
               ]
             }]
