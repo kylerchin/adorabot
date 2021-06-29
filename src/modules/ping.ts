@@ -15,17 +15,17 @@ export async function ping(message,client) {
                 {
                   "name": "Shard #",
                   "value": "DMs",
-                  "inline": "true"
+                  "inline": true
                 },
                 {
                   "name": "Latency",
                   "value": `\`${pingReturn.createdTimestamp - message.createdTimestamp}ms\``,
-                  "inline": "true"
+                  "inline": true
                 },
                 {
                   "name": "API WebSocket Latency",
                   "value": `\`${Math.round(client.ws.ping)}ms\``,
-                  "inline": "true"
+                  "inline": true
                 }
               ]
             }]
