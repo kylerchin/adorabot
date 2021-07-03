@@ -135,10 +135,14 @@ client.on('rateLimit', async rateLimitInfo => {
 })
 
 client.on('guildCreate', async guild => {
-  updateDiscordBotsGG(client,config)
-  await logger.discordInfoLogger.info({message: `guild id ${guild.id} added to the bot`, type: "guildCreate", guildObject: guild})
-  await client.shard.broadcastEval('this.everyServerRecheckBansOnThisShard()');
+  await Promise.all[
+  updateDiscordBotsGG(client,config),
+  logger.discordInfoLogger.info({message: `guild id ${guild.id} added to the bot`, type: "guildCreate", guildObject: guild}),
+  client.shard.broadcastEval(client => client.everyServerRecheckBansOnThisShard())]
+
   updateDatadogCount(client,config,cassandraclient)
+
+  
 })
 
 client.on('guildDelete', async guild => {
@@ -175,16 +179,20 @@ client.on('message', async (message:Message) => {
     tracer.trace('clientMessage', () => {
       //const logTrace = logger.info(body);
       //const traceId = logTrace.dd.trace_id;
-      commandHandler(message,client,config,cassandraclient,dogstatsd)
+      Promise.all[commandHandler(message,client,config,cassandraclient,dogstatsd), 
+        onMessageForQR(message), 
+        updateDatadogCount(client,config,cassandraclient),
+        dogstatsd.increment('adorabot.client.message')]
+      
       // here we are in the context for a trace that has been activated on the scope by tracer.trace
     })
-    //updateDatadogCount(client,config)
+    //
   }
     catch {
       console.log("Command failed");
     }
 
-    await onMessageForQR(message)
+   
 
     //var clientMessageToUploadToDatadog
 
@@ -196,7 +204,7 @@ client.on('message', async (message:Message) => {
     }*/
 
     //await logger.discordSillyLogger.silly(clientMessageToUploadToDatadog);
-    dogstatsd.increment('adorabot.client.message');
+  
   //setPresenceForAdora();
 });
 

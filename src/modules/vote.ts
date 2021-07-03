@@ -2,6 +2,7 @@ var _ = require('lodash');
 var forEach = require('for-each')
 import { Message } from 'discord.js'
 var Discord = require('discord.js')
+const TimeUuid = require('cassandra-driver').types.TimeUuid;
 
 //stolen from https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
 function sortObject(obj) {
@@ -38,28 +39,33 @@ export async function showTopVoters(voteArgs:showTopVotersArgs) {
     //schema 
     //time timeuuid PRIMARY KEY, voteservice text, userid text
 
-    var query = "SELECT * from adoravotes.votes";
-    var parameters = []
-  
- await voteArgs.cassandraclient.stream(query, parameters, options)
-  .on('readable', function () {
-    // readable is emitted as soon a row is received and parsed
-    let row;
-    while (row = this.read()) {
-      // process row
-      // Invoked per each row in all the pages
-     var userid = row.userid
-     console.log(userid)
-     if (!(leaderboard[userid] === undefined)) {
-         //add to the number
-         console.log("it's already in here")
-         leaderboard[userid] = leaderboard[userid] + 1
-     } else {
-        leaderboard[userid] = 1
-     }
-    }
-  })
-  .on('end', async function () {
+    //var query = "SELECT * from adoravotes.votes";
+    //var params = []
+
+    var today = new Date()
+    var priorDate = new Date().setDate(today.getDate()-30)
+    const id2 = TimeUuid.fromDate(new Date(priorDate));
+    var query = "SELECT * from adoravotes.votes WHERE time >= ? ALLOW FILTERING";
+    var params = [id2]
+
+    const result = await voteArgs.cassandraclient.execute(query, params, { prepare: true });
+
+        for await (const row of result) {
+        console.log(row.userid);
+
+                // process row
+            // Invoked per each row in all the pages
+            var userid = row.userid
+            console.log(userid)
+            if (!(leaderboard[userid] === undefined)) {
+                //add to the number
+                console.log("it's already in here")
+                leaderboard[userid] = leaderboard[userid] + 1
+            } else {
+                leaderboard[userid] = 1
+            }
+        }
+
     // emitted when all rows have been retrieved and read
 
     console.log(leaderboard)
@@ -78,8 +84,20 @@ if(_.size(leaderboard) === 0) {
 
     //sortedLeaderboard = sortedLeaderboard.slice(0, 100);
 
-    const sortedLeaderboardPromise = await sortedLeaderboard.map(async (eachUser) => {
+   /* const sortedLeaderboardPromise = await sortedLeaderboard.map(async (eachUser) => {
 
+        console.log(eachUser)
+
+        var userResults = voteArgs.client.users.fetch(eachUser.key, true, true).then(async (user) => {
+            console.log(user)
+            return {id: eachUser.key, user: user, votes: eachUser.value}})
+        .catch((error) => {return {id: eachUser.id, error: error}})
+
+        return userResults
+
+    })*/
+
+    const sortedLeaderboardPromise = await Promise.all(sortedLeaderboard.map(async (eachUser) => {
         console.log(eachUser)
 
         var userResults = await voteArgs.client.users.fetch(eachUser.key, true, true).then(async (user) => {
@@ -88,8 +106,9 @@ if(_.size(leaderboard) === 0) {
         .catch((error) => {return {id: eachUser.id, error: error}})
 
         return userResults
-
-    })
+    }));
+    
+    console.log(sortedLeaderboardPromise);
 
     Promise.all(sortedLeaderboardPromise).then(async(sortedLeaderboard) => {
         
@@ -159,7 +178,7 @@ if(_.size(leaderboard) === 0) {
                 "content": "Vote for Adora with `a!vote` to show up on the leaderboard!",
                 "embeds": [{
                 "description": page,
-                "title": `Top Voters | Page ${pageindex + 1} out of ${pages.length} pages.`,
+                "title": `Top Voters (past 30 days) | Page ${pageindex + 1} out of ${pages.length} pages.`,
                 "footer": {
                     "text": `Anonymized for privacy reasons.`
                 }
@@ -220,6 +239,6 @@ if(_.size(leaderboard) === 0) {
     //voteArgs.message.channel.send(pages)
     
 }
-  });
+
 
 }

@@ -2,6 +2,7 @@ const requestjson = require('request-json');
 import { storeYoutubeDataIntoDatabase } from "./storeYtStats"; 
 import {logger} from "./logger"
 const ytScraper = require("yt-scraper")
+import * as Discord from "discord.js"
 // Exporting the class which will be 
 // used in another file 
 // Export keyword or form should be 
@@ -9,7 +10,7 @@ const ytScraper = require("yt-scraper")
   
     // Class method which prints the 
     // user called in another file 
-export async function sendYtCountsEmbed(id,message,apikey) { 
+export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) { 
 
   try {
 
@@ -44,10 +45,12 @@ export async function sendYtCountsEmbed(id,message,apikey) {
           })
 
           const videostats = body.items[0].statistics;
+
+          var urlForEmbed = "https://youtube.com/watch?v=" + body.items[0].id
   
-            const embedYtStats = 
+            const embedYtStats:Discord.MessageEmbedOptions = 
               {
-                "url": "https://youtube.com/watch?v=" + body.items[0].id,
+                "url": urlForEmbed,
                 "description": "*" + channelBody.items[0].snippet.title + "*\n" + "https://youtu.be/" + body.items[0].id,
                 "color": 16711680,
                 "timestamp": Date.now(),

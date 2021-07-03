@@ -1,11 +1,13 @@
-export async function ping(message,client) {
+import {Message, MessageOptions} from 'discord.js'
+
+export async function ping(message:Message,client) {
 
     const isDM: boolean = message.guild === null;
      // Calculates ping between sending a message and editing it, giving a nice round-trip latency.
         // The second ping is an average latency between the bot and the websocket server (one-way, not round-trip)
         const pingReturn = await message.reply("Ping?");
 
-        var pingEmbedResponse;
+        var pingEmbedResponse:MessageOptions;
 
         if (isDM) {
           pingEmbedResponse = {
@@ -38,17 +40,17 @@ export async function ping(message,client) {
                 {
                   "name": "Shard #",
                   "value": message.guild.shardID.toString(),
-                  "inline": "true"
+                  "inline": true
                 },
                 {
                   "name": "Latency",
                   "value": `\`${pingReturn.createdTimestamp - message.createdTimestamp}ms\``,
-                  "inline": "true"
+                  "inline": true
                 },
                 {
                   "name": "API WebSocket Latency",
                   "value": `\`${Math.round(client.ws.ping)}ms\``,
-                  "inline": "true"
+                  "inline": true
                 }
               ]
             }]

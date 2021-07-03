@@ -1,4 +1,5 @@
 import {Message} from 'discord.js';
+import { logger } from './logger';
 
 interface helpDirArgs {
     message: Message,
@@ -90,7 +91,7 @@ export function helpDirectory(helpDirArgs: helpDirArgs) {
             {
                 "name": "`a!votes`",
                 "value": "Shows leaderboard of voters"
-            }
+            },
             {
               "name": "I have an idea for a command or feedback!",
               "value": "We'd love to hear it! Please join our support server and tell us! Run `a!invite` for the invite link to our Support & Suggestion Adorabot Discord Server"
@@ -101,5 +102,5 @@ export function helpDirectory(helpDirArgs: helpDirArgs) {
             }
           ]
         }]
-      }).catch(console.error());
+      }).catch((error) => {logger.discordErrorLogger.error(error)});
 }

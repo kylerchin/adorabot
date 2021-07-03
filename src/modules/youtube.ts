@@ -4,6 +4,8 @@ import { sendYtCountsEmbed } from "./sendYtEmbed";
 import { logger } from "./logger";
 const getQueryParam = require('get-query-param')
 
+import {Message} from 'discord.js'
+
 export async function youtubeHelpMessageReply(message) {
     message.reply("The correct format for Youtube Video Searches is `a!youtube [youtube url / search string]`\n" +
         "A search looks like `a!youtube BTS Dynamite`\n" +
@@ -13,7 +15,7 @@ export async function youtubeHelpMessageReply(message) {
         "Youtube Music `a!youtube https://music.youtube.com/watch?v=FFmdTU4Cpr8`")
 }
 
-export async function youtubeVideoStats(msg, command, client, config, args) {
+export async function youtubeVideoStats(msg:Message, command, client, config, args) {
     const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
 
     var videoID = "dQw4w9WgXcQ"
