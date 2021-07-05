@@ -32,6 +32,7 @@
     "bufferutil": "^4.0.3",
     "cassandra-driver": "^4.6.1",
     "cheerio-without-node-native": "^1.0.0-rc.2",
+    "cors": "^2.8.5",
     "csv": "^5.3.2",
     "dd-trace": "^0.32.2",
     "discord-botlist-api": "^2.1.1",

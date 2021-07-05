@@ -11,6 +11,7 @@ import { updateDiscordBotsGG, updateDatadogCount } from "./uploadStatsToBotsGg"
 import {youtubeVideoStats} from "./youtube"
 import {sendVoteLinks,showTopVoters} from "./vote"
 import {helpDirectory} from "./help"
+import {manuallyAddVote} from './adminvotes'
 const wiktionary = require('wiktionary')
 const isUrl = require("is-url");
 const scrapeyoutube = require('scrape-youtube').default;
@@ -67,6 +68,10 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
         await client.setPresenceForAdora()
         await client.shard.broadcastEval(client => client.setPresenceForAdora())
         await msg.channel.send('done!')
+      }
+
+      if(command === "manualvoteadd") {
+        manuallyAddVote({message: msg, args: args})
       }
 
       if (command === 'botstats') {

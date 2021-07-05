@@ -11,6 +11,8 @@ const Topgg = require("@top-gg/sdk")
 import { assignWith } from 'lodash';
 import {logger,tracer,span} from './modules/logger'
 
+const cors = require('cors');
+
 // Parse JSON bodies for this app. Make sure you put
 // `app.use(express.json())` **before** your route handlers!
 app.use(express.json());
@@ -35,7 +37,7 @@ async function createDatabases() {
 
 }
 
-async function addNewVote(userid,service) {
+export async function addNewVote(userid,service) {
   const query = 'INSERT INTO adoravotes.votes (time, voteservice, userid) VALUES (?, ?, ?)';
   var params;
       params = [TimeUuid.now(), service, userid];
@@ -53,8 +55,6 @@ const cassandraclient = new cassandra.Client({
   authProvider: new cassandra.auth
    .PlainTextAuthProvider(config.cassandra.plainTextUsername, config.cassandra.plainTextPassword)
 });
-
-const cors = require('cors');
 
 // Automatically allow cross-origin requests
 app.use(cors({ origin: true }));
