@@ -1,3 +1,6 @@
+// shut up warning
+process.setMaxListeners(0);
+
 const Discord = require('discord.js');
 var client = new Discord.Client(
   { 
