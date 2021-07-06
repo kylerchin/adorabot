@@ -7,8 +7,8 @@ const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../config.json`);
 import { inspect } from './inspect';
 import { logger } from './logger'
-import {uniq} from './util'
-import {Message} from 'discord.js'
+import { uniq } from './util'
+import { Message } from 'discord.js'
 //let file = editJsonFile(`${__dirname}/config.json`);
 //Generate time with TimeUuid.now();
 const emptylinesregex = /\n/ig;
@@ -22,25 +22,49 @@ interface unbanSubArgsInterface {
     userid: string;
     reason: string;
     client: any;
-  }
+}
 
-export async function kickAdoraOutOfServerId(serverId,client) {
+export async function kickAdoraOutOfServerId(serverId, client) {
     client.shard.broadcastEval((clientBroadcasted, contextParam) => {
         clientBroadcasted.guilds.fetch(contextParam.serverId)
-        .then(guild => {
-            guild.leave().then((guildleft) => {
-                //logger.discordInfoLogger.info(`Admin kicked Adora out of ${guildleft.name}`, {type: "adminTriggeredKickFromServer", guildleft: guildleft})
-                var infoToSendBack = {status: "successful", guildleft: guildleft}
-            }).catch()
-            
-        })
-        .catch();
-    }, {context: {
-        serverId: serverId
-    }}).then(results => {
-        logger.discordInfoLogger.info(`Admin kicked Adora out of ${results.guildleft.name}`, {type: "adminTriggeredKickFromServer", guildleft: results.guildleft})
+            .then(guild => {
+                guild.leave().then((guildleft) => {
+                    //logger.discordInfoLogger.info(`Admin kicked Adora out of ${guildleft.name}`, {type: "adminTriggeredKickFromServer", guildleft: guildleft})
+                    var infoToSendBack = { status: "successful", guildleft: guildleft }
+                }).catch()
+
+            })
+            .catch();
+    }, {
+        context: {
+            serverId: serverId
+        }
+    }).then(results => {
+        logger.discordInfoLogger.info(`Admin kicked Adora out of ${results.guildleft.name}`, { type: "adminTriggeredKickFromServer", guildleft: results.guildleft })
     })
-    .catch((error) => logger.discordErrorLogger.error(error))
+        .catch((error) => logger.discordErrorLogger.error(error))
+}
+
+function arrayOfUserIdsFromMessage(message) {
+    var roleMentionsRemoved = message.content.replace(/<@&(\d{18})>/g, '')
+
+
+    // don't put in attachment links into the fuckin ban list
+    var attachments = message.attachments
+    var urlsInMessage = []
+
+    var removedMessageAttachmentURLsFromContent = roleMentionsRemoved
+
+    forEach(attachments, (attach) => {
+        urlsInMessage.push(attach.url)
+        removedMessageAttachmentURLsFromContent = removedMessageAttachmentURLsFromContent.replaceAll(attach.url, "")
+    })
+    //transforms the user id list into a list to be banned
+    var arrayOfUserIdsToBan = uniq(removedMessageAttachmentURLsFromContent.match(/(?<!\d)\d{18}(?!\d)/g));
+
+    var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*ban(\ )*)/g, '').trim().replace(emptylinesregex, "")
+
+    return { arrayOfIds: arrayOfUserIdsToBan, reason: reasonForBanRegister }
 }
 
 export async function unBanOnAllAdoraSubbedServers(unbanSubArgs: unbanSubArgsInterface) {
@@ -93,11 +117,11 @@ export async function unBanOnAllAdoraSubbedServers(unbanSubArgs: unbanSubArgsInt
             forEach(matchingServerList.rows, async function (eachServerThatIsSubscribed) {
                 //console.log("serverid to work on" + eachServerThatIsSubscribed.serverid)
                 var individualservertodoeachunban = await unbanSubArgs.client.guilds.cache.get(eachServerThatIsSubscribed.serverid);
-                individualservertodoeachunban.members.unban(unbanSubArgs.userid,unbanSubArgs.reason)
-                .then((user) => async (user) => {
-                    await logger.discordDebugLogger.debug(`Unbanned from Banlist ${user.username || user.id || user} from ${individualservertodoeachunban.name} for ${unbanSubArgs.reason}`, { userObject: user, unbanReason: unbanSubArgs.reason, individualservertodoeachunban: individualservertodoeachunban, type: "manualGlobalbanlistUnbanSuccessful"})
-                }).catch(error => logger.discordErrorLogger.error({message: error, type: "banlistUnbanFailed"}))
-                
+                individualservertodoeachunban.members.unban(unbanSubArgs.userid, unbanSubArgs.reason)
+                    .then((user) => async (user) => {
+                        await logger.discordDebugLogger.debug(`Unbanned from Banlist ${user.username || user.id || user} from ${individualservertodoeachunban.name} for ${unbanSubArgs.reason}`, { userObject: user, unbanReason: unbanSubArgs.reason, individualservertodoeachunban: individualservertodoeachunban, type: "manualGlobalbanlistUnbanSuccessful" })
+                    }).catch(error => logger.discordErrorLogger.error({ message: error, type: "banlistUnbanFailed" }))
+
 
             })
 
@@ -111,25 +135,25 @@ export async function unBanOnAllAdoraSubbedServers(unbanSubArgs: unbanSubArgsInt
 export async function isAuthorizedAdmin(userid) {
     var isauthorizedtoaddbanstodatabase: boolean = false;
 
-        var loadedConfigData = importconfigfile.get()
+    var loadedConfigData = importconfigfile.get()
 
-        /*  console.log(loadedConfigData) */
+    /*  console.log(loadedConfigData) */
 
-         forEach(loadedConfigData.config.allowedToBanUsers, function (value, key, array) {
-            if (value.userid === userid) {
-                isauthorizedtoaddbanstodatabase = true;
-            } else {
+    forEach(loadedConfigData.config.allowedToBanUsers, function (value, key, array) {
+        if (value.userid === userid) {
+            isauthorizedtoaddbanstodatabase = true;
+        } else {
 
-            }
-        });
+        }
+    });
 
-        return isauthorizedtoaddbanstodatabase;
+    return isauthorizedtoaddbanstodatabase;
 }
 
-export async function banGuildMember(message,command,args) {
+export async function banGuildMember(message, command, args) {
     //check if user trying to do the command has permissions
 
-    var isPurgeBan:boolean;
+    var isPurgeBan: boolean;
 
     if (command === "ban") {
         isPurgeBan = false;
@@ -168,10 +192,9 @@ export async function banGuildMember(message,command,args) {
                 var banOptionsObject: any;
 
                 if (isPurgeBan) {
-                banOptionsObject = {days: 7, 'reason': reasonForBanRegister }
-                } else 
-                {
-                banOptionsObject = {'reason': reasonForBanRegister }
+                    banOptionsObject = { days: 7, 'reason': reasonForBanRegister }
+                } else {
+                    banOptionsObject = { 'reason': reasonForBanRegister }
                 }
 
                 const arrayOfBanPromisesMapped = arrayOfUserIdsToBan.map(banID => message.guild.members.ban(banID, banOptionsObject));
@@ -182,43 +205,43 @@ export async function banGuildMember(message,command,args) {
                     console.log(values); // [3, 1337, "foo"]
                     forEach(values, async (promisecontent) => {
                         console.log(promisecontent)
-                       // logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
+                        // logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
                     })
-                  });
+                });
 
                 //Loop through array
-               /* await forEach(arrayOfUserIdsToBan, async (banID) => {
-                    console.log(banID)
-                    if (message.guild.available) {
-                        if (isPurgeBan) {
-                                // ban a guild member
-                                await message.guild.members.ban(banID, {days: 7, 'reason': reasonForBanRegister })
-                            .then(async (user) => {
-                                logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
-
-                                //  await message.channel.send(`:ballot_box_with_check: Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
-
-                            }
-                            )
-                            .catch(error => {
-                                message.channel.send(`Failed to ban ${banID}`)
-                            });
-
-                        } else {
-                            await message.guild.members.ban(banID, { 'reason': reasonForBanRegister })
-                            .then(async (user) => {
-                                logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
-
-                                //  await message.channel.send(`:ballot_box_with_check: Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
-
-                            }
-                            )
-                            .catch(error => {
-                                message.channel.send(`Failed to ban ${banID}`)
-                            });
-                        }
-                    }
-                })*/
+                /* await forEach(arrayOfUserIdsToBan, async (banID) => {
+                     console.log(banID)
+                     if (message.guild.available) {
+                         if (isPurgeBan) {
+                                 // ban a guild member
+                                 await message.guild.members.ban(banID, {days: 7, 'reason': reasonForBanRegister })
+                             .then(async (user) => {
+                                 logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
+ 
+                                 //  await message.channel.send(`:ballot_box_with_check: Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
+ 
+                             }
+                             )
+                             .catch(error => {
+                                 message.channel.send(`Failed to ban ${banID}`)
+                             });
+ 
+                         } else {
+                             await message.guild.members.ban(banID, { 'reason': reasonForBanRegister })
+                             .then(async (user) => {
+                                 logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
+ 
+                                 //  await message.channel.send(`:ballot_box_with_check: Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
+ 
+                             }
+                             )
+                             .catch(error => {
+                                 message.channel.send(`Failed to ban ${banID}`)
+                             });
+                         }
+                     }
+                 })*/
             }
 
         } else {
@@ -228,7 +251,7 @@ export async function banGuildMember(message,command,args) {
 
 }
 
-export async function unbanGuildMember(message:Message) {
+export async function unbanGuildMember(message: Message) {
     //check if user trying to do the command has permissions
 
     const isDM: boolean = message.guild === null;
@@ -291,7 +314,7 @@ export async function processAllModerationCommands(message, command, args, confi
     const isDM: boolean = message.guild === null;
 
     if (command === "ban" || command === 'banpurge' || command === "purgeban") {
-        await banGuildMember(message,command,args)
+        await banGuildMember(message, command, args)
         /*await message.reply({
             "embed": {
                 "description": "Are you banning someone because they are raiding, putting NSFW, etc?\n" +
@@ -309,15 +332,38 @@ export async function processAllModerationCommands(message, command, args, confi
         message.reply(`${__dirname}`)
     }
 
-    if (command === "inspectuser" || command ==='inspect') {
-        inspect({message,client,cassandraclient})
+    if (command === "inspectuser" || command === 'inspect') {
+        inspect({ message, client, cassandraclient })
     }
 
     if (command === "adoraunban") {
         if (isAuthorizedAdmin(message.author.id)) {
             message.reply(":unlock: You are authorized :unlock: ")
 
-            client.shard.broadcastEval(client => client.unBanOnAllAdoraSubbedServers({client}))
+            var resultsFromUserId = arrayOfUserIdsFromMessage(message)
+
+            forEach(resultsFromUserId.arrayOfIds, function (userid) {
+                client.shard.broadcastEval(client => client.unBanOnAllAdoraSubbedServers({ userid, reason: resultsFromUserId.reason }))
+            })
+
+            message.reply(`Unbanned ${resultsFromUserId.arrayOfIds.length} from all subscribed servers`)
+
+            //remove the entry from the database
+            const queryToRemoveFromDatabase = "DELETE FROM adoramoderation.banneduserlist WHERE banneduserid = ?"
+
+            forEach(resultsFromUserId.arrayOfIds, function (userid) {
+                const parametersToRemoveFromDatabase = [userid]
+
+                cassandraclient.execute(queryToRemoveFromDatabase, parametersToRemoveFromDatabase, { prepare: true })
+                    .then(results => {
+                        logger.discordInfoLogger(`Removed ${userid} from banlist database`, { type: "deleteFromBanlist", userid: userid })
+                    }).catch(
+                        (cassandraerror) => logger.discordErrorLogger.error(cassandraerror, { type: "cassandraerrorDeleteFromBanList" })
+                    )
+            })
+
+            message.reply(`Removed ${resultsFromUserId.arrayOfIds.length} entries from global banlist database`)
+
         }
     }
 
@@ -328,7 +374,7 @@ export async function processAllModerationCommands(message, command, args, confi
             var arrayOfUserIdsToBan = uniq(message.content.match(/(?<!\d)\d{18}(?!\d)/g));
 
             forEach(arrayOfUserIdsToBan, function (serverId) {
-                kickAdoraOutOfServerId(serverId,client)
+                kickAdoraOutOfServerId(serverId, client)
             })
 
             message.reply(`Removed ${arrayOfUserIdsToBan.length} server(s) from Adora's system`)
@@ -370,28 +416,30 @@ export async function processAllModerationCommands(message, command, args, confi
     }
 
     if (command === "currentinfo") {
-        message.reply({embeds: [{
-            "fields": [
-                {
-                  "name": "Message ID",
-                  "value": `\`${message.id}\``
-                },
-                {
-                    "name": "Message Channel ID",
-                    "value": `\`${message.channel.id}\``
-                },
-                {
-                    "name": "Message Guild ID",
-                    "value": `\`${message.guild.id}\``
-                },
-              ]
-        }]})
+        message.reply({
+            embeds: [{
+                "fields": [
+                    {
+                        "name": "Message ID",
+                        "value": `\`${message.id}\``
+                    },
+                    {
+                        "name": "Message Channel ID",
+                        "value": `\`${message.channel.id}\``
+                    },
+                    {
+                        "name": "Message Guild ID",
+                        "value": `\`${message.guild.id}\``
+                    },
+                ]
+            }]
+        })
     }
 
     if (command === "adminhelp") {
         await message.reply("Adora's admin help page! Only for adora managers\n`a!adoraban <user id list/tags> <reason (max 512 chars)>`: Inserts bans into database and completes bans on all shards" +
-            "\n`a!updatebans`: Force all guilds in all shards to check for bans\n" + 
-            "`a!adorakickoutofserver <list of server ids>`\n" + 
+            "\n`a!updatebans`: Force all guilds in all shards to check for bans\n" +
+            "`a!adorakickoutofserver <list of server ids>`\n" +
             "`a!currentinfo`: replies to a message with the message id, channel id, and guild id")
     }
 
@@ -713,14 +761,14 @@ export async function processAllModerationCommands(message, command, args, confi
                     var isauthorizedtoaddbanstodatabase: boolean = false;
 
                     var loadedConfigData = importconfigfile.get()
-            
+
                     /*  console.log(loadedConfigData) */
-            
+
                     forEach(loadedConfigData.config.allowedToBanUsers, function (value, key, array) {
                         if (value.userid === message.author.id) {
                             isauthorizedtoaddbanstodatabase = true;
                         } else {
-            
+
                         }
                     });
 
@@ -891,13 +939,13 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                             toBanReason = toBanReason.substring(0, 511)
 
                             //if the cache of unknown users includes that banned user, don't do anything
-                            if (unknownuserlocalarray.includes(eachBannableUserRow.banneduserid)) {}
+                            if (unknownuserlocalarray.includes(eachBannableUserRow.banneduserid)) { }
                             else {
                                 //always check if the guild is avaliable before doing this
                                 if (individualservertodoeachban.available) {
                                     await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
                                         .then(async (user) => {
-                                            await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`, { userObject: user, banReason: toBanReason, individualservertodoeachban: individualservertodoeachban, type: "recheckBansAddBanSuccessful"})
+                                            await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`, { userObject: user, banReason: toBanReason, individualservertodoeachban: individualservertodoeachban, type: "recheckBansAddBanSuccessful" })
                                         })
                                         .catch(async (error) => {
                                             await logger.discordWarnLogger.warn({
@@ -927,7 +975,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                                         });
                                 }
                             }
-                            
+
 
                         }
 
