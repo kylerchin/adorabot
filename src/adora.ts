@@ -162,7 +162,7 @@ client.on('guildCreate', async guild => {
 client.on('guildDelete', async guild => {
   updateDiscordBotsGG(client,config)
   await logger.discordInfoLogger.info({message: `guild id ${guild.id} removed from the bot`, type: "guildDelete", guildObject: guild})
-  await client.shard.broadcastEval(`this.everyServerRecheckBansOnThisShard()`);
+  client.shard.broadcastEval(client => client.everyServerRecheckBansOnThisShard())
   updateDatadogCount(client,config,cassandraclient)
 })
 
