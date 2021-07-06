@@ -448,7 +448,7 @@ export async function processAllModerationCommands(message, command, args, confi
                       },
                       {
                           "name": `a!adoraunban`,
-                          "value": "a!adoraban <user id list/tags> <reason (max 512 chars)>`: Inserts bans into database and completes bans on all shards"
+                          "value": "a!adoraunban <user id list/tags> <reason (max 512 chars)>`: Unbans on all subscribed servers, then removes from database"
                       },
                       {
                         "name": `a!adorakickoutofserver <list of server ids>`,
