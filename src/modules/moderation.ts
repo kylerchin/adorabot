@@ -18,6 +18,113 @@ var unknownuserlocalarray: Array<any> = []
 const userIDsRegex = /^(?:<@\D?)?(\d+)(?:>)?\s*,?\s*/;
 
 const userReg = RegExp(/<@!?(\d+)>/);
+interface unbanSubArgsInterface {
+    userid: string;
+    reason: string;
+    client: any;
+  }
+
+export async function kickAdoraOutOfServerId(serverId,client) {
+    client.shard.broadcastEval((clientBroadcasted, contextParam) => {
+        clientBroadcasted.guilds.fetch(contextParam.serverId)
+        .then(guild => {
+            guild.leave().then((guildleft) => {
+                //logger.discordInfoLogger.info(`Admin kicked Adora out of ${guildleft.name}`, {type: "adminTriggeredKickFromServer", guildleft: guildleft})
+                var infoToSendBack = {status: "successful", guildleft: guildleft}
+            }).catch()
+            
+        })
+        .catch();
+    }, {context: {
+        serverId: serverId
+    }}).then(results => {
+        logger.discordInfoLogger.info(`Admin kicked Adora out of ${results.guildleft.name}`, {type: "adminTriggeredKickFromServer", guildleft: results.guildleft})
+    })
+    .catch((error) => logger.discordErrorLogger.error(error))
+}
+
+export async function unBanOnAllAdoraSubbedServers(unbanSubArgs: unbanSubArgsInterface) {
+    //for every server subscribed
+    //fetch the ban list for the server
+
+    //fetch the ban database
+    //is each ban inside the database?
+    //if not, ban them
+    var currentShardServerIDArray = []
+
+    await unbanSubArgs.client.guilds.cache.forEach(guild => {
+        //console.log(`${guild.name} | ${guild.id}`);
+        currentShardServerIDArray.push(guild.id)
+        //console.log("guild.id " + guild.id)
+    })
+
+    //each shard fetch it's servers it's able to ban the user on
+    var queryForMatchingServers = ('SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid IN ? AND subscribed = ? ALLOW FILTERING;')
+
+    var listOfQueriesToSendToScylla = []
+
+    //For Every server in the array, transform it into a query to send to Cassandra
+    await forEach(currentShardServerIDArray, async (eachServerIdItem) => {
+        //console.log(eachServerIdItem)
+
+        var serverIdArrayThing = []
+        serverIdArrayThing.push(eachServerIdItem)
+
+        var parametersServers = [serverIdArrayThing, true];
+
+        listOfQueriesToSendToScylla.push(cassandraclient.execute(queryForMatchingServers, parametersServers, { prepare: true }))
+
+    })
+
+    //console.log(listOfQueriesToSendToScylla)
+
+    //Run All the queries, then
+    await Promise.all(listOfQueriesToSendToScylla).then(async function (values) {
+        //console.log(values)
+
+        //For Each server in the shard that is subscribed, run the ban database check
+        forEach(values, async (matchingServerList) => {
+            //console.log(matchingServerList.rows.length)
+
+            //console.log(matchingServerList)
+            //.rows.length === 0
+
+            //for each server that the shard client is able to ban on...
+            forEach(matchingServerList.rows, async function (eachServerThatIsSubscribed) {
+                //console.log("serverid to work on" + eachServerThatIsSubscribed.serverid)
+                var individualservertodoeachunban = await unbanSubArgs.client.guilds.cache.get(eachServerThatIsSubscribed.serverid);
+                individualservertodoeachunban.members.unban(unbanSubArgs.userid,unbanSubArgs.reason)
+                .then((user) => async (user) => {
+                    await logger.discordDebugLogger.debug(`Unbanned from Banlist ${user.username || user.id || user} from ${individualservertodoeachunban.name} for ${unbanSubArgs.reason}`, { userObject: user, unbanReason: unbanSubArgs.reason, individualservertodoeachunban: individualservertodoeachunban, type: "manualGlobalbanlistUnbanSuccessful"})
+                }).catch(error => logger.discordErrorLogger.error({message: error, type: "banlistUnbanFailed"}))
+                
+
+            })
+
+
+        })
+
+        //now all bans have been completed
+    });
+}
+
+export async function isAuthorizedAdmin(userid) {
+    var isauthorizedtoaddbanstodatabase: boolean = false;
+
+        var loadedConfigData = importconfigfile.get()
+
+        /*  console.log(loadedConfigData) */
+
+         forEach(loadedConfigData.config.allowedToBanUsers, function (value, key, array) {
+            if (value.userid === userid) {
+                isauthorizedtoaddbanstodatabase = true;
+            } else {
+
+            }
+        });
+
+        return isauthorizedtoaddbanstodatabase;
+}
 
 export async function banGuildMember(message,command,args) {
     //check if user trying to do the command has permissions
@@ -206,6 +313,29 @@ export async function processAllModerationCommands(message, command, args, confi
         inspect({message,client,cassandraclient})
     }
 
+    if (command === "adoraunban") {
+        if (isAuthorizedAdmin(message.author.id)) {
+            message.reply(":unlock: You are authorized :unlock: ")
+
+            client.shard.broadcastEval(client => client.unBanOnAllAdoraSubbedServers({client}))
+        }
+    }
+
+    if (command === "adorakickoutofserver") {
+        if (isAuthorizedAdmin(message.author.id)) {
+            message.reply(":unlock: You are authorized :unlock: ")
+
+            var arrayOfUserIdsToBan = uniq(message.content.match(/(?<!\d)\d{18}(?!\d)/g));
+
+            forEach(arrayOfUserIdsToBan, function (serverId) {
+                kickAdoraOutOfServerId(serverId,client)
+            })
+
+            message.reply(`Removed ${arrayOfUserIdsToBan.length} from Adora's system`)
+
+        }
+    }
+
     if (command === "updatebans") {
 
         var isauthorizedtoaddbanstodatabase: boolean = false;
@@ -239,9 +369,30 @@ export async function processAllModerationCommands(message, command, args, confi
         }
     }
 
+    if (command === "currentinfo") {
+        message.reply({embeds: [{
+            "fields": [
+                {
+                  "name": "Message ID",
+                  "value": `\`${message.id}\``
+                },
+                {
+                    "name": "Message Channel ID",
+                    "value": `\`${message.channel.id}\``
+                },
+                {
+                    "name": "Message Guild ID",
+                    "value": `\`${message.guild.id}\``
+                },
+              ]
+        }]})
+    }
+
     if (command === "adminhelp") {
         await message.reply("Adora's admin help page! Only for adora managers\n`a!adoraban <user id list/tags> <reason (max 512 chars)>`: Inserts bans into database and completes bans on all shards" +
-            "\n`a!updatebans`: Force all guilds in all shards to check for bans")
+            "\n`a!updatebans`: Force all guilds in all shards to check for bans\n" + 
+            "`a!adorakickoutofserver <list of server ids>`\n" + 
+            "`a!currentinfo`: replies to a message with the message id, channel id, and guild id")
     }
 
     if (command === "adoraban") {
@@ -821,5 +972,5 @@ export async function runOnStartup(cassandraclient, client) {
             await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
         }).catch(error => console.error(error));
 
-    await everyServerRecheckBans(cassandraclient, client, false)
+    everyServerRecheckBans(cassandraclient, client, false)
 }

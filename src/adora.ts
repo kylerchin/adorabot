@@ -14,7 +14,7 @@ import {logger,tracer,span} from './modules/logger'
 //var fs = require('fs'); 
 import { appendFile } from 'fs';
 import { commandHandler } from "./modules/commandhandler"; 
-import { runOnStartup, everyServerRecheckBans } from "./modules/moderation";
+import { runOnStartup, everyServerRecheckBans, unBanOnAllAdoraSubbedServers } from "./modules/moderation";
 import { onMessageForQR, onMessageUpdateForQR } from './modules/antiLoginQRCode';
 import { updateDiscordBotsGG, updateDatadogCount } from "./modules/uploadStatsToBotsGg"
 import { Message } from 'discord.js'
@@ -60,6 +60,17 @@ client.everyServerRecheckBansOnThisShard = async () => {
 client.everyServerRecheckBansOnThisShardWithUnknownBans = async () => {
   everyServerRecheckBans(cassandraclient, client, true);
   //3rd argument is if the function should recheck Unkown Bans
+}
+
+interface unbanSubArgsInterface {
+  userid: string;
+  reason: string;
+}
+
+client.unBanOnAllAdoraSubbedServers = function async (unbanSubArgs: unbanSubArgsInterface) {
+  var unbanSubArgsModified:any = unbanSubArgs
+  unbanSubArgsModified.client = client
+  unBanOnAllAdoraSubbedServers(unbanSubArgsModified)
 }
 
 client.setPresenceForAdora = async () => {
