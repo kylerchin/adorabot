@@ -437,10 +437,35 @@ export async function processAllModerationCommands(message, command, args, confi
     }
 
     if (command === "adminhelp") {
-        await message.reply("Adora's admin help page! Only for adora managers\n`a!adoraban <user id list/tags> <reason (max 512 chars)>`: Inserts bans into database and completes bans on all shards" +
-            "\n`a!updatebans`: Force all guilds in all shards to check for bans\n" +
-            "`a!adorakickoutofserver <list of server ids>`\n" +
-            "`a!currentinfo`: replies to a message with the message id, channel id, and guild id")
+            if (isAuthorizedAdmin(message.author.id)) {
+                await message.reply({embeds: [{
+                    "title": "Adora Admins Only Help Page",
+                    "description": "Only Admins of can see this page",
+                    "fields": [
+                      {
+                        "name": "`a!adoraban`",
+                        "value": "a!adoraban <user id list/tags> <reason (max 512 chars)>`: Inserts bans into database and completes bans on all shards"
+                      },
+                      {
+                          "name": `a!adoraunban`,
+                          "value": "a!adoraban <user id list/tags> <reason (max 512 chars)>`: Inserts bans into database and completes bans on all shards"
+                      },
+                      {
+                        "name": `a!adorakickoutofserver <list of server ids>`,
+                        "value": "Kicks a guild off the platform. This is not a ban! They can add it back in a second ahahah"
+                    },
+                    {
+                        "name": `a!currentinfo`,
+                        "value": "Shows the current message id, channel id, and guild id"
+                    },
+                    {
+                        "name": `a!updatebans`,
+                        "value": " Force all guilds in all shards to check for bans"
+                    }
+                    ]
+                  }]})
+            }
+            
     }
 
     if (command === "adoraban") {
