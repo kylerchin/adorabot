@@ -331,7 +331,7 @@ export async function processAllModerationCommands(message, command, args, confi
                 kickAdoraOutOfServerId(serverId,client)
             })
 
-            message.reply(`Removed ${arrayOfUserIdsToBan.length} from Adora's system`)
+            message.reply(`Removed ${arrayOfUserIdsToBan.length} server(s) from Adora's system`)
 
         }
     }
