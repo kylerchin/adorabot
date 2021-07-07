@@ -69,7 +69,40 @@ export async function geniusShowOtherSongs(response,message: Message) {
 
     var groupedEmbeds = _.chunk(embedsArrayUngroomed, 10);
     
-    message.reply({"embeds": groupedEmbeds[0], "content": "run `a!lyrics <song name>` to fetch the correct one! If that fails, try `a!lyrics <artist name> <song name>`"})
+    var messageOfOtherSongs = await message.reply({"embeds": groupedEmbeds[0], "content": "run `a!lyrics <song name>` to fetch the correct one! If that fails, try `a!lyrics <artist name> <song name>`"})
+
+    
+   // Create a reaction collector
+                //reaction.emoji.name === '🗑' && user.id === lyricsRequester
+     const deleteFilter = (reaction, user) => {
+                    console.log(reaction)
+                    console.log(user)
+                    if(user.id === message.author.id && reaction.emoji.name === "🗑") {
+                        console.log("delete this message, trash icon clicked")
+                        return true;
+                    } else {
+                        return false;
+                    }
+
+                }
+
+                const deleteCollector = messageOfOtherSongs.createReactionCollector(deleteFilter);
+
+                deleteCollector.on('collect', async (r) => {
+                    console.log("YUH DELETE THIS")
+                    //const reaction = collected.first()
+
+                    messageOfOtherSongs.delete().catch()
+                    
+                    logger.discordInfoLogger.info(r);
+                    
+                    logger.discordInfoLogger.info(`Collected ${r.emoji.name}`)});
+                deleteCollector.on('end', collected => logger.discordInfoLogger.info(`Collected ${collected.size} items`));
+                
+                messageOfOtherSongs.react("🗑").then((reaction) => {
+                    //lastMessageToListenTo.react('❓')
+                })
+    }
 }
 
 export async function geniusLyrics(message:Message,args,config) {
