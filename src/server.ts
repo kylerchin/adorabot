@@ -117,6 +117,9 @@ app.all('/topgg', webhook.listener(async (vote) => {
 
     await addNewVote(vote.user,"topgg")
 
+    try {logger.discordInfoLogger.info(vote, {type: "topggvotewebhook"})} 
+    catch {}
+
     // You can also throw an error to the listener callback in order to resend the webhook after a few seconds
   }));
 
