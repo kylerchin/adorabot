@@ -57,6 +57,7 @@ export async function geniusShowOtherSongs(response,message: Message) {
     var embedsArrayUngroomed = response.data.response.hits.map((hit) => {
         return {
             "title": hit.result.title,
+            "url": hit.result.url,
             "author": {
                 "name" : hit.result.primary_artist.name.substring(0, 255),
                 "icon_url": hit.result.primary_artist.image_url
