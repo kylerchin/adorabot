@@ -1,5 +1,6 @@
 
 const editJsonFile = require("edit-json-file");
+import {Message} from 'discord.js'
 
 const forEach = require("for-each")
 
@@ -19,10 +20,10 @@ async function bvHelpPage(msg) {
 
   msg.channel.send("Select Poll to Vote:\n" + 
   pollMenuBV +
-  "*more polls coming soon, go bug kyler lmao*")
+  "*more polls coming soon, if you see a new poll on billboard.com, please send it to the adora support server!*")
 }
 
-export function billboardVote(msg,args) {
+export function billboardVote(msg:Message,args) {
     var precurserpoll = "Remember to vote on a different browser, device, incognito mode, or clear cookies! The bot won't let you vote as the same cookie session. If you see \"Thank you, we have counted your vote\", you are repeat voting and your new vote is not counted!\n"
 
     if (args[0]) {
@@ -54,12 +55,13 @@ export function billboardVote(msg,args) {
     }
 }
 
-export function billboardPollGetValue(msg,args) {
+export function billboardPollGetValue(msg:Message,args) {
 
   const jsdom = require('jsdom');
   var dom = new jsdom.JSDOM();
   var window = dom.window;
   var document = window.document;
+  var pollTitle;
   
   var $ = require('jquery')(window);
   console.log('jquery version:', $.fn.jquery)
@@ -128,6 +130,10 @@ export function billboardPollGetValue(msg,args) {
 
 
        $content.each( function () {
+
+        $(this).find('.pds-question-top').each(function (i,row) {
+          pollTitle = row.innerHTML
+        })
         
         $(this).find(".pds-answer-text").each(function (i,row) {
           var nameAnswer = row.innerHTML
@@ -136,7 +142,7 @@ export function billboardPollGetValue(msg,args) {
       })
 
       $(this).find(".pds-feedback-per").each(function (i,row) {
-        var scoreAnswer = row.innerHTML.replace("&nbsp;","")
+        var scoreAnswer = row.innerHTML.replace(/&nbsp;/g,"\u00A0").replace(/&amp;/g,"&")
       //console.log(nameAnswer)
     scoreArray.push(scoreAnswer)
     })
@@ -151,7 +157,9 @@ export function billboardPollGetValue(msg,args) {
         var pollResultsFinalArray = []
 
         nameArray.forEach(message => {
-          var nextLinePoll = nameArray[pollindex] + " : " + scoreArray[pollindex]
+          //var nextLinePoll = nameArray[pollindex] + " : " + scoreArray[pollindex]
+          var nextLinePoll =  `\`${scoreArray[pollindex]}\`: ${nameArray[pollindex]}`
+          nextLinePoll = nextLinePoll.replace(/&amp;/g,"&")
           pollResultsFinalArray.push(nextLinePoll)
           pollindex = pollindex + 1;
         });
@@ -169,7 +177,10 @@ export function billboardPollGetValue(msg,args) {
           poll2index = poll2index + 1;
         });
       
-        msg.reply(pollResultToDiscord);
+        msg.reply({embeds: [{
+          "title": pollTitle,
+          "color": 0xe3abce,
+          "description": pollResultToDiscord}]});
 
 console.log(nameArray.length)
 
