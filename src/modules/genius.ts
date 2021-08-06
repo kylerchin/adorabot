@@ -6,7 +6,7 @@ const cio = require('cheerio-without-node-native');
 const Discord = require('discord.js');
 import {decode} from 'html-entities';
 import { logger,tracer,span } from './logger';
-import { asyncForEach } from './util';
+import { asyncForEach,hexCodeToColorNumber } from './util';
 const forEach = require("for-each")
 import {Message} from 'discord.js'
 
@@ -55,6 +55,8 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
 export async function geniusShowOtherSongs(response,message: Message) {
     logger.discordInfoLogger.info("type of response.data.response.hits is " + typeof response.data.response.hits)
     var embedsArrayUngroomed = response.data.response.hits.map((hit) => {
+        const colorForSong = hexCodeToColorNumber(hit.result.song_art_primary_color)
+
         return {
             "title": hit.result.title,
             "url": hit.result.url,
@@ -64,7 +66,8 @@ export async function geniusShowOtherSongs(response,message: Message) {
             },
             "thumbnail": {
                 "url": hit.result.song_art_image_url
-            }
+            },
+            "color": colorForSong
         }
     })
 
@@ -104,7 +107,6 @@ export async function geniusShowOtherSongs(response,message: Message) {
                     //lastMessageToListenTo.react('❓')
                 })
     }
-}
 
 export async function geniusLyrics(message:Message,args,config) {
 
