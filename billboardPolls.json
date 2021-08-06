@@ -39,6 +39,22 @@
             "polldatabase": "10584893",
             "title": "Who deserves to win album of the year at the 2021 Grammys?",
             "active": true
+        },
+        {
+            "id": "6",
+            "billboardlink": "https://www.billboard.com/articles/news/awards/9577477/favorite-2021-billboard-music-awards-performance-poll/",
+            "polldaddy": "https://poll.fm/10841295",
+            "polldatabase": "10841295",
+            "title": "[5/24/21] Which Was Your Favorite Performance at the 2021 Billboard Music Awards?",
+            "active": true
+        },
+        {
+            "id": "7",
+            "billboardlink": "https://www.billboard.com/articles/news/9602274/favorite-new-music-release-poll-normani-cardi-b-pop-smoke-shakira-john-mayer",
+            "polldaddy": "https://poll.fm/10881415",
+            "polldatabase": "10881415",
+            "title": "[7/16/21] Normani & Cardi B, Pop Smoke, Shakira & More: What's Your Favorite New Music Release?",
+            "active": true
         }
     ]
 }
