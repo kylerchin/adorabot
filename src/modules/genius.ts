@@ -4,7 +4,7 @@ var _ = require('lodash');
 const axios = require('axios')
 const cio = require('cheerio-without-node-native');
 const Discord = require('discord.js');
-import {Util} from 'discord.js'
+import {Util,ReactionCollector} from 'discord.js'
 import {decode} from 'html-entities';
 import { logger,tracer,span } from './logger';
 import { asyncForEach,hexCodeToColorNumber } from './util';
@@ -25,7 +25,7 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
 
 			var lyrics = ''
 
-            $('[data-scrolltrigger-pin]').each((i, elem) => {
+            $('[class^=Lyrics__Container]').each((i, elem) => {
 				if($(elem).text().length !== 0) {
                     let snippet = decode($(elem).html()
                     .replace(/<br><br>/g, 'AdorabotTwoLine00x00')
@@ -53,7 +53,7 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
     
 }
 
-export async function geniusShowOtherSongs(response,message: Message) {
+export async function geniusShowOtherSongs(response,message: Message,client) {
     logger.discordInfoLogger.info("type of response.data.response.hits is " + typeof response.data.response.hits)
     var embedsArrayUngroomed = response.data.response.hits.map((hit) => {
         const colorForSong = hexCodeToColorNumber(hit.result.song_art_primary_color)
@@ -79,19 +79,9 @@ export async function geniusShowOtherSongs(response,message: Message) {
     
    // Create a reaction collector
                 //reaction.emoji.name === '🗑' && user.id === lyricsRequester
-     const deleteFilter = (reaction, user) => {
-                    console.log(reaction)
-                    console.log(user)
-                    if(user.id === message.author.id && reaction.emoji.name === "🗑") {
-                        console.log("delete this message, trash icon clicked")
-                        return true;
-                    } else {
-                        return false;
-                    }
+     const deleteFilter = (reaction, user) => user.id === message.author.id && reaction.emoji.name === "🗑" && user.id !== client.user.id;
 
-                }
-
-                const deleteCollector = messageOfOtherSongs.createReactionCollector(deleteFilter);
+                const deleteCollector = messageOfOtherSongs.createReactionCollector({filter: deleteFilter});
 
                 deleteCollector.on('collect', async (r) => {
                     console.log("YUH DELETE THIS")
@@ -109,7 +99,7 @@ export async function geniusShowOtherSongs(response,message: Message) {
                 })
     }
 
-export async function geniusLyrics(message:Message,args,config) {
+export async function geniusLyrics(message:Message,args,config, client) {
 
     // Set config defaults when creating the instance
     const geniusinstance = axios.create({
@@ -152,6 +142,8 @@ export async function geniusLyrics(message:Message,args,config) {
              songLyricsHTML = await geniusSongUrlHTMLExtract(response.data.response.hits[0].result.url);
             
             console.log(songLyricsHTML)
+
+            logger.discordInfoLogger.info({type: 'songlyricshtml', message: songLyricsHTML})
 
             var arrayOfTexts = await Util.splitMessage(songLyricsHTML);
 
@@ -203,7 +195,7 @@ export async function geniusLyrics(message:Message,args,config) {
                 const deleteFilter = (reaction, user) => {
                     console.log(reaction)
                     console.log(user)
-                    if(user.id === lyricsRequester && reaction.emoji.name === "🗑") {
+                    if(user.id === lyricsRequester && reaction.emoji.name === "🗑" && user.id != client.user.id) {
                         console.log("delete this message, trash icon clicked")
                         return true;
                     } else {
@@ -213,19 +205,10 @@ export async function geniusLyrics(message:Message,args,config) {
 
                 // Create a reaction collector
                 //reaction.emoji.name === '🗑' && user.id === lyricsRequester
-                const showOtherResultsFilter = (reaction, user) => {
-                    console.log(reaction)
-                    console.log(user)
-                    if(user.id === lyricsRequester && reaction.emoji.name === "❓") {
-                        console.log("respond with other results")
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
+                const showOtherResultsFilter = (reaction, user) => user.id === lyricsRequester && reaction.emoji.name === "❓"  && user.id != client.user.id
 
-                const deleteCollector = lastMessageToListenTo.createReactionCollector(deleteFilter);
-                const otherResultsCollector = lastMessageToListenTo.createReactionCollector(showOtherResultsFilter);
+                const deleteCollector:ReactionCollector = lastMessageToListenTo.createReactionCollector({filter: deleteFilter});
+                const otherResultsCollector:ReactionCollector = lastMessageToListenTo.createReactionCollector({filter: showOtherResultsFilter});
                 deleteCollector.on('collect', async (r) => {
                     console.log("YUH DELETE THIS")
                     //const reaction = collected.first()
@@ -247,7 +230,7 @@ export async function geniusLyrics(message:Message,args,config) {
                     console.log("show similar results")
                     //const reaction = collected.first()
 
-                    geniusShowOtherSongs(response,message)
+                    geniusShowOtherSongs(response,message,client)
                     
                     logger.discordInfoLogger.info(r);
                     

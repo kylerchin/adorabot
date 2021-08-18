@@ -316,7 +316,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
 
       if (command === "genius" || command === "lyric" || command === "lyrics") {
         try {
-          geniusLyrics(msg, args, config)
+          geniusLyrics(msg, args, config, client)
         }
         catch (geniusLyricsCommandError) {
           console.log(geniusLyricsCommandError)
