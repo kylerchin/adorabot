@@ -10,10 +10,12 @@ export async function youtubeHelpMessageReply(message) {
     message.reply("The correct format for Youtube Video Searches is `a!youtube [youtube url / search string]`\n" +
         "A search looks like `a!youtube BTS Dynamite`\n" +
         "Acceptable URLS include\n" +
-        "Youtube `https://youtube.com/watch?v=FFmdTU4Cpr8`\n" +
+        "Youtube `a!yt https://youtube.com/watch?v=FFmdTU4Cpr8`\n" +
         "YouTu.be `a!youtube https://youtu.be/FFmdTU4Cpr8`\n" +
         "Youtube Music `a!youtube https://music.youtube.com/watch?v=FFmdTU4Cpr8`")
 }
+
+//fetch youtube videos
 
 export async function youtubeVideoStats(msg:Message, command, client, config, args) {
     const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];

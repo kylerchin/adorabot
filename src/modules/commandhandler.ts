@@ -9,7 +9,7 @@ import { billboardCharts } from "./billboard"
 import { processAllModerationCommands, howManyUsersInBanDatabase } from "./moderation"
 import { updateDiscordBotsGG, updateDatadogCount } from "./uploadStatsToBotsGg"
 import {youtubeVideoStats} from "./youtube"
-import {sendVoteLinks,showTopVoters} from "./vote"
+import {sendVoteLinks,showListOfVotersTimes,showTopVoters} from "./vote"
 import {helpDirectory} from "./help"
 import {manuallyAddVote} from './adminvotes'
 const wiktionary = require('wiktionary')
@@ -29,12 +29,14 @@ const https = require('https')
 const translate = require('@vitalets/google-translate-api');
 import { logger,tracer,span } from './logger'
 import { ping } from "./ping";
+import { playMusic } from "./music";
 
 export async function commandHandler(msg, client, config, cassandraclient, dogstatsd) {
 
   const isDM: boolean = msg.guild === null;
 
   if (msg.content.toLowerCase().startsWith(config.prefix) || msg.content.toLowerCase().startsWith("a!")) {
+    
     if (!msg.author.bot) {
       console.log("prefix true")
       //log triggerprefix adorabot
@@ -98,7 +100,31 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
             var subscribedServerCount = returnSubscribedServersCount.rows[0].count.low
             var returnBanDatabaseAmount = results[3]
             var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
-            return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}\nNumber of Shards: ${client.shard.count}\nNumber of Bans in Database: ${numberofrowsindatabase}\nNumber of Servers Subscribed to Autoban: ${subscribedServerCount}`);
+            var bob = `Bot Statistics`
+            return msg.channel.send({embeds: [{description: bob,"fields": [
+              {
+                "name": "Num. of Servers",
+                "value": `${totalGuilds}`
+              },
+              {
+                "name": "Num. of Members",
+                "value": `${totalMembers}`
+              },
+              {
+                "name": "Num. of Shards",
+                "value": `${client.shard.count}`
+              },
+              {
+                "name": "Num. of Bans in Database",
+                "value": `${numberofrowsindatabase}`,
+                "inline": true
+              },
+              {
+                "name": "Num. of Servers Subscribed to Autoban",
+                "value": `${subscribedServerCount}`,
+                "inline": true
+              }
+            ]}]});
           })
           .catch(console.error);
 
@@ -124,6 +150,10 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
         showTopVoters({cassandraclient,message: msg,client})
       }
 
+      if (command === "votesconsolelogtimes") {
+        showListOfVotersTimes({cassandraclient,message: msg,client})
+      }
+
       if (command === "editbio") {
         editProfile(client, msg, args, cassandraclient)
       }
@@ -138,11 +168,25 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
       }
 
       if (command === "inviteme" || command === "invite" || command === "inviter") {
-        msg.reply("Here's the invite link! It's an honor to help you :) \n https://discord.com/api/oauth2/authorize?client_id=737046643974733845&permissions=8&scope=bot\nHere's our support server for announcements and questions! Subscribe to the announcements channel for updates. https://discord.gg/3h6dpyzHk7\nRemember to run `a!help` for the list of commands!")
+        msg.reply("Here's the invite link! It's an honor to help you :) \n" + 
+        "https://discord.com/oauth2/authorize?client_id=737046643974733845&scope=bot%20applications.commands&permissions=2151017550"+
+        "\nHere's our support server for announcements and questions! Subscribe to the announcements channel for updates. https://discord.gg/3h6dpyzHk7\nRemember to run `a!help` for the list of commands!")
       }
 
       if (command === "billboard" || command === "bb") {
         await billboardCharts(msg, command, args,client)
+      }
+
+      if (command === "testtypetime") {
+
+        console.log("before")
+        var t0 = Date.now()
+        msg.channel.startTyping()
+          var t1 = Date.now()
+
+         
+
+          msg.channel.send("Call to startTyping took " + (t1 - t0))
       }
 
       if (command === "gaon" || command === "goan") {
@@ -238,8 +282,13 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
 
       }
 
-      if (command === "tomato") {// Join the same voice channel of the author of the message
-        try {
+      if (command === "play") {
+        playMusic({command,message: msg,args,client})
+      }
+
+     // if (command === "tomato") {// Join the same voice channel of the author of the message
+     if (false) {
+     try {
           msg.reply("🍅  TOMATO! 🍅")
           if (msg.member.voice.channel) {
             const connection = await msg.member.voice.channel.join();
@@ -297,6 +346,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
       tracer.inject(span, 'log', loggedCommand)
 
     }
+
   }
 }
 

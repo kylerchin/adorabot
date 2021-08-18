@@ -15,3 +15,13 @@ export function uniq(a) {
       return seen.hasOwnProperty(item) ? false : (seen[item] = true);
   });
 }
+
+export  function hexCodeToColorNumber(hexBoi) {
+  const extractHex = hexBoi.replace(/#/g, '')
+
+            //Add 0x and give it to parse int
+            const colorNumber = parseInt("0x" + extractHex)
+
+return colorNumber
+
+}

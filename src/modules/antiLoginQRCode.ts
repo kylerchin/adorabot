@@ -101,7 +101,7 @@ async function toBitmap(buffer) {
     //const sharpBitmap = await sharp(buffer).raw().toBuffer({ resolveWithObject: true })
     var bitmapReturn:any;
     await Jimp.read(buffer).then(({ bitmap }) => {bitmapReturn = bitmap})
-    console.log(bitmapReturn)
+    //console.log(bitmapReturn)
     //return sharpBitmap;
     return bitmapReturn;
 }

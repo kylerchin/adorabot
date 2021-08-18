@@ -5,10 +5,12 @@ const Discord = require('discord.js');
 var client = new Discord.Client(
   { 
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
-    intents: Discord.Intents.NON_PRIVILEGED, retryLimit: Infinity
+    intents: ['GUILDS',"GUILD_BANS","GUILD_EMOJIS_AND_STICKERS","GUILD_WEBHOOKS","GUILD_MESSAGES","DIRECT_MESSAGES","GUILD_MESSAGE_REACTIONS","DIRECT_MESSAGE_REACTIONS"], 
+    retryLimit: Infinity
   });
 const { config } = require('./../config.json');
 import {logger,tracer,span} from './modules/logger'
+import {processmalwarediscordmessage} from './modules/scanurl'
 //const prefix = "shake ";
 //const token = process.env.BOT_TOKEN;
 //var fs = require('fs'); 
@@ -16,7 +18,7 @@ import { appendFile } from 'fs';
 import { commandHandler } from "./modules/commandhandler"; 
 import { runOnStartup, everyServerRecheckBans, unBanOnAllAdoraSubbedServers } from "./modules/moderation";
 import { onMessageForQR, onMessageUpdateForQR } from './modules/antiLoginQRCode';
-import { updateDiscordBotsGG, updateDatadogCount } from "./modules/uploadStatsToBotsGg"
+import { updateDiscordBotsGG, updateDatadogCount, updateDatadogCountRateLimited } from "./modules/uploadStatsToBotsGg"
 import { Message } from 'discord.js'
 //import "dd-trace/init";
 
@@ -127,12 +129,14 @@ client.on("warn",async (info) => {
 
 client.on('ready',async () => {
   console.log(`Logged in as ${client.user.tag}!`)
-  await logger.discordInfoLogger.info(`Logged in as ${client.user.tag}!`, { type: 'clientReady'});
+ // await logger.discordInfoLogger.info(`Logged in as ${client.user.tag}!`, { type: 'clientReady'});
   const howManyUsersFam = `Bot has started, with ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`
-  await logger.discordInfoLogger.info(howManyUsersFam, {type: 'clientReady'});
+//  await logger.discordInfoLogger.info(howManyUsersFam, {type: 'clientReady'});
   
+  console.log('set presence loading')
   await setPresenceForAdora();
 
+  console.log('moderation setup loading')
     //ban list
     try {moderationCassandra()} catch (error38362) {
       console.error(error38362)
@@ -140,7 +144,10 @@ client.on('ready',async () => {
 
     //dbots.postStats(client.guilds.size, client.shard.count, client.shard.id)
     
+    console.log('update discord bot gg')
     await updateDiscordBotsGG(client,config)
+
+    console.log('finish ready script')
 });
 
 client.on('rateLimit', async rateLimitInfo => {
@@ -168,6 +175,7 @@ client.on('guildDelete', async guild => {
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
   await onMessageUpdateForQR(oldMessage, newMessage)
+  processmalwarediscordmessage(newMessage)
 })
 
 client.on('guildBanAdd', async (guild, user) => {
@@ -187,7 +195,7 @@ client.on('guildBanRemove', async (guild, user) => {
 })
 
 
-client.on('message', async (message:Message) => {
+client.on('messageCreate', async (message:Message) => {
 
   try {
     tracer.trace('clientMessage', () => {
@@ -195,8 +203,10 @@ client.on('message', async (message:Message) => {
       //const traceId = logTrace.dd.trace_id;
       Promise.all[commandHandler(message,client,config,cassandraclient,dogstatsd), 
         onMessageForQR(message), 
-        updateDatadogCount(client,config,cassandraclient),
+        updateDatadogCountRateLimited(client,config,cassandraclient),
         dogstatsd.increment('adorabot.client.message')]
+
+        processmalwarediscordmessage(message)
       
       // here we are in the context for a trace that has been activated on the scope by tracer.trace
     })

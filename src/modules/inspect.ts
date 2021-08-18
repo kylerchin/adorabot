@@ -3,6 +3,7 @@ var _ = require('lodash');
 var forEach = require("for-each")
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 import {logger} from './logger'
+import  {Guild} from 'discord.js'
 
 interface inspectFunction {
     message: any;
@@ -47,7 +48,7 @@ export function inspect(args:inspectFunction) {
                         if(fetchExistingBanResult.rows[0].banned === true) {
                             //console.log(fetchExistingBanResult.rows[0].reason.lastchangedtime)
                             var timeUuidLastChanged =  new TimeUuid(fetchExistingBanResult.rows[0].reason.lastchangedtime)
-                            var timeOfBan = timeUuidLastChanged.getDate().toString();
+                            var timeOfBan = `<t:${Math.round(timeUuidLastChanged.getDate().getTime()/ 1000)}:F>`
                             _.set(embed, 'fields[0].value',"Banned: " + fetchExistingBanResult.rows[0].reason.trim() + "\nTime of ban: " + timeOfBan)
                         } else {
                             _.set(embed, 'fields[0].value',"Not Banned")
@@ -56,13 +57,51 @@ export function inspect(args:inspectFunction) {
                     }
                 });
 
+
+                //Figure out number of common servers Adora has with the user id
+         /*   const promises = [
+                //For Every Shard
+                args.client.shard.broadcastEval( (client, contextParam) => {
+                //console.log(client)
+                
+                //for every guild on every shard
+                client.guilds.cache.reduce((prev, guild) => {
+                    console.log("line 63")
+
+                    //find the user
+                guild.members.fetch(contextParam.individualUserId).then(
+                    //if the result comes back, add 1 to the user count
+                    (resultOfMember) => {
+                        prev +1
+                    }
+                ).catch()
+
+              
+
+                }, 0)},
+                 {
+                    
+                        individualUserId: individualUserId
+                    
+                }
+                )
+            ]
+
+            */
+
+           // var serverInfos = await Promise.all(promises)
+            //const numberOfServersUserIsIn = serverInfos[0].reduce((prev, eachBatchOfServer) => prev + eachBatchOfServer, 0);
+
+            //_.set(embed, 'fields[1].name','Common Servers')
+            //_.set(embed, 'fields[1].value',`${numberOfServersUserIsIn}`)
+
             if (discordUser.user) {
                 //embed.thumbnail.url = await discordUser.user.displayAvatarURL();
                 var avatarURL = await discordUser.user.displayAvatarURL();
                 _.set(embed, 'thumbnail.url', avatarURL);
                 _.set(embed, 'title', await discordUser.user.tag)
                 _.set(embed, 'fields[1].name',"Account Created At")
-                _.set(embed, 'fields[1].value',await discordUser.user.createdAt.toString())
+                _.set(embed, 'fields[1].value', `<t:${Math.round(await discordUser.user.createdAt.getTime() / 1000)}:F>`)
 
                 var avatarURLString = `\nAvatarURL: \`${avatarURL}\``
 
@@ -78,6 +117,27 @@ export function inspect(args:inspectFunction) {
                 } else {
                     _.set(embed, 'fields[2].value', flagsArray.join("\n"))
                 }
+
+                _.set(embed, 'fields[3].name', "Bot")
+                if (discordUser.user.bot) {
+                    _.set(embed, 'fields[3].value', "TRUE")
+                } else {
+                    _.set(embed, 'fields[3].value', "FALSE")
+                }
+
+                _.set(embed, 'fields[3].name', "Bot")
+                if (discordUser.user.bot) {
+                    _.set(embed, 'fields[3].value', "TRUE")
+                } else {
+                    _.set(embed, 'fields[3].value', "FALSE")
+                }
+
+                _.set(embed, 'fields[4].name', "Official Discord System user")
+                if (discordUser.user.systen) {
+                    _.set(embed, 'fields[4].value', "TRUE")
+                } else {
+                    _.set(embed, 'fields[4].value', "FALSE")
+                }
                 
             }
 
@@ -92,4 +152,44 @@ export function inspect(args:inspectFunction) {
             console.log(embed)
             args.message.channel.send({embeds: [embed]})
         });
+}
+
+interface inspectservertype {
+    client: any;
+    serverId: string;
+}
+
+export async function inspectserver(inspectserverargs: inspectservertype) {
+    inspectserverargs.client.shard.broadcastEval((clientBroadcasted, contextParam) => {
+        clientBroadcasted.guilds.fetch(contextParam.serverId).then((guild) => {
+            console.log(guild)
+            return {
+                "id": guild.id,
+                "name": guild.name,
+                "memberCount": guild.memberCount,
+                "ownerID": guild.ownerID
+            }
+
+        }).catch((error) => {
+            console.error(error)
+            return false})
+    }, {
+        serverId: inspectserverargs.serverId
+    }).catch((err) => logger.discordInfoLogger.info(err))
+}
+export async function inspectservercmd(args: inspectFunction) {
+
+    var roleMentionsRemoved = args.message.content.replace(/<@&(\d{18})>/g, '')
+
+    var arrayOfServersToLookup = uniq(roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g));
+
+    var fetchesToMake = arrayOfServersToLookup.map((serverid) => {
+        console.log(serverid)
+        return inspectserver({client: args.client, serverId: serverid})
+    });
+
+    await Promise.all(fetchesToMake).then(results => {
+        console.log(results)
+        logger.discordInfoLogger.info(results)
+    });
 }

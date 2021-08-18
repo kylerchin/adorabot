@@ -13,21 +13,22 @@ export function helpDirectory(helpDirArgs: helpDirArgs) {
     helpDirArgs.message.channel.send({
         "content": "**Adora Commands**",
         "embeds": [{
-          "title": "Help - Music Charts & Statistics",
+          "title": "Music Charts & Statistics",
           "description": "Access live information across music charts and platforms",
+          "color": 0xf3ccbd,
           "fields": [
             {
-              "name": "`a!billboard`",
-              "value": "View latest & historical Billboard Charts, run `a!billboard` for more info\nAlias: `a!bb`"
+              "name": "`a!billboard list/[Chart Name]`",
+              "value": "View latest & historical Billboard Charts, run `a!billboard` for more info`\n`a!list to list all the chart codes\nAlias: `a!bb`"
             },
-            {
+            /*{
               "name": "`a!bbp`",
               "value": "View statistics for billboard polls, run command for more info"
             },
             {
               "name": "`a!bv`",
               "value": "Retrieve voting links for billboard polls, run command for a list of polls"
-            },
+            },*/
             {
               "name": "`a!youtube`",
               "value": "`a!youtube <video link / search for a video>`: Realtime view counter for YouTube videos. \n Example: `a! youtube fake love music video` or `a! youtube https://www.youtube.com/watch?v=gdZLi9oWNZg`, run `a!youtube` for more information\nAlias: `a!yt`"
@@ -39,12 +40,30 @@ export function helpDirectory(helpDirArgs: helpDirArgs) {
           ]
         },
         {
-          "title": "Help - Moderation",
+          "title": "Billboard Polls",
+          "description": "Latest Billboard Poll Scores and Vote Links",
+          "color": 0xeebcbb,
+          "fields": [
+            {
+              "name": "`a!bbp`",
+              "value": "View vote tallys for billboard polls, run command for a list of polls",
+              "inline": true
+            },
+            {
+              "name": "`a!bv`",
+              "value": "Show Voting links for billboard polls, run command for a list of polls",
+              "inline": true
+            },
+          ]
+        },
+        {
+          "title": "Moderation commands",
           "description": "Make protecting your community easier!",
+          "color": 0xe7acc2,
           "fields": [
             {
               "name": "`a!autoban`",
-              "value": "Automatically block known-raid accounts from blacklists before they come to your server, run command for more info"
+              "value": "Automatically block known-raid accounts from blacklists before they come to your server, run command for more info\n`a!autoban on` to enable the global blacklist, `a!autoban off` to turn it off."
             },
             {
               "name": "`a!ban (mentions/userids) [reason]`",
@@ -69,8 +88,9 @@ export function helpDirectory(helpDirArgs: helpDirArgs) {
           ]
         },
         {
-          "title": "Help - Adora",
-          "description": "General tools and access!",
+          "title": "General commands",
+          "description": "Ping, Support server, and vote for the bot commands",
+          "color": 0xd6b5d4,
           "fields": [
             {
               "name": "`a!ping`",
@@ -86,20 +106,22 @@ export function helpDirectory(helpDirArgs: helpDirArgs) {
             },
             {
                 "name": "`a!vote`",
-                "value": "Vote for Adora on Top.gg links"
+                "value": "Vote for Adora on Top.gg links",
+                "inline": true
             },
             {
                 "name": "`a!votes`",
-                "value": "Shows leaderboard of voters"
+                "value": "Shows leaderboard of voters",
+                "inline": true
             },
             {
               "name": "I have an idea for a command or feedback!",
               "value": "We'd love to hear it! Please join our support server and tell us! Run `a!invite` for the invite link to our Support & Suggestion Adorabot Discord Server"
-            },
-            {
+            }
+            /*{
               "name": "Credits",
               "value": "Developer: Kyler#9100\nAdmins: Moka\nThank you to all that contribute code, feedback, and ban reports! Y'all make this bot better so thanks for using it"
-            }
+            }*/
           ]
         }]
       }).catch((error) => {logger.discordErrorLogger.error(error)});

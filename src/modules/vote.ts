@@ -1,6 +1,6 @@
 var _ = require('lodash');
 var forEach = require('for-each')
-import { Message } from 'discord.js'
+import { Message, MessageOptions } from 'discord.js'
 var Discord = require('discord.js')
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 
@@ -31,8 +31,33 @@ interface showTopVotersArgs {
     client: any;
 }
 
+export async function showListOfVotersTimes(voteArgs:showTopVotersArgs) {
+    var today = new Date()
+    var priorDate = new Date().setDate(today.getDate()-7)
+    const id2 = TimeUuid.fromDate(new Date(priorDate));
+    var query = "SELECT * from adoravotes.votes WHERE time >= ? ALLOW FILTERING";
+    var params = [id2]
+
+    const result = await voteArgs.cassandraclient.execute(query, params, { prepare: true });
+
+        for await (const row of result) {
+        console.log(row.userid);
+
+        var timeOfVote = row.time.getDate(); 
+        
+        console.log(timeOfVote)
+        }
+
+    // emitted when all rows have been retrieved and read
+}
+
 export async function showTopVoters(voteArgs:showTopVotersArgs) {
     var leaderboard = {}
+
+    var totalStats = {
+        "discordbotlist": 0,
+        "topgg": 0
+    }
 
     const options = { prepare : true , fetchSize : 1000 };
 
@@ -52,6 +77,9 @@ export async function showTopVoters(voteArgs:showTopVotersArgs) {
 
         for await (const row of result) {
         console.log(row.userid);
+
+        console.log(row.voteservice)
+        totalStats[`${row.voteservice}`] += 1;
 
                 // process row
             // Invoked per each row in all the pages
@@ -173,17 +201,34 @@ if(_.size(leaderboard) === 0) {
 
         console.log(pages)
 
-        const pageEmbedArray = pages.map((page,pageindex) => {
-            return {
+        const pageEmbedArray = await pages.map((page,pageindex) => {
+
+            //var descForPage = page
+             var messageMap = {
                 "content": "Vote for Adora with `a!vote` to show up on the leaderboard!",
                 "embeds": [{
                 "description": page,
                 "title": `Top Voters (past 30 days) | Page ${pageindex + 1} out of ${pages.length} pages.`,
                 "footer": {
                     "text": `Anonymized for privacy reasons.`
-                }
+                },
+                "fields": [
+                    {
+                        "name": "Top.gg votes",
+                        "value": `${totalStats.topgg}`
+                    },
+                    {
+                        "name": "Discordbotlist votes",
+                        "value": `${totalStats.discordbotlist}`
+                    }
+                ]
             }]
-        }})
+        }
+    
+        return messageMap;
+    }
+        
+        )
 
         console.log('pageEmbedArray')
         console.log(pageEmbedArray)

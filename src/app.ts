@@ -4,7 +4,8 @@
 */
 
 // Include discord.js ShardingManger
-const { ShardingManager } = require('discord.js');
+//const { ShardingManager } = require('discord.js');
+import {ShardingManager} from 'discord.js'
 const { config } = require('./../config.json');
 import {} from "./adora"; 
 import {logger,tracer} from './modules/logger'
@@ -47,13 +48,13 @@ const manager = new ShardingManager('./dist/adora.js', {
     token: config.token
 });
 
-// Spawn your shards
-manager.spawn().catch(async (error) => {
-    await logger.discordErrorLogger.error({type: "shardCreateError", error: error});
-});
-
 // Emitted when a shard is created
 manager.on('shardCreate',async (shard) => {
     console.log(`Shard ${shard.id} launched`);
-    logger.discordInfoLogger.info({type: "shardCreate", shard: shard});
+    //logger.discordInfoLogger.info({type: "shardCreate", shard: shard});
+});
+
+// Spawn your shards
+manager.spawn().catch(async (error) => {
+  //await logger.discordErrorLogger.error({type: "shardCreateError", error: error});
 });

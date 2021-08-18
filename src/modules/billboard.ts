@@ -5,6 +5,25 @@ var forEach = require("for-each")
 const Discord = require('discord.js');
 var _ = require('lodash')
 import {Message} from 'discord.js'
+import {hexCodeToColorNumber} from './util'
+
+var chartShortObject = {}
+
+ listCharts((err, charts)=> {
+  forEach(charts, function (eachChart) {
+
+    var chartcode = eachChart.url.replace("http://www.billboard.com/charts/", "")
+    var shortCode = officialToAdoraBBcode(chartcode)
+    chartShortObject[`${shortCode}`] = chartcode
+    chartShortObject[chartcode] = chartcode
+    var evenShorter = chartcode.toString().replace(/-/g,'')
+    chartShortObject[evenShorter] = chartcode
+
+    var doubleshort = shortCode.toString().replace(/-/g,'')
+    chartShortObject[doubleshort] = chartcode
+  })
+  logger.discordInfoLogger.info({message: chartShortObject, type: "chartShortArrayFinished"})
+})
 
 async function sendChartScrollable(chart,message: Message,err,chartCode) {
     console.log(chart)
@@ -28,17 +47,17 @@ async function sendChartScrollable(chart,message: Message,err,chartCode) {
             "fields": [
                 {
                     "name": "Weeks on Chart",
-                    "value": `${song.position.weeksOnChart}`,
+                    "value": `${song.position.weeksOnChart} weeks`,
                     "inline": true
                 },
                 {
                     "name": "Peak Position",
-                    "value": `${song.position.peakPosition}`,
+                    "value": `#${song.position.peakPosition}`,
                     "inline": true
                 },
                 {
                     "name": "Position Last Week",
-                    "value": `${song.position.positionLastWeek}`,
+                    "value": `#${song.position.positionLastWeek}`,
                     "inline": true
                 }
             ]
@@ -59,10 +78,15 @@ async function sendChartScrollable(chart,message: Message,err,chartCode) {
         return eachChunkFixed;
     })
 
+    logger.discordInfoLogger.info(chart, {type: "billboardChart"})
+
     var pageCounter = 0;
     message.channel.send({
       "content": `${chartCode} Chart | ${chart.week}`,
       embeds: groupedEmbeds[pageCounter]}).then(messageBillboardEmbed => {
+
+        message.channel.stopTyping();
+
         console.log("finished part 1")
     
 
@@ -127,6 +151,7 @@ async function sendChartScrollable(chart,message: Message,err,chartCode) {
 export async function billboardChartsHelpPage(message,command,args) {
     message.channel.send({embeds: [{
         "title": "Billboard Charts Help Page",
+        "color": hexCodeToColorNumber('#eebcbb'),
         "description": "Shows latest and historical information on Billboard charts",
         "fields": [
           {
@@ -135,7 +160,7 @@ export async function billboardChartsHelpPage(message,command,args) {
           },
           {
             "name": "Getting latest Chart information",
-            "value": "`a!bilboard <chart> [optional YYYY-MM-DD]`\nFor example, `a!billboard hot-100` will get the latest Hot-100 songs.\n`a!billboard billboard-korea-100` will get the latest Hot Korean songs.\n`a!billboard hot-100 2016-08-27` retrieves the Hot-100 chart from Aug 27, 2016."
+            "value": "`a!bilboard <chart> [optional YYYY-MM-DD]`\nFor example, `a!billboard hot-100` will get the latest Hot-100 songs.\n`a!billboard korea-100` will get the latest Hot Korean songs.\n`a!billboard hot-100 2016-08-27` retrieves the Hot-100 chart from Aug 27, 2016.\nWhen typing a chart code, you can omit the dashes and that will work too! `a!bb korea100` will be the same as `a!bb korea-100`"
           },
           {
             "name": "Alias",
@@ -143,6 +168,17 @@ export async function billboardChartsHelpPage(message,command,args) {
           }
         ]
       }]})
+}
+
+export function officialToAdoraBBcode(chartname: string) {
+  const regex = /billboards?-?/g
+  return chartname.toString().replace(regex,"")
+}
+
+export function adoraToOfficialBBcode(chartname) {
+  console.log(chartShortObject)
+  console.log(`long code for ${chartname}: ` + chartShortObject[`${chartname}`])
+    return chartShortObject[`${chartname}`]
 }
 
 export async function billboardListChartsScrollable(message,command,args) {
@@ -160,6 +196,8 @@ export async function billboardListChartsScrollable(message,command,args) {
         forEach(charts, function (eachChart, key) {
         
         var chartCode = eachChart.url.replace("http://www.billboard.com/charts/", "")
+
+        chartCode = officialToAdoraBBcode(chartCode)
         
         currentPageStage = currentPageStage + chartCode + "\n";
 
@@ -175,7 +213,8 @@ export async function billboardListChartsScrollable(message,command,args) {
 
             //}
             currentPageStage = chartCode + "\n";
-            pages.push("`"  + currentPage + "`")
+           // pages.push("`"  + currentPage + "`")
+           pages.push( currentPage )
            //logger.discordInfoLogger.info({type: "billboardChartListTest", message: "currentPageStage.length >= 2000"})
         }
 
@@ -196,7 +235,7 @@ export async function billboardListChartsScrollable(message,command,args) {
           let page = 1 
   
           const embed = new Discord.MessageEmbed() // Define a new embed
-          .setColor(0xffffff) // Set the color
+          .setColor(0xe7acc2) // Set the color
           .setFooter(`Page ${page} of ${pages.length}`)
           .setDescription(pages[page-1])
           .setTitle("Billboard List of Charts")
@@ -244,27 +283,55 @@ export async function billboardListChartsScrollable(message,command,args) {
               })
           })
     });
-    
-
-      
+        
 }
 
 export async function billboardCharts(message,command,args,client) {
     if(args.length < 1 || args[0] === "help") {
         await billboardChartsHelpPage(message,command,args)
-    }
-    
-    if(args[0] === "list" || args[0] === "listchart" || args[0] === "listcharts" || args[0] === 'charts') {
+    } else 
+  {
+    if (args[0] === "testcode") {
+      var chartCodeProcessed = adoraToOfficialBBcode(args[1])
+      message.reply(chartCodeProcessed)
+    } else {
+      if(args[0] === "list" || args[0] === "listchart" || args[0] === "listcharts" || args[0] === 'charts') {
         billboardListChartsScrollable(message,command,args)
     } else {
-        if(args[1]) {
-            getChart(args[0], args[1], async (err, chart) => {
-                sendChartScrollable(chart,message,err,args[0])
-              });
-        } else {
-            getChart(args[0], async (err, chart) => {
-                sendChartScrollable(chart,message,err,args[0])
-              });
-        }
+      var chartCodeProcessed = adoraToOfficialBBcode(args[0])
+
+      if(typeof(chartCodeProcessed) === "undefined") {
+        message.channel.send("Invalid chart, use `a!bb list` to see a full list of valid chart")
+        billboardChartsHelpPage(message,command,args)
+       // message.channel.stopTyping();
+      } else {
+         // Start typing in a channel, or increase the typing count by one
+         message.channel.startTyping();
+         if(args[1]) {
+             getChart(chartCodeProcessed, args[1], async (err, chart) => {
+                 sendChartScrollable(chart,message,err,chartCodeProcessed)
+               }).catch(err => {console.log(err)
+               // Reduce the typing count by one and stop typing if it reached 0
+               message.channel.send("Invalid chart, use `a!bb list` to see a full list of valid chart")
+               billboardChartsHelpPage(message,command,args)
+               message.channel.stopTyping();
+               });
+         } else {
+             getChart(chartCodeProcessed, async (err, chart) => {
+               console.log(chart)
+                 sendChartScrollable(chart,message,err,chartCodeProcessed)
+               }).catch(err => {console.log(err)
+                 // Reduce the typing count by one and stop typing if it reached 0
+                 message.channel.send("Invalid chart, use `a!bb list` to see a full list of valid chart")
+                 billboardChartsHelpPage(message,command,args)
+                 message.channel.stopTyping();
+                 });
+         }
+      }
+       
     }
+    } 
+  }
+
+      
 }

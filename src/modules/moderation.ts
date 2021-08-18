@@ -1,14 +1,13 @@
 var _ = require('lodash');
 var forEach = require("for-each")
 // at the top of your file
-const Discord = require('discord.js');
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../config.json`);
-import { inspect } from './inspect';
+import { inspect, inspectservercmd } from './inspect';
 import { logger } from './logger'
 import { uniq } from './util'
-import { Message } from 'discord.js'
+import { Client, Message, Guild } from 'discord.js'
 //let file = editJsonFile(`${__dirname}/config.json`);
 //Generate time with TimeUuid.now();
 const emptylinesregex = /\n/ig;
@@ -36,9 +35,7 @@ export async function kickAdoraOutOfServerId(serverId, client) {
             })
             .catch();
     }, {
-        context: {
             serverId: serverId
-        }
     }).then(results => {
         logger.discordInfoLogger.info(`Admin kicked Adora out of ${results.guildleft.name}`, { type: "adminTriggeredKickFromServer", guildleft: results.guildleft })
     })
@@ -336,6 +333,10 @@ export async function processAllModerationCommands(message, command, args, confi
         inspect({ message, client, cassandraclient })
     }
 
+    if (command === 'inspectserver' || command === 'inspectguild') {
+        inspectservercmd({ message, client, cassandraclient })
+    }
+
     if (command === "adoraunban") {
         if (isAuthorizedAdmin(message.author.id)) {
             message.reply(":unlock: You are authorized :unlock: ")
@@ -356,7 +357,7 @@ export async function processAllModerationCommands(message, command, args, confi
 
                 cassandraclient.execute(queryToRemoveFromDatabase, parametersToRemoveFromDatabase, { prepare: true })
                     .then(results => {
-                        logger.discordInfoLogger(`Removed ${userid} from banlist database`, { type: "deleteFromBanlist", userid: userid })
+                        logger.discordInfoLogger.info(`Removed ${userid} from banlist database`, { type: "deleteFromBanlist", userid: userid })
                     }).catch(
                         (cassandraerror) => logger.discordErrorLogger.error(cassandraerror, { type: "cassandraerrorDeleteFromBanList" })
                     )

@@ -1,6 +1,8 @@
 var axios = require('axios');
 var qs = require('qs');
 import {logger,tracer,span} from "./logger"
+// Rate Limit Set
+const rateLimitsInShard = new Set();
 
 var StatsD = require('hot-shots'),
 dogstatsd = new StatsD({
@@ -9,7 +11,10 @@ dogstatsd = new StatsD({
 });
   
 export async function updateDatadogCount(client,config,cassandraclient) {
-  var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban WHERE subscribed= ? ALLOW FILTERING;"
+
+  tracer.trace('updateDatadogCount', () => {
+
+  var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban"
         var parametersForSubscribedServers = [true]
         var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
 
@@ -17,7 +22,7 @@ export async function updateDatadogCount(client,config,cassandraclient) {
     const promises = [
       client.shard.fetchClientValues('guilds.cache.size'),
       client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)),
-      cassandraclient.execute(queryNumberOfSubscribedServers, parametersForSubscribedServers),
+      cassandraclient.execute(queryNumberOfSubscribedServers),
       cassandraclient.execute(lookuphowmanybannedusersquery)
  ];
 
@@ -39,9 +44,15 @@ export async function updateDatadogCount(client,config,cassandraclient) {
 
   })
 
-}}
+}
+  })
+}
 
 export async function updateDiscordBotsGG(client,config) {
+
+  tracer.trace('updateDiscordBotsGG', () => {
+    
+ 
 
   if(true) {
     const promises = [
@@ -119,6 +130,34 @@ await logger.discordWarnLogger.warn({type: "uploadStatsToBotsGg", error: error})
 
   }
 
-            
+})      
 
+}
+
+export async function updateDiscordBotsGGRateLimited(client,config) {
+  //has the system recently uploaded stats to discord bots gg
+  if (rateLimitsInShard.has("discordbotsgg")) {
+  } else {
+    Promise.all([updateDiscordBotsGG(client,config),
+    // Adds the user to the set so that they can't talk for 7sec
+    rateLimitsInShard.add("discordbotsgg")]);
+    setTimeout(() => {
+      // Removes the user from the set after 7sec
+      rateLimitsInShard.delete("discordbotsgg");
+    }, 7000);
+  }
+}
+
+
+export async function updateDatadogCountRateLimited(client,config,cassandraclient) {
+  //has the system recently fetched the database
+  if (rateLimitsInShard.has("datadogcount")) {
+  } else {
+    Promise.all([updateDatadogCount(client,config,cassandraclient),
+    rateLimitsInShard.add("datadogcount")]);
+    setTimeout(() => {
+      // Removes rate limit after 1 sec
+      rateLimitsInShard.delete("datadogcount");
+    }, 1000);
+  }
 }

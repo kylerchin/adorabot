@@ -4,6 +4,7 @@ var _ = require('lodash');
 const axios = require('axios')
 const cio = require('cheerio-without-node-native');
 const Discord = require('discord.js');
+import {Util} from 'discord.js'
 import {decode} from 'html-entities';
 import { logger,tracer,span } from './logger';
 import { asyncForEach,hexCodeToColorNumber } from './util';
@@ -152,7 +153,7 @@ export async function geniusLyrics(message:Message,args,config) {
             
             //console.log(songLyricsHTML)
 
-            var arrayOfTexts = await Discord.splitMessage(songLyricsHTML);
+            var arrayOfTexts = await Util.splitMessage(songLyricsHTML);
 
             console.log(arrayOfTexts)
 
