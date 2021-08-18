@@ -151,7 +151,7 @@ export async function geniusLyrics(message:Message,args,config) {
             var songLyricsHTML;
              songLyricsHTML = await geniusSongUrlHTMLExtract(response.data.response.hits[0].result.url);
             
-            //console.log(songLyricsHTML)
+            console.log(songLyricsHTML)
 
             var arrayOfTexts = await Util.splitMessage(songLyricsHTML);
 
