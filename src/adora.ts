@@ -129,9 +129,9 @@ client.on("warn",async (info) => {
 
 client.on('ready',async () => {
   console.log(`Logged in as ${client.user.tag}!`)
- // await logger.discordInfoLogger.info(`Logged in as ${client.user.tag}!`, { type: 'clientReady'});
+  await logger.discordInfoLogger.info(`Logged in as ${client.user.tag}!`, { type: 'clientReady'});
   const howManyUsersFam = `Bot has started, with ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`
-//  await logger.discordInfoLogger.info(howManyUsersFam, {type: 'clientReady'});
+  await logger.discordInfoLogger.info(howManyUsersFam, {type: 'clientReady'});
   
   console.log('set presence loading')
   await setPresenceForAdora();
