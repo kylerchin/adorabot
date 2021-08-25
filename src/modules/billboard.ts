@@ -3,6 +3,7 @@ import { logger } from "./logger";
 const { listCharts,getChart } = require('billboard-top-100');
 var forEach = require("for-each")
 const Discord = require('discord.js');
+import {ReactionCollectorOptions,CollectorFilter} from 'discord.js'
 var _ = require('lodash')
 import {Message} from 'discord.js'
 import {hexCodeToColorNumber} from './util'
@@ -22,7 +23,7 @@ var chartShortObject = {}
     var doubleshort = shortCode.toString().replace(/-/g,'')
     chartShortObject[doubleshort] = chartcode
   })
-  logger.discordInfoLogger.info({message: chartShortObject, type: "chartShortArrayFinished"})
+  //logger.discordInfoLogger.info({message: chartShortObject, type: "chartShortArrayFinished"})
 })
 
 async function sendChartScrollable(chart,message: Message,err,chartCode) {
@@ -85,7 +86,7 @@ async function sendChartScrollable(chart,message: Message,err,chartCode) {
       "content": `${chartCode} Chart | ${chart.week}`,
       embeds: groupedEmbeds[pageCounter]}).then(messageBillboardEmbed => {
 
-        message.channel.stopTyping();
+      //  message.channel.stopTyping();
 
         console.log("finished part 1")
     
@@ -98,9 +99,9 @@ async function sendChartScrollable(chart,message: Message,err,chartCode) {
           const deleteFilter = (reaction, user) => reaction.emoji.name === '🗑' && user.id === message.author.id
 
           const timeOfTimer = 60*60*1000
-          const backwards = messageBillboardEmbed.createReactionCollector(backwardsFilter, {time: timeOfTimer})
-          const forwards = messageBillboardEmbed.createReactionCollector(forwardsFilter, {time: timeOfTimer})
-          const deleteCollector = messageBillboardEmbed.createReactionCollector(deleteFilter, {time: timeOfTimer})
+          const backwards = messageBillboardEmbed.createReactionCollector({filter: backwardsFilter, time: timeOfTimer})
+          const forwards = messageBillboardEmbed.createReactionCollector({filter: forwardsFilter, time: timeOfTimer})
+          const deleteCollector = messageBillboardEmbed.createReactionCollector({filter: deleteFilter, time: timeOfTimer})
 
           backwards.on('collect', (r, u) => {
               if (pageCounter === 0) {
@@ -250,8 +251,8 @@ export async function billboardListChartsScrollable(message,command,args) {
               const forwardsFilter = (reaction, user) => reaction.emoji.name === '➡' && user.id === message.author.id
   
               const timeOfTimer = 60*60*1000
-              const backwards = messageBillboardEmbed.createReactionCollector(backwardsFilter, {time: timeOfTimer})
-              const forwards = messageBillboardEmbed.createReactionCollector(forwardsFilter, {time: timeOfTimer})
+              const backwards = messageBillboardEmbed.createReactionCollector({filter: backwardsFilter, time: timeOfTimer})
+              const forwards = messageBillboardEmbed.createReactionCollector({filter: forwardsFilter, time: timeOfTimer})
   
               backwards.on('collect', (r, u) => {
                   if (page === 1) {
@@ -298,6 +299,8 @@ export async function billboardCharts(message,command,args,client) {
       if(args[0] === "list" || args[0] === "listchart" || args[0] === "listcharts" || args[0] === 'charts') {
         billboardListChartsScrollable(message,command,args)
     } else {
+      //message.channel.send("The billboard command is currently unstable. Certain pages may not work and we are working on an update. We apologize for the inconvenience\n Join the Adora Support Server via `a!invite` to get updates on when a fix will be delivered! ")
+
       var chartCodeProcessed = adoraToOfficialBBcode(args[0])
 
       if(typeof(chartCodeProcessed) === "undefined") {
@@ -306,26 +309,16 @@ export async function billboardCharts(message,command,args,client) {
        // message.channel.stopTyping();
       } else {
          // Start typing in a channel, or increase the typing count by one
-         message.channel.startTyping();
+         message.channel.sendTyping();
          if(args[1]) {
              getChart(chartCodeProcessed, args[1], async (err, chart) => {
                  sendChartScrollable(chart,message,err,chartCodeProcessed)
-               }).catch(err => {console.log(err)
-               // Reduce the typing count by one and stop typing if it reached 0
-               message.channel.send("Invalid chart, use `a!bb list` to see a full list of valid chart")
-               billboardChartsHelpPage(message,command,args)
-               message.channel.stopTyping();
-               });
+               })
          } else {
              getChart(chartCodeProcessed, async (err, chart) => {
                console.log(chart)
                  sendChartScrollable(chart,message,err,chartCodeProcessed)
-               }).catch(err => {console.log(err)
-                 // Reduce the typing count by one and stop typing if it reached 0
-                 message.channel.send("Invalid chart, use `a!bb list` to see a full list of valid chart")
-                 billboardChartsHelpPage(message,command,args)
-                 message.channel.stopTyping();
-                 });
+               })
          }
       }
        

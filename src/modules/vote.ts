@@ -1,8 +1,9 @@
 var _ = require('lodash');
 var forEach = require('for-each')
-import { Message, MessageOptions } from 'discord.js'
+import { Message, MessageOptions, Util } from 'discord.js'
 var Discord = require('discord.js')
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
+import {cassandraclient} from './cassandraclient'
 
 //stolen from https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
 function sortObject(obj) {
@@ -25,7 +26,6 @@ export function sendVoteLinks(message: Message) {
 }
 
 interface showTopVotersArgs {
-    cassandraclient: any;
     message: Message;
     [key:string]: any;
     client: any;
@@ -38,7 +38,7 @@ export async function showListOfVotersTimes(voteArgs:showTopVotersArgs) {
     var query = "SELECT * from adoravotes.votes WHERE time >= ? ALLOW FILTERING";
     var params = [id2]
 
-    const result = await voteArgs.cassandraclient.execute(query, params, { prepare: true });
+    const result = await cassandraclient.execute(query, params, { prepare: true });
 
         for await (const row of result) {
         console.log(row.userid);
@@ -73,7 +73,7 @@ export async function showTopVoters(voteArgs:showTopVotersArgs) {
     var query = "SELECT * from adoravotes.votes WHERE time >= ? ALLOW FILTERING";
     var params = [id2]
 
-    const result = await voteArgs.cassandraclient.execute(query, params, { prepare: true });
+    const result = await cassandraclient.execute(query, params, { prepare: true });
 
         for await (const row of result) {
         console.log(row.userid);
@@ -197,7 +197,7 @@ if(_.size(leaderboard) === 0) {
 
         });*/
 
-        pages = Discord.splitMessage(sortedFormatedRows.join("\n"), {maxLength: 1500})
+        pages = Util.splitMessage(sortedFormatedRows.join("\n"), {maxLength: 1500})
 
         console.log(pages)
 
@@ -247,9 +247,9 @@ if(_.size(leaderboard) === 0) {
           const deleteFilter = (reaction, user) => reaction.emoji.name === '🗑' && user.id === voteArgs.message.author.id
 
                   const timeOfTimer = 60*60*1000
-          const backwards = messageVotes.createReactionCollector(backwardsFilter, {time: timeOfTimer})
-          const forwards = messageVotes.createReactionCollector(forwardsFilter, {time: timeOfTimer})
-          const deleteCollector = messageVotes.createReactionCollector(deleteFilter, {time: timeOfTimer})
+          const backwards = messageVotes.createReactionCollector({filter:backwardsFilter, time: timeOfTimer})
+          const forwards = messageVotes.createReactionCollector({filter: forwardsFilter, time: timeOfTimer})
+          const deleteCollector = messageVotes.createReactionCollector({filter: deleteFilter, time: timeOfTimer})
 
             backwards.on('collect', (r, u) => {
                 if (pageCounter === 0) {

@@ -10,7 +10,9 @@ var client = new Discord.Client(
   });
 const { config } = require('./../config.json');
 import {logger,tracer,span} from './modules/logger'
+import {processInteraction} from './modules/interactions'
 import {processmalwarediscordmessage} from './modules/scanurl'
+import {cassandraclient} from './modules/cassandraclient'
 //const prefix = "shake ";
 //const token = process.env.BOT_TOKEN;
 //var fs = require('fs'); 
@@ -45,15 +47,6 @@ var fshour;
 
 let fsnewfilename = "bruh";
 
-const cassandra = require('cassandra-driver');
-
-const cassandraclient = new cassandra.Client({
-  contactPoints: config.cassandra.contactPoints,
-  localDataCenter: config.cassandra.localDataCenter,
-  authProvider: new cassandra.auth
-   .PlainTextAuthProvider(config.cassandra.plainTextUsername, config.cassandra.plainTextPassword)
-});
-
 client.everyServerRecheckBansOnThisShard = async () => {
   everyServerRecheckBans(cassandraclient, client, false);
   //3rd argument is if the function should recheck Unkown Bans
@@ -68,6 +61,8 @@ interface unbanSubArgsInterface {
   userid: string;
   reason: string;
 }
+
+
 
 client.unBanOnAllAdoraSubbedServers = function async (unbanSubArgs: unbanSubArgsInterface) {
   var unbanSubArgsModified:any = unbanSubArgs
@@ -150,6 +145,11 @@ client.on('ready',async () => {
     console.log('finish ready script')
 });
 
+client.on('interactionCreate', async interaction => {
+ // if (!interaction.isCommand()) return;
+  processInteraction({client,interaction})
+});
+
 client.on('rateLimit', async rateLimitInfo => {
   await logger.discordWarnLogger.warn({ clientEvent: 'rateLimit', rateLimitInfo: rateLimitInfo, type: 'rateLimit' });
  // console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
@@ -161,7 +161,7 @@ client.on('guildCreate', async guild => {
   logger.discordInfoLogger.info({message: `guild id ${guild.id} added to the bot`, type: "guildCreate", guildObject: guild}),
   client.shard.broadcastEval(client => client.everyServerRecheckBansOnThisShard())]
 
-  updateDatadogCount(client,config,cassandraclient)
+  updateDatadogCount(client,config)
 
   
 })
@@ -170,7 +170,7 @@ client.on('guildDelete', async guild => {
   updateDiscordBotsGG(client,config)
   await logger.discordInfoLogger.info({message: `guild id ${guild.id} removed from the bot`, type: "guildDelete", guildObject: guild})
   client.shard.broadcastEval(client => client.everyServerRecheckBansOnThisShard())
-  updateDatadogCount(client,config,cassandraclient)
+  updateDatadogCount(client,config)
 })
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
@@ -201,9 +201,9 @@ client.on('messageCreate', async (message:Message) => {
     tracer.trace('clientMessage', () => {
       //const logTrace = logger.info(body);
       //const traceId = logTrace.dd.trace_id;
-      Promise.all[commandHandler(message,client,config,cassandraclient,dogstatsd), 
+      Promise.all[commandHandler(message,client,config,dogstatsd), 
         onMessageForQR(message), 
-        updateDatadogCountRateLimited(client,config,cassandraclient),
+        updateDatadogCountRateLimited(client,config),
         dogstatsd.increment('adorabot.client.message')]
 
         processmalwarediscordmessage(message)

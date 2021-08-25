@@ -1,24 +1,34 @@
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
+import { DiscordInteractions } from "slash-commands";
+const { config } = require('./../config.json');
+
+
+const interaction = new DiscordInteractions({
+  applicationId: config.clientid,
+  authToken: config.token,
+  publicKey: config.publickey,
+});
 
 const commands = [{
-  name: 'ping',
-  description: 'Replies with Latency Time.'
-}]; 
+  name: "ping",
+  description: "View bot latency."
+},
+{
+  name: "youtube",
+  description: ""
+}];
 
-const rest = new REST({ version: '9' }).setToken('token');
 
-(async () => {
-  try {
-    console.log('Started refreshing application (/) commands.');
+async function createCommands() {
+// Create Global Command
 
-    await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-      { body: commands },
-    );
+commands.forEach(async command => {
+  await interaction
+.createApplicationCommand(command)
+.then(console.log)
+.catch(console.error);
+}
+)
 
-    console.log('Successfully reloaded application (/) commands.');
-  } catch (error) {
-    console.error(error);
-  }
-})();
+}
+
+createCommands()

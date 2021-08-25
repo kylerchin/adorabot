@@ -462,6 +462,10 @@ export async function processAllModerationCommands(message, command, args, confi
                     {
                         "name": `a!updatebans`,
                         "value": " Force all guilds in all shards to check for bans"
+                    },
+                    {
+                        "name": `a!updatepresence`,
+                        "value": "Refreshes the presence on all guilds."
                     }
                     ]
                   }]})

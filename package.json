@@ -6,9 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "run": "node ./dist/app.js",
-    "compile": "tsc",
+    "build": "tsc",
     "server": "node ./dist/runserver.js",
-    "updatesafebrowsing": "node ./dist/updatesafebrowsingdatabase.js"
+    "testslash": "node ./dist/testregister.js",
+    "updatesafebrowsing": "node ./dist/updatesafebrowsingdatabase.js",
+    "registerslash": "node ./dist/registerslash.js",
+    "deleteslash": "node ./dist/deleteslash.js"
   },
   "author": "",
   "license": "ISC",
@@ -23,12 +26,13 @@
   },
   "dependencies": {
     "@discordjs/opus": "^0.4.0",
+    "@discordjs/rest": "*",
     "@discordjs/voice": "^0.5.3",
     "@google-cloud/translate": "^6.0.5",
     "@top-gg/sdk": "^3.1.1",
     "@vitalets/google-translate-api": "^4.0.0",
     "axios": "^0.21.1",
-    "billboard-top-100": "^2.4.16",
+    "billboard-top-100": "^2.5.9",
     "bluebird": "^3.7.2",
     "bufferutil": "^4.0.3",
     "cassandra-driver": "^4.6.1",
@@ -72,6 +76,7 @@
     "request-promise-native": "^1.0.9",
     "scrape-youtube": "^2.0.7",
     "sharp": "^0.28.3",
+    "slash-commands": "^1.5.0",
     "unique-random": "^3.0.0",
     "utf-8-validate": "^5.0.4",
     "webrisk-hash": "^1.2.9",

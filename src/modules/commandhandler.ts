@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 //import * as Discord from 'discord.js'
 import { verboseDiscordLog } from "./verboseDiscordLog";
 import { billboardVote, billboardPollGetValue } from "./billboardPolls";
+import {cassandraclient} from './cassandraclient'
 import { editProfile, fetchProfile } from "./userProfile";
 import { banGuildMember } from "./moderation";
 import { geniusLyrics } from "./genius"
@@ -31,7 +32,7 @@ import { logger,tracer,span } from './logger'
 import { ping } from "./ping";
 import { playMusic } from "./music";
 
-export async function commandHandler(msg, client, config, cassandraclient, dogstatsd) {
+export async function commandHandler(msg, client, config, dogstatsd) {
 
   const isDM: boolean = msg.guild === null;
 
@@ -139,7 +140,7 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
       }
 
       if (command === "datadog") {
-        updateDatadogCount(client,config,cassandraclient)
+        updateDatadogCount(client,config)
       }
 
       if (command === "vote") {
@@ -147,11 +148,11 @@ export async function commandHandler(msg, client, config, cassandraclient, dogst
       }
 
       if (command === "votes") {
-        showTopVoters({cassandraclient,message: msg,client})
+        showTopVoters({message: msg,client})
       }
 
       if (command === "votesconsolelogtimes") {
-        showListOfVotersTimes({cassandraclient,message: msg,client})
+        showListOfVotersTimes({message: msg,client})
       }
 
       if (command === "editbio") {

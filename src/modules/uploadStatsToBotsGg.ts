@@ -4,13 +4,15 @@ import {logger,tracer,span} from "./logger"
 // Rate Limit Set
 const rateLimitsInShard = new Set();
 
+import {cassandraclient} from './cassandraclient'
+
 var StatsD = require('hot-shots'),
 dogstatsd = new StatsD({
     port: 8125,
     globalTags: { env: process.env.NODE_ENV }
 });
   
-export async function updateDatadogCount(client,config,cassandraclient) {
+export async function updateDatadogCount(client,config) {
 
   tracer.trace('updateDatadogCount', () => {
 
@@ -149,11 +151,11 @@ export async function updateDiscordBotsGGRateLimited(client,config) {
 }
 
 
-export async function updateDatadogCountRateLimited(client,config,cassandraclient) {
+export async function updateDatadogCountRateLimited(client,config) {
   //has the system recently fetched the database
   if (rateLimitsInShard.has("datadogcount")) {
   } else {
-    Promise.all([updateDatadogCount(client,config,cassandraclient),
+    Promise.all([updateDatadogCount(client,config),
     rateLimitsInShard.add("datadogcount")]);
     setTimeout(() => {
       // Removes rate limit after 1 sec
