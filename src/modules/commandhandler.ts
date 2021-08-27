@@ -4,7 +4,7 @@ import { verboseDiscordLog } from "./verboseDiscordLog";
 import { billboardVote, billboardPollGetValue } from "./billboardPolls";
 import {cassandraclient} from './cassandraclient'
 import { editProfile, fetchProfile } from "./userProfile";
-import { banGuildMember } from "./moderation";
+import { banGuildMember, isAuthorizedAdmin } from "./moderation";
 import { geniusLyrics } from "./genius"
 import { billboardCharts } from "./billboard"
 import { processAllModerationCommands, howManyUsersInBanDatabase } from "./moderation"
@@ -67,10 +67,30 @@ export async function commandHandler(msg, client, config, dogstatsd) {
       }
 
       if (command === "updatepresence") {
+       if( isAuthorizedAdmin(msg.author.id))
+ {
+
+  msg.reply("you are authorized :unlock:")
+  var presencetext = msg.content.replace(/a!update( )?presence/g,"").trim()
+
         await msg.channel.send('updating presence...')
-        await client.setPresenceForAdora()
+        if(presencetext.length > 0) {
+         // await client.setPresenceForAdoraCustom(presencetext)
+          await client.shard.broadcastEval((client,contextParam) => client.setPresenceForAdoraCustom(contextParam.presencetext), 
+          {
+            context: {
+              presencetext: presencetext
+            }
+          })
+          await msg.channel.send('done!')
+        //  await msg.channel.send('do') 
+        } else {
+          await client.setPresenceForAdora()
         await client.shard.broadcastEval(client => client.setPresenceForAdora())
         await msg.channel.send('done!')
+        }
+ }
+        
       }
 
       if(command === "manualvoteadd") {
@@ -317,7 +337,7 @@ export async function commandHandler(msg, client, config, dogstatsd) {
 
       if (command === "genius" || command === "lyric" || command === "lyrics") {
         try {
-          geniusLyrics(msg, args, config, client)
+          geniusLyrics(msg, args, client)
         }
         catch (geniusLyricsCommandError) {
           console.log(geniusLyricsCommandError)

@@ -13,9 +13,16 @@ const commands = [{
   description: "View bot latency."
 },
 {
-  name: "youtube",
-  description: ""
-}];
+  "name": "lyrics",
+  "description": "Lookup a song's lyrics",
+  "options": [
+    {
+      "type": 3,
+      "name": "song",
+      "description": "The name of the song, artist, album, and/or a line in a song",
+      "required": true
+    }
+]}];
 
 
 async function createCommands() {

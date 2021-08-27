@@ -74,6 +74,11 @@ client.setPresenceForAdora = async () => {
   await setPresenceForAdora()
 }
 
+client.setPresenceForAdoraCustom = async (presencetext) => {
+  console.log("inside client var recieved: " + presencetext)
+  await setPresenceForAdoraCustom(presencetext)
+}
+
 function bruhhasadate() {
   fsdateObj = new Date();
   fsmonth =fsdateObj.getUTCMonth() + 1; //months from 1-12
@@ -88,6 +93,12 @@ function bruhhasadate() {
   fsnewfilename = fsnewdate + "-" + fshour + "hr";
 
   return fsnewfilename;
+}
+
+async function setPresenceForAdoraCustom(presencetext) {
+   // Set the client user's presence
+
+   client.user.setPresence({ activities: [{ name: presencetext}], status: 'online' });
 }
 
 async function setPresenceForAdora() {
@@ -220,12 +231,23 @@ client.on('messageCreate', async (message:Message) => {
 
     //var clientMessageToUploadToDatadog
 
-    /*
+    
     if (message.guild.available) {
-        clientMessageToUploadToDatadog = {type: "clientMessage", messageObject: message, guildName: message.guild.name}
+    //    clientMessageToUploadToDatadog = {type: "clientMessage", messageObject: message, guildName: message.guild.name}
+   // console.log(`My Nickname: ${message.guild.me.nickname}`)
+    logger.discordSillyLogger.silly(`My Nickname: ${message.guild.me.nickname} in server ${message.guild.name} ID ${message.guild.id}`)
+    if (message.guild.me.nickname === null) {
+      //if (message.guild.me.permissions.has('CHANGE_NICKNAME')) {
+        if (true) {
+        await message.guild.me.setNickname("Adora 앋오라")
+        logger.discordInfoLogger.info(`Renamed to correct username in server ${message.guild.name} ID ${message.guild.id}`)
+      }
+    }
+    if (message.guild.me.nickname === undefined) {
+    }
     } else {
-        clientMessageToUploadToDatadog = {type: "clientMessage", messageObject: message}
-    }*/
+      //  clientMessageToUploadToDatadog = {type: "clientMessage", messageObject: message}
+    }
 
     //await logger.discordSillyLogger.silly(clientMessageToUploadToDatadog);
   

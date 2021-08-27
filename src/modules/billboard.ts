@@ -10,21 +10,23 @@ import {hexCodeToColorNumber} from './util'
 
 var chartShortObject = {}
 
- listCharts((err, charts)=> {
-  forEach(charts, function (eachChart) {
-
-    var chartcode = eachChart.url.replace("http://www.billboard.com/charts/", "")
-    var shortCode = officialToAdoraBBcode(chartcode)
-    chartShortObject[`${shortCode}`] = chartcode
-    chartShortObject[chartcode] = chartcode
-    var evenShorter = chartcode.toString().replace(/-/g,'')
-    chartShortObject[evenShorter] = chartcode
-
-    var doubleshort = shortCode.toString().replace(/-/g,'')
-    chartShortObject[doubleshort] = chartcode
+async function listChartsDownload() {
+  await listCharts((err, charts)=> {
+    forEach(charts, function (eachChart) {
+  
+      var chartcode = eachChart.url.replace("http://www.billboard.com/charts/", "")
+      var shortCode = officialToAdoraBBcode(chartcode)
+      chartShortObject[`${shortCode}`] = chartcode
+      chartShortObject[chartcode] = chartcode
+      var evenShorter = chartcode.toString().replace(/-/g,'')
+      chartShortObject[evenShorter] = chartcode
+  
+      var doubleshort = shortCode.toString().replace(/-/g,'')
+      chartShortObject[doubleshort] = chartcode
+    })
+    //logger.discordInfoLogger.info({message: chartShortObject, type: "chartShortArrayFinished"})
   })
-  //logger.discordInfoLogger.info({message: chartShortObject, type: "chartShortArrayFinished"})
-})
+}
 
 async function sendChartScrollable(chart,message: Message,err,chartCode) {
     console.log(chart)
@@ -328,3 +330,5 @@ export async function billboardCharts(message,command,args,client) {
 
       
 }
+
+listChartsDownload()
