@@ -1,7 +1,13 @@
+
+var startupTime = Date.now()
+var recievedFirstMessageState:boolean = false;
+
 // shut up warning
 process.setMaxListeners(0);
 
+
 const Discord = require('discord.js');
+var elapsedTimeFirstMsg;
 var client = new Discord.Client(
   { 
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
@@ -139,26 +145,33 @@ client.on('ready',async () => {
   const howManyUsersFam = `Bot has started, with ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`
   await logger.discordInfoLogger.info(howManyUsersFam, {type: 'clientReady'});
   
-  console.log('set presence loading')
-  await setPresenceForAdora();
+  //console.log('set presence loading')
+  //await setPresenceForAdora();
 
-  console.log('moderation setup loading')
+  //console.log('moderation setup loading')
     //ban list
-    try {moderationCassandra()} catch (error38362) {
-      console.error(error38362)
-    }
+    //try {moderationCassandra()} catch (error38362) {
+     // console.error(error38362)
+    //}
 
     //dbots.postStats(client.guilds.size, client.shard.count, client.shard.id)
     
-    console.log('update discord bot gg')
-    await updateDiscordBotsGG(client,config)
+    //console.log('update discord bot gg')
+    //await updateDiscordBotsGG(client,config)
+
+    
+    await Promise.all([
+      setPresenceForAdora(),
+      moderationCassandra(),
+      await updateDiscordBotsGG(client,config)
+    ])
 
     console.log('finish ready script')
 });
 
 client.on('interactionCreate', async interaction => {
  // if (!interaction.isCommand()) return;
-  processInteraction({client,interaction})
+  processInteraction({interaction})
 });
 
 client.on('rateLimit', async rateLimitInfo => {
@@ -208,6 +221,14 @@ client.on('guildBanRemove', async (guild, user) => {
 
 client.on('messageCreate', async (message:Message) => {
 
+  if (recievedFirstMessageState === false) {
+    recievedFirstMessageState = true;
+
+     elapsedTimeFirstMsg = Date.now() - startupTime
+    console.log(`First message in ${elapsedTimeFirstMsg}ms`)
+    logger.discordInfoLogger.info(`First message in ${elapsedTimeFirstMsg}ms`)
+  }
+
   try {
     tracer.trace('clientMessage', () => {
       //const logTrace = logger.info(body);
@@ -218,6 +239,10 @@ client.on('messageCreate', async (message:Message) => {
         dogstatsd.increment('adorabot.client.message')]
 
         processmalwarediscordmessage(message)
+
+        if (message.content === `a!startuptime`) {
+          message.reply(`First message in ${elapsedTimeFirstMsg}ms`)
+        }
       
       // here we are in the context for a trace that has been activated on the scope by tracer.trace
     })
@@ -235,10 +260,10 @@ client.on('messageCreate', async (message:Message) => {
     if (message.guild.available) {
     //    clientMessageToUploadToDatadog = {type: "clientMessage", messageObject: message, guildName: message.guild.name}
    // console.log(`My Nickname: ${message.guild.me.nickname}`)
-    logger.discordSillyLogger.silly(`My Nickname: ${message.guild.me.nickname} in server ${message.guild.name} ID ${message.guild.id}`)
+   // logger.discordSillyLogger.silly(`My Nickname: ${message.guild.me.nickname} in server ${message.guild.name} ID ${message.guild.id}`)
     if (message.guild.me.nickname === null) {
-      //if (message.guild.me.permissions.has('CHANGE_NICKNAME')) {
-        if (true) {
+    if (message.guild.me.permissions.has('CHANGE_NICKNAME')) {
+    //    if (true) {
         await message.guild.me.setNickname("Adora 앋오라")
         logger.discordInfoLogger.info(`Renamed to correct username in server ${message.guild.name} ID ${message.guild.id}`)
       }
