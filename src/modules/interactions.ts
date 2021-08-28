@@ -1,6 +1,6 @@
 import {CommandInteraction, Interaction, ReactionCollector} from 'discord.js'
 import { geniusLyricsFromInteraction } from './genius';
-import { logger } from './logger'
+import { logger,tracer,span } from './logger'
 import { ping, pingInteraction } from './ping'
 
 interface processInteractionType {
@@ -10,7 +10,6 @@ interface processInteractionType {
 
 export async function processInteraction(args:processInteractionType) {
   const interaction = args.interaction
-  logger.discordInfoLogger.info({type:'interactionCreate',interaction})
  if (interaction.isCommand) {
 
   const expr = interaction.commandName;
@@ -27,4 +26,11 @@ switch (expr) {
 }
 
  }
+
+ await logger.discordInfoLogger.info({
+   "interaction": args.interaction,
+   "type": 'interactionCreate'
+ })
+
+ await logger.discordElasticLogger.info(`${JSON.stringify(interaction), {'type': 'interactionCreate'}}`)
 }

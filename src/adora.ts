@@ -171,7 +171,7 @@ client.on('ready',async () => {
 
 client.on('interactionCreate', async interaction => {
  // if (!interaction.isCommand()) return;
-  processInteraction({interaction})
+  await processInteraction({interaction})
 });
 
 client.on('rateLimit', async rateLimitInfo => {
