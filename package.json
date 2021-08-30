@@ -11,7 +11,8 @@
     "testslash": "node ./dist/testregister.js",
     "updatesafebrowsing": "node ./dist/updatesafebrowsingdatabase.js",
     "registerslash": "node ./dist/registerslash.js",
-    "deleteslash": "node ./dist/deleteslash.js"
+    "deleteslash": "node ./dist/deleteslash.js",
+    "statsserver": "node ./dist/runstatsdaemon.js"
   },
   "author": "",
   "license": "ISC",
