@@ -97,7 +97,7 @@ export function inspect(args:inspectFunction) {
 
             if (discordUser.user) {
                 //embed.thumbnail.url = await discordUser.user.displayAvatarURL();
-                var avatarURL = await discordUser.user.displayAvatarURL();
+                var avatarURL = await discordUser.user.displayAvatarURL({"dynamic": true});
                 _.set(embed, 'thumbnail.url', avatarURL);
                 _.set(embed, 'title', await discordUser.user.tag)
                 _.set(embed, 'fields[1].name',"Account Created At")
