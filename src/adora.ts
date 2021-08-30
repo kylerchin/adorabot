@@ -34,11 +34,7 @@ import { Message } from 'discord.js'
 //const dbots = new discordbots(config.clientid, config.discordbotsggapitoken)
 
 //datadog
-var StatsD = require('hot-shots'),
-dogstatsd = new StatsD({
-    port: 8125,
-    globalTags: { env: process.env.NODE_ENV }
-});
+import {dogstatsd} from './modules/dogstats'
 
 var fsdateObj = new Date();
 var fsmonth;
@@ -139,6 +135,14 @@ client.on("warn",async (info) => {
   tracer.inject(span,'log',logWarn)
 })
 
+client.on('guildMemberAdd', async (member) => {
+  //detect if guild has autorespond on member join and send welcome message to guild and or dms
+
+  //detect if guild has autorole on and give the roles needed
+
+  //log to appropriate log channel
+})
+
 client.on('ready',async () => {
   console.log(`Logged in as ${client.user.tag}!`)
   await logger.discordInfoLogger.info(`Logged in as ${client.user.tag}!`, { type: 'clientReady'});
@@ -170,8 +174,11 @@ client.on('ready',async () => {
 });
 
 client.on('interactionCreate', async interaction => {
+  tracer.trace('interactionCreate',async () => {
  // if (!interaction.isCommand()) return;
   await processInteraction({interaction})
+  await dogstatsd.increment('adorabot.interactionCreate');
+  });
 });
 
 client.on('rateLimit', async rateLimitInfo => {
@@ -233,7 +240,7 @@ client.on('messageCreate', async (message:Message) => {
     tracer.trace('clientMessage', () => {
       //const logTrace = logger.info(body);
       //const traceId = logTrace.dd.trace_id;
-      Promise.all[commandHandler(message,client,config,dogstatsd), 
+      Promise.all[commandHandler(message,client,config,dogstatsd,startupTime), 
         onMessageForQR(message), 
         updateDatadogCountRateLimited(client,config),
         dogstatsd.increment('adorabot.client.message')]
