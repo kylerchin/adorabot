@@ -32,7 +32,7 @@ import { logger,tracer,span } from './logger'
 import { ping } from "./ping";
 import { playMusic } from "./music";
 
-export async function commandHandler(msg, client, config, dogstatsd) {
+export async function commandHandler(msg, client, config, dogstatsd, startupTime) {
 
   const isDM: boolean = msg.guild === null;
 
@@ -95,6 +95,18 @@ export async function commandHandler(msg, client, config, dogstatsd) {
 
       if(command === "manualvoteadd") {
         manuallyAddVote({message: msg, args: args})
+      }
+
+      if (command === 'uptime') {
+        var roundedTime = Math.round((startupTime/1000))
+        msg.reply({embeds: [{
+          description: `Up since <t:${roundedTime}:D> <t:${roundedTime}:T>`,
+          fields: [
+            {"name":"Uptime",
+            "value": `<t:${roundedTime}:R>`
+          }
+          ]
+        }]})
       }
 
       if (command === 'botstats') {
@@ -333,7 +345,7 @@ export async function commandHandler(msg, client, config, dogstatsd) {
         }
       }
 
-      processAllModerationCommands(msg, command, args, config, cassandraclient, client)
+      processAllModerationCommands(msg, command, args, config, client)
 
       if (command === "genius" || command === "lyric" || command === "lyrics") {
         try {
