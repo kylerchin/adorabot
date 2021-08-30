@@ -4,11 +4,11 @@ var forEach = require("for-each")
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 import {logger} from './logger'
 import  {Guild} from 'discord.js'
+import {cassandraclient} from './cassandraclient'
 
 interface inspectFunction {
     message: any;
     client: any;
-    cassandraclient: any;
     [key:string]: any;
 }
 
@@ -35,7 +35,7 @@ export function inspect(args:inspectFunction) {
             await args.client.users.fetch(individualUserId, true, true).then(async (user) => {discordUser['user'] = user;
         }).catch((fetcherror) => {discordUser['error'] = fetcherror});
 
-            await args.cassandraclient.execute("SELECT * FROM adoramoderation.banneduserlist WHERE banneduserid = ?", [individualUserId])
+            await cassandraclient.execute("SELECT * FROM adoramoderation.banneduserlist WHERE banneduserid = ?", [individualUserId])
                 .then(fetchExistingBanResult => {
                     console.log(fetchExistingBanResult.rows)
                     if (fetchExistingBanResult.rows.length === 0) {
