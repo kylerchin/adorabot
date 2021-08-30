@@ -8,6 +8,7 @@ import { inspect, inspectservercmd } from './inspect';
 import { logger } from './logger'
 import { uniq } from './util'
 import { Client, Message, Guild } from 'discord.js'
+import {cassandraclient} from './cassandraclient'
 //let file = editJsonFile(`${__dirname}/config.json`);
 //Generate time with TimeUuid.now();
 const emptylinesregex = /\n/ig;
@@ -17,11 +18,6 @@ var unknownuserlocalarray: Array<any> = []
 const userIDsRegex = /^(?:<@\D?)?(\d+)(?:>)?\s*,?\s*/;
 
 const userReg = RegExp(/<@!?(\d+)>/);
-interface unbanSubArgsInterface {
-    userid: string;
-    reason: string;
-    client: any;
-}
 
 export async function kickAdoraOutOfServerId(serverId, client) {
     client.shard.broadcastEval((clientBroadcasted, contextParam) => {
@@ -62,6 +58,12 @@ function arrayOfUserIdsFromMessage(message) {
     var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*ban(\ )*)/g, '').trim().replace(emptylinesregex, "")
 
     return { arrayOfIds: arrayOfUserIdsToBan, reason: reasonForBanRegister }
+}
+
+interface unbanSubArgsInterface {
+    userid: string;
+    reason: string;
+    client: any;
 }
 
 export async function unBanOnAllAdoraSubbedServers(unbanSubArgs: unbanSubArgsInterface) {
@@ -296,7 +298,7 @@ export async function unbanGuildMember(message: Message) {
 
 }
 
-export async function howManyUsersInBanDatabase(cassandraclient) {
+export async function howManyUsersInBanDatabase() {
     var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
     await cassandraclient.execute(lookuphowmanybannedusersquery)
         .then(async returnBanDatabaseAmount => {
@@ -306,7 +308,7 @@ export async function howManyUsersInBanDatabase(cassandraclient) {
         })
 }
 
-export async function processAllModerationCommands(message, command, args, config, cassandraclient, client) {
+export async function processAllModerationCommands(message, command, args, config, client) {
 
     const isDM: boolean = message.guild === null;
 
@@ -330,7 +332,7 @@ export async function processAllModerationCommands(message, command, args, confi
     }
 
     if (command === "inspectuser" || command === 'inspect') {
-        inspect({ message, client, cassandraclient })
+        inspect({ message, client })
     }
 
     if (command === 'inspectserver' || command === 'inspectguild') {
@@ -344,7 +346,13 @@ export async function processAllModerationCommands(message, command, args, confi
             var resultsFromUserId = arrayOfUserIdsFromMessage(message)
 
             forEach(resultsFromUserId.arrayOfIds, function (userid) {
-                client.shard.broadcastEval(client => client.unBanOnAllAdoraSubbedServers({ userid, reason: resultsFromUserId.reason }))
+                client.shard.broadcastEval((client,context) => client.unBanOnAllAdoraSubbedServers({ "userid": context.userid, "reason": context.reason }),
+                {
+                    "context": {
+                        "userid": userid,
+                        "reason": resultsFromUserId.reason
+                    }
+                })
             })
 
             message.reply(`Unbanned ${resultsFromUserId.arrayOfIds.length} from all subscribed servers`)

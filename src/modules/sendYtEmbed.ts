@@ -3,6 +3,7 @@ import { storeYoutubeDataIntoDatabase } from "./storeYtStats";
 import {logger} from "./logger"
 const ytScraper = require("yt-scraper")
 import * as Discord from "discord.js"
+import {addVideoToTrackList} from './../youtubeviewcountdaemon'
 // Exporting the class which will be 
 // used in another file 
 // Export keyword or form should be 
@@ -53,10 +54,6 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
                 "url": urlForEmbed,
                 "description": "*" + channelBody.items[0].snippet.title + "*\n" + "https://youtu.be/" + body.items[0].id,
                 "color": 16711680,
-                "timestamp": Date.now(),
-                "footer": {
-                  "text": "Drink water uwu <3 #JusticeForGeorgeFloyd #BlackLivesMatter"
-                },
                 "thumbnail": {
                   "url": body.items[0].snippet.thumbnails.default.url
                 },
@@ -89,6 +86,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
             
   
             await message.reply({embeds: [embedYtStats]}).then(async (repliedMessage) => {
+              await addVideoToTrackList(body.items[0].id)
               if(repliedMessage.guild.available) {
                 await logger.discordInfoLogger.info({type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, guildName: repliedMessage.guild.name, guildAnailable: repliedMessage.guild.available})
               }

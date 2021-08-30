@@ -19,7 +19,8 @@ switch (expr) {
     break;
   case 'lyrics':
     await geniusLyricsFromInteraction(interaction)
-    // expected output: "Mangoes and papayas are $2.79 a pound."
+  case 'youtube':
+    //await geniusLyricsFromInteraction(interaction)
     break;
   default:
    // console.log(`Sorry, we are out of ${expr}.`);

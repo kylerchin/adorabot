@@ -19,7 +19,7 @@ const clientOpts = {
 
 var transportsArray = [
 new transports.Console(),
-new ElasticsearchTransport({level: 'debug', 'clientOpts': clientOpts}),
+//new ElasticsearchTransport({level: 'debug', 'clientOpts': clientOpts}),
 new DatadogWinston({
   apiKey: config.datadogapi,
   service: 'adora',
