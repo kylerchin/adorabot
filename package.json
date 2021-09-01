@@ -44,7 +44,7 @@
     "datadog-winston": "^1.5.1",
     "dd-trace": "^0.32.2",
     "discord-botlist-api": "^2.1.1",
-    "discord.js": "github:discordjs/discord.js",
+    "discord.js": "github:kylerchin/discord.js",
     "edit-json-file": "^1.5.0",
     "elastic-apm-node": "^3.20.0",
     "encodeurl": "^1.0.2",
