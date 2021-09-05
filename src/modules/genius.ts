@@ -65,7 +65,7 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
 export async function geniusShowOtherSongs(response,requesterid,isInteractionOrMessage,initialRequestObject) {
     logger.discordInfoLogger.info("type of response.data.response.hits is " + typeof response.data.response.hits)
     var embedsArrayUngroomed = response.data.response.hits.map((hit) => {
-        const colorForSong = hexCodeToColorNumber(hit.result.song_art_primary_color)
+        //const colorForSong = hexCodeToColorNumber(hit.result.song_art_primary_color)
 
         return {
             "title": hit.result.title,
@@ -76,8 +76,7 @@ export async function geniusShowOtherSongs(response,requesterid,isInteractionOrM
             },
             "thumbnail": {
                 "url": hit.result.song_art_image_url
-            },
-            "color": colorForSong
+            }
         }
     })
 
@@ -168,15 +167,15 @@ export async function geniusShowOtherSongs(response,requesterid,isInteractionOrM
             _.set(lastItem, 'footer.text', `Powered by Genius | ${response.data.response.hits[0].result.stats.pageviews} pageviews.\nWrong song? Click ❓ to see other song options.`)
 
             //Get Color as Hex String from Genius API response, remove the hashtag
-            const extractHex = response.data.response.hits[0].result.song_art_primary_color.replace(/#/g, '')
+           // const extractHex = response.data.response.hits[0].result.song_art_primary_color.replace(/#/g, '')
 
             //Add 0x and give it to parse int
-            const colorNumber = parseInt("0x" + extractHex)
+          //  const colorNumber = parseInt("0x" + extractHex)
 
-            console.log(colorNumber)
+         //   console.log(colorNumber)
 
             //For every array, set the color
-            arrayOfEmbeds.map(eachEmbed => eachEmbed.color = colorNumber)
+          //  arrayOfEmbeds.map(eachEmbed => eachEmbed.color = colorNumber)
 
             return ['success',arrayOfEmbeds,response];
         }
@@ -334,15 +333,15 @@ export async function geniusLyrics(message:Message,args, client) {
             _.set(lastItem, 'footer.text', `Powered by Genius | ${response.data.response.hits[0].result.stats.pageviews} pageviews.\nWrong song? Click ❓ to see other song options.`)
 
             //Get Color as Hex String from Genius API response, remove the hashtag
-            const extractHex = response.data.response.hits[0].result.song_art_primary_color.replace(/#/g, '')
+           // const extractHex = response.data.response.hits[0].result.song_art_primary_color.replace(/#/g, '')
 
             //Add 0x and give it to parse int
-            const colorNumber = parseInt("0x" + extractHex)
+        //    const colorNumber = parseInt("0x" + extractHex)
 
-            console.log(colorNumber)
+          //  console.log(colorNumber)
 
             //For every array, set the color
-            arrayOfEmbeds.map(eachEmbed => eachEmbed.color = colorNumber)
+         //   arrayOfEmbeds.map(eachEmbed => eachEmbed.color = colorNumber)
 
             var lyricsRequester = message.author.id;
 
