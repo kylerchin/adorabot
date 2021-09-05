@@ -56,7 +56,8 @@ export async function showTopVoters(voteArgs:showTopVotersArgs) {
 
     var totalStats = {
         "discordbotlist": 0,
-        "topgg": 0
+        "topgg": 0,
+        "topggmtd": 0
     }
 
     const options = { prepare : true , fetchSize : 1000 };
@@ -80,6 +81,12 @@ export async function showTopVoters(voteArgs:showTopVotersArgs) {
 
         console.log(row.voteservice)
         totalStats[`${row.voteservice}`] += 1;
+
+        var firstDateOfMonthUTC = new Date(Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth()));
+
+        if (row.voteservice === 'topgg' && row.time.getDate() > firstDateOfMonthUTC) {
+            totalStats['topggmtd'] += 1;
+        }
 
                 // process row
             // Invoked per each row in all the pages
@@ -208,14 +215,20 @@ if(_.size(leaderboard) === 0) {
                 "content": "Vote for Adora with `a!vote` to show up on the leaderboard!",
                 "embeds": [{
                 "description": page,
-                "title": `Top Voters (past 30 days) | Page ${pageindex + 1} out of ${pages.length} pages.`,
+                "title": `Top Voters (past 30 days)`,
                 "footer": {
-                    "text": `Anonymized for privacy reasons.`
+                    "text": `Anonymized for privacy reasons.\nPage ${pageindex + 1} out of ${pages.length} pages.`
                 },
                 "fields": [
                     {
                         "name": "Top.gg votes",
-                        "value": `${totalStats.topgg}`
+                        "value": `${totalStats.topgg}`,
+                        "inline": true
+                    },
+                    {
+                        "name": "Top.gg votes this month (actual ranking)",
+                        "value": `${totalStats.topggmtd}`,
+                        "inline": true
                     },
                     {
                         "name": "Discordbotlist votes",
@@ -235,48 +248,57 @@ if(_.size(leaderboard) === 0) {
         //console.log(pageEmbedArray[0].embeds)
 
         var pageCounter = 0;
-
+ 
         voteArgs.message.channel.send(pageEmbedArray[pageCounter]).then(async (messageVotes: Message) => {
-            messageVotes.react('⬅').then( r => {
-                messageVotes.react('➡').then( r => {
-                  messageVotes.react("🗑")
-
-                    // Filters
-          const backwardsFilter = (reaction, user) => reaction.emoji.name === '⬅' && user.id === voteArgs.message.author.id
-          const forwardsFilter = (reaction, user) => reaction.emoji.name === '➡' && user.id === voteArgs.message.author.id
-          const deleteFilter = (reaction, user) => reaction.emoji.name === '🗑' && user.id === voteArgs.message.author.id
-
-                  const timeOfTimer = 60*60*1000
-          const backwards = messageVotes.createReactionCollector({filter:backwardsFilter, time: timeOfTimer})
-          const forwards = messageVotes.createReactionCollector({filter: forwardsFilter, time: timeOfTimer})
-          const deleteCollector = messageVotes.createReactionCollector({filter: deleteFilter, time: timeOfTimer})
-
-            backwards.on('collect', (r, u) => {
-                if (pageCounter === 0) {
-                    pageCounter = pages.length-1
-                } else {
-                    pageCounter--
-                }
-                messageVotes.edit(pageEmbedArray[pageCounter])
-                r.users.remove(r.users.cache.filter(u => u === voteArgs.message.author).first())
+            if (pages.length != 1) {
+                messageVotes.react('⬅').then( r => {
+                    messageVotes.react('➡').then( r => {
+                      messageVotes.react("🗑")
+    
+                        // Filters
+              const backwardsFilter = (reaction, user) => reaction.emoji.name === '⬅' && user.id === voteArgs.message.author.id
+              const forwardsFilter = (reaction, user) => reaction.emoji.name === '➡' && user.id === voteArgs.message.author.id
+              const deleteFilter = (reaction, user) => reaction.emoji.name === '🗑' && user.id === voteArgs.message.author.id
+    
+                      const timeOfTimer = 60*60*1000
+              const backwards = messageVotes.createReactionCollector({filter:backwardsFilter, time: timeOfTimer})
+              const forwards = messageVotes.createReactionCollector({filter: forwardsFilter, time: timeOfTimer})
+              const deleteCollector = messageVotes.createReactionCollector({filter: deleteFilter, time: timeOfTimer})
+    
+                backwards.on('collect', (r, u) => {
+                    if (pageCounter === 0) {
+                        pageCounter = pages.length-1
+                    } else {
+                        pageCounter--
+                    }
+                    messageVotes.edit(pageEmbedArray[pageCounter])
+                    r.users.remove(r.users.cache.filter(u => u === voteArgs.message.author).first())
+                })
+    
+                forwards.on('collect', (r, u) => {
+                    if (pageCounter === pageEmbedArray.length-1) {
+                        pageCounter = 0;
+                    } else {
+                        pageCounter++
+                    }
+                    messageVotes.edit(pageEmbedArray[pageCounter])
+                    r.users.remove(r.users.cache.filter(u => u === voteArgs.message.author).first())
+                })
+    
+                deleteCollector.on('collect', (r, u) => {
+                    messageVotes.delete()
+                })
+                })
+    
+                    }
+                    )
+            }
+         
             })
 
-            forwards.on('collect', (r, u) => {
-                if (pageCounter === pageEmbedArray.length-1) {
-                    pageCounter = 0;
-                } else {
-                    pageCounter++
-                }
-                messageVotes.edit(pageEmbedArray[pageCounter])
-                r.users.remove(r.users.cache.filter(u => u === voteArgs.message.author).first())
-            })
+       
 
-            deleteCollector.on('collect', (r, u) => {
-                messageVotes.delete()
-            })
-            })
-
-                })})
+       
         })        
         //SortdFormatedRowsPromise
     })
