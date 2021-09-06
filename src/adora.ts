@@ -13,7 +13,7 @@ var client = new Discord.Client(
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
     intents: ['GUILDS',"GUILD_BANS","GUILD_EMOJIS_AND_STICKERS","GUILD_WEBHOOKS","GUILD_MESSAGES","DIRECT_MESSAGES","GUILD_MESSAGE_REACTIONS","DIRECT_MESSAGE_REACTIONS"], 
     retryLimit: Infinity,
-    fetchGuildTimeout: 2000
+    fetchGuildTimeout: 1000
   });
 const { config } = require('./../config.json');
 import {logger,tracer,span} from './modules/logger'
