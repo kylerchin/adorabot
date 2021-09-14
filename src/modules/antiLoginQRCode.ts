@@ -5,6 +5,9 @@ const request = require('request-promise-native');
 const QrScanner = require('qr-scanner')
 import { logger } from './logger';
 const discordScamRegex = new RegExp('(ptb|canary)?discord(app)?\.com\/ra(\/)?', 'g');
+const isWebp = require('is-webp');
+const FileType = require('file-type');
+const sharp = require('sharp');
 
 process.on('unhandledRejection', console.error);
 
@@ -60,7 +63,7 @@ async function plainURLDiscordScamChecker(message) {
                 "title": ":warning: Warning! This is a dangerous link that can hack your discord account! :warning: ",
                 "description": "The link above is a Discord Login link, which if scanned, can allow an attacker to login and take over your account. Often scammers will pretend the qr codes are free nitro or other gifts. DO NOT SCAN IT!"
             }]
-        })
+        }).catch((error) => undefined)
     ]);
         await logger.discordInfoLogger.info({ type: "foundScamLink", messageObject: message, guildName: message.guild.name })
     }
@@ -100,6 +103,14 @@ async function handleMessage(message) {
 async function toBitmap(buffer) {
     //const sharpBitmap = await sharp(buffer).raw().toBuffer({ resolveWithObject: true })
     var bitmapReturn:any;
+    logger.discordInfoLogger.info({type: "buffer", buffer})
+
+    var fileType = await FileType.fromBuffer(buffer)
+
+    if (fileType.ext === 'webp') {
+        buffer = await sharp(buffer).jpeg().toBuffer();
+    }
+
     await Jimp.read(buffer).then(({ bitmap }) => {bitmapReturn = bitmap})
     //console.log(bitmapReturn)
     //return sharpBitmap;
@@ -110,7 +121,6 @@ async function toBitmap(buffer) {
 async function getBitmaps(buffers) {
     return await Promise.all(
      //   buffers.map(buffer => Jimp.read(buffer).then(({ bitmap }) => bitmap)
-
         buffers.map(buffer => toBitmap(buffer))
     );
 }
