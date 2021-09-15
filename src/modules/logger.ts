@@ -40,6 +40,16 @@ export const logger = {
     format: format.json(),
     transports: transportsArray
   }),
+  discordRateLimitLogger: createLogger({
+    level: 'warn',
+    exitOnError: false,
+    format: format.json(),
+    transports: [new DatadogWinston({
+      apiKey: config.datadogapi,
+      service: 'adora',
+      ddsource: 'nodejs',
+    })]
+  }),
   discordInfoLogger: createLogger({
     level: 'info',
     exitOnError: false,
