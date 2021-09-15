@@ -207,40 +207,6 @@ export async function banGuildMember(message, command, args) {
                         // logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
                     })
                 });
-
-                //Loop through array
-                /* await forEach(arrayOfUserIdsToBan, async (banID) => {
-                     console.log(banID)
-                     if (message.guild.available) {
-                         if (isPurgeBan) {
-                                 // ban a guild member
-                                 await message.guild.members.ban(banID, {days: 7, 'reason': reasonForBanRegister })
-                             .then(async (user) => {
-                                 logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
- 
-                                 //  await message.channel.send(`:ballot_box_with_check: Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
- 
-                             }
-                             )
-                             .catch(error => {
-                                 message.channel.send(`Failed to ban ${banID}`)
-                             });
- 
-                         } else {
-                             await message.guild.members.ban(banID, { 'reason': reasonForBanRegister })
-                             .then(async (user) => {
-                                 logger.discordInfoLogger.info(`Banned ${user.username || user.id || user} from ${message.guild.name}`, { userObject: user })
- 
-                                 //  await message.channel.send(`:ballot_box_with_check: Banned ${user.username || user.id || user} from ${message.guild.name}`).catch()
- 
-                             }
-                             )
-                             .catch(error => {
-                                 message.channel.send(`Failed to ban ${banID}`)
-                             });
-                         }
-                     }
-                 })*/
             }
 
         } else {
