@@ -22,7 +22,12 @@ const commands = [{
       "description": "The name of the song, artist, album, and/or a line in a song",
       "required": true
     }
-]}];
+]},
+{
+  "name": "ytparty",
+  "description": "Start a YouTube watch party in a voice channel"
+}
+];
 
 
 async function createCommands() {
