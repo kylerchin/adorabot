@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var forEach = require("for-each")
 // at the top of your file
+const { canonicalize, getPrefixes } = require('webrisk-hash');
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../config.json`);
@@ -421,7 +422,7 @@ export async function processAllModerationCommands(message, command, args, confi
             if (arrayOfUrls === null) {
                 message.reply(`No Urls Found. Please insert urls seperated by spaces.`)
             } else {
-                var arrayOfUrlsCleaned = arrayOfUrls.map(link => link.replace(/https:\/\//, "").replace(/http:\/\//, ""))
+                var arrayOfUrlsCleaned = arrayOfUrls.map(link => canonicalize(link).replace(/https:\/\//, "").replace(/http:\/\//, ""))
 
                 arrayOfUrlsCleaned.forEach(async (url) => {
                     const query = 'INSERT INTO adoramoderation.badlinks (link, type, addedbyid, addtime) VALUES (?, ?, ?, ?)';
