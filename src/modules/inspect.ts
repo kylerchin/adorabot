@@ -3,7 +3,7 @@ var _ = require('lodash');
 var forEach = require("for-each")
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 import {logger} from './logger'
-import  {Guild} from 'discord.js'
+import  {Guild, Message} from 'discord.js'
 import {cassandraclient} from './cassandraclient'
 
 interface inspectFunction {
@@ -22,8 +22,9 @@ export function inspect(args:inspectFunction) {
 
         var arrayOfUserIdsToLookup = uniq(roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g));
 
+        var embeds = []
 
-        forEach(arrayOfUserIdsToLookup, async function (individualUserId, key, array) {
+       forEach(arrayOfUserIdsToLookup, async function (individualUserId, key, array) {
               // inside a command, event listener, etc.
             var embed:any = {}
             var discordUser:any = {};
@@ -151,7 +152,16 @@ export function inspect(args:inspectFunction) {
             console.log(discordUser.user)
             console.log(embed)
             args.message.channel.send({embeds: [embed]})
+
+           //embeds.push(embed)
         });
+
+        /*
+        const embedChunked = _.chunk(embeds, 10);
+
+        embedChunked.forEach(async (item) => {
+            await args.message.channel.send({embeds: item})
+        })*/
 }
 
 interface inspectservertype {

@@ -11,7 +11,7 @@ import { processAllModerationCommands, howManyUsersInBanDatabase } from "./moder
 import { updateDiscordBotsGG, updateDatadogCount } from "./uploadStatsToBotsGg"
 import {youtubeVideoStats} from "./youtube"
 import {sendVoteLinks,showListOfVotersTimes,showTopVoters} from "./vote"
-import {helpDirectory} from "./help"
+import {helpDirectory, helpDirectoryTest} from "./help"
 import {manuallyAddVote} from './adminvotes'
 const wiktionary = require('wiktionary')
 const isUrl = require("is-url");
@@ -31,6 +31,10 @@ const translate = require('@vitalets/google-translate-api');
 import { logger,tracer,span } from './logger'
 import { ping } from "./ping";
 import { playMusic } from "./music";
+import { ytparty,fishing } from "./discordTogether";
+import { Message } from "discord.js";
+import { igprofile } from "./instagram";
+import { adminhelp } from "./adminhelp";
 
 export async function commandHandler(msg, client, config, dogstatsd, startupTime) {
 
@@ -62,6 +66,13 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
        await ping(msg,client);
       }
 
+      if (command === "igprofile") {
+         igprofile({
+           message: msg,
+           args
+         })
+      }
+
       if (command === "info") {
         msg.reply("This command is deprecated, please use `a!botstats`").catch()
       }
@@ -90,7 +101,6 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         await msg.channel.send('done!')
         }
  }
-        
       }
 
       if(command === "manualvoteadd") {
@@ -109,6 +119,14 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         }]})
       }
 
+      if (command === 'ytparty') {
+        ytparty({message: msg, client: client})
+      }
+
+      if (command === 'fishing') {
+        fishing({message: msg, client: client})
+      }
+
       if (command === 'botstats') {
 
         //await howManyUsersInBanDatabase(cassandraclient)
@@ -116,13 +134,15 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban WHERE subscribed= ? ALLOW FILTERING;"
         var parametersForSubscribedServers = [true]
         var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
+        var lookuphowmanyphishinglinks = "SELECT COUNT(*) FROM adoramoderation.badlinks;"
         //return numberofrowsindatabase;
 
         const promises = [
           client.shard.fetchClientValues('guilds.cache.size'),
           client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)),
           cassandraclient.execute(queryNumberOfSubscribedServers, parametersForSubscribedServers),
-          cassandraclient.execute(lookuphowmanybannedusersquery)
+          cassandraclient.execute(lookuphowmanybannedusersquery),
+          cassandraclient.execute(lookuphowmanyphishinglinks)
         ];
 
         return Promise.all(promises)
@@ -133,6 +153,7 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
             var subscribedServerCount = returnSubscribedServersCount.rows[0].count.low
             var returnBanDatabaseAmount = results[3]
             var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
+            var numberofrowsphishing = results[4].rows[0].count.low
             var bob = `Bot Statistics`
             return msg.channel.send({embeds: [{description: bob,"fields": [
               {
@@ -156,6 +177,10 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
                 "name": "Num. of Servers Subscribed to Autoban",
                 "value": `${subscribedServerCount}`,
                 "inline": true
+              },
+              {
+                "name": "Num. of phishing links blocked",
+                "value": `${numberofrowsphishing}`
               }
             ]}]});
           })
@@ -193,6 +218,11 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
       if (command === "help") {
         helpDirectory({message: msg,
+          command,args})
+      }
+
+      if (command === "helptest") {
+        helpDirectoryTest({message: msg,
           command,args})
       }
 
@@ -264,17 +294,15 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
       }
 
       if (command === "bv") {
-
         billboardVote(msg, args)
+      }
 
+      if (command === "adminhelp") {
+        adminhelp({message: msg})
       }
 
       if (command === "youtubestats" || command === "ytstat" || command === "ytstats" || command === "youtube" || command === "yt") {
-
         await youtubeVideoStats(msg,command,client,config,args)
-
-
-
       }
 
       if (command === 'wiktionary') {
@@ -310,39 +338,11 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
       }
 
       if (command === "bbp") {
-
         billboardPollGetValue(msg, args)
-
       }
 
       if (command === "play") {
         playMusic({command,message: msg,args,client})
-      }
-
-     // if (command === "tomato") {// Join the same voice channel of the author of the message
-     if (false) {
-     try {
-          msg.reply("🍅  TOMATO! 🍅")
-          if (msg.member.voice.channel) {
-            const connection = await msg.member.voice.channel.join();
-
-            // Create a dispatcher
-            const dispatcher = connection.play('tomato.mp3');
-
-            dispatcher.on('start', () => {
-              console.log('tomato.mp3 is now playing!');
-            });
-
-            dispatcher.on('finish', () => {
-              console.log('tomato.mp3 has finished playing!');
-            });
-
-            // Always remember to handle errors appropriately!
-            dispatcher.on('error', console.error);
-          }
-        } catch {
-          console.log("ooops")
-        }
       }
 
       processAllModerationCommands(msg, command, args, config, client)
