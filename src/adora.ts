@@ -5,16 +5,31 @@ var recievedFirstMessageState:boolean = false;
 // shut up warning
 process.setMaxListeners(0);
 
-
 const Discord = require('discord.js');
+const { DiscordTogether } = require('discord-together');
 var elapsedTimeFirstMsg;
 var client = new Discord.Client(
   { 
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
-    intents: ['GUILDS',"GUILD_BANS","GUILD_EMOJIS_AND_STICKERS","GUILD_WEBHOOKS","GUILD_MESSAGES","DIRECT_MESSAGES","GUILD_MESSAGE_REACTIONS","DIRECT_MESSAGE_REACTIONS"], 
+    intents: [
+      "GUILDS",
+      "GUILD_BANS",
+      "GUILD_EMOJIS_AND_STICKERS",
+      "GUILD_INTEGRATIONS",
+      "GUILD_WEBHOOKS",
+      "GUILD_INVITES",
+      "GUILD_VOICE_STATES",
+      "GUILD_MESSAGES",
+      "GUILD_MESSAGE_REACTIONS",
+      "GUILD_MESSAGE_TYPING",
+      "DIRECT_MESSAGES",
+      "DIRECT_MESSAGE_REACTIONS",
+      "DIRECT_MESSAGE_TYPING"
+    ], 
     retryLimit: Infinity,
     fetchGuildTimeout: 1000
   });
+  client.discordTogether = new DiscordTogether(client);
 const { config } = require('./../config.json');
 import {logger,tracer,span} from './modules/logger'
 import {processInteraction} from './modules/interactions'
@@ -29,26 +44,9 @@ import { runOnStartup, everyServerRecheckBans, unBanOnAllAdoraSubbedServers } fr
 import { onMessageForQR, onMessageUpdateForQR } from './modules/antiLoginQRCode';
 import { updateDiscordBotsGG, updateDatadogCount, updateDatadogCountRateLimited } from "./modules/uploadStatsToBotsGg"
 import { Message } from 'discord.js'
-//import "dd-trace/init";
-
-//const discordbots = require('discord.bots.gg')
-//const dbots = new discordbots(config.clientid, config.discordbotsggapitoken)
-
 //datadog
 import {dogstatsd} from './modules/dogstats'
-
-var fsdateObj = new Date();
-var fsmonth;
-var fsday;
-var fsyear;
-
-var finalfswrite;
-
-var fsnewdate;
-
-var fshour;
-
-let fsnewfilename = "bruh";
+import { alertBotAdder } from './modules/alertBotAdder';
 
 client.everyServerRecheckBansOnThisShard = async () => {
   everyServerRecheckBans(cassandraclient, client, false);
@@ -82,44 +80,14 @@ client.setPresenceForAdoraCustom = async (presencetext) => {
   await setPresenceForAdoraCustom(presencetext)
 }
 
-function bruhhasadate() {
-  fsdateObj = new Date();
-  fsmonth =fsdateObj.getUTCMonth() + 1; //months from 1-12
-  fsday =fsdateObj.getUTCDate();
-  fsyear =fsdateObj.getUTCFullYear();
-  fshour = fsdateObj.getUTCHours();
-
-  //console.log("Current time: "  + fsdateObj.getUTCHours() + ":" +fsdateObj.getUTCMinutes() + ":" +fsdateObj.getUTCSeconds());
-
-  fsnewdate = fsyear + "-" + fsmonth + "-" + fsday;
-
-  fsnewfilename = fsnewdate + "-" + fshour + "hr";
-
-  return fsnewfilename;
-}
-
 async function setPresenceForAdoraCustom(presencetext) {
    // Set the client user's presence
-
    client.user.setPresence({ activities: [{ name: presencetext}], status: 'online' });
 }
 
 async function setPresenceForAdora() {
   // Set the client user's presence
-
   client.user.setPresence({ activities: [{ name: 'a!help \n 💜 Invite me to your server please! do a!invite' }], status: 'online' });
-}
-
-function logFloorGangText(appendtxt) {
-  
-  bruhhasadate();
-
-  finalfswrite =fsdateObj.getUTCHours() + ":" +fsdateObj.getUTCMinutes() + ":" +fsdateObj.getUTCSeconds()  + " - " + appendtxt + "\r\n";
-
-  appendFile( "logs/" + fsnewdate + '.log.txt', finalfswrite, function (err) {
-    if (err) return console.log(err);
-    //console.log('Appended!');
- });
 }
 
 async function moderationCassandra() {
@@ -149,29 +117,13 @@ client.on('ready',async () => {
   await logger.discordInfoLogger.info(`Logged in as ${client.user.tag}!`, { type: 'clientReady'});
   const howManyUsersFam = `Bot has started, with ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`
   await logger.discordInfoLogger.info(howManyUsersFam, {type: 'clientReady'});
-  
-  //console.log('set presence loading')
-  //await setPresenceForAdora();
-
-  //console.log('moderation setup loading')
-    //ban list
-    //try {moderationCassandra()} catch (error38362) {
-     // console.error(error38362)
-    //}
-
-    //dbots.postStats(client.guilds.size, client.shard.count, client.shard.id)
     
-    //console.log('update discord bot gg')
-    //await updateDiscordBotsGG(client,config)
-
-    
+  //set the presence, create moderation databases and then check all servers for ban updates, and then upload guild count
     await Promise.all([
       setPresenceForAdora(),
       moderationCassandra(),
       await updateDiscordBotsGG(client,config)
     ])
-
-    console.log('finish ready script')
 });
 
 client.on('interactionCreate', async interaction => {
@@ -183,19 +135,19 @@ client.on('interactionCreate', async interaction => {
 });
 
 client.on('rateLimit', async rateLimitInfo => {
-  await logger.discordWarnLogger.warn({ clientEvent: 'rateLimit', rateLimitInfo: rateLimitInfo, type: 'rateLimit' });
+  await logger.discordRateLimitLogger.warn({ clientEvent: 'rateLimit', rateLimitInfo: rateLimitInfo, type: 'rateLimit' });
  // console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
 })
 
 client.on('guildCreate', async guild => {
   await Promise.all[
   updateDiscordBotsGG(client,config),
+  alertBotAdder(guild,client),
   logger.discordInfoLogger.info({message: `guild id ${guild.id} added to the bot`, type: "guildCreate", guildObject: guild}),
-  client.shard.broadcastEval(client => client.everyServerRecheckBansOnThisShard())]
+  client.shard.broadcastEval(client => client.everyServerRecheckBansOnThisShard())
+  ]
 
   updateDatadogCount(client,config)
-
-  
 })
 
 client.on('guildDelete', async guild => {
@@ -259,16 +211,8 @@ client.on('messageCreate', async (message:Message) => {
     catch {
       console.log("Command failed");
     }
-
-   
-
-    //var clientMessageToUploadToDatadog
-
     
     if (message.guild.available) {
-    //    clientMessageToUploadToDatadog = {type: "clientMessage", messageObject: message, guildName: message.guild.name}
-   // console.log(`My Nickname: ${message.guild.me.nickname}`)
-   // logger.discordSillyLogger.silly(`My Nickname: ${message.guild.me.nickname} in server ${message.guild.name} ID ${message.guild.id}`)
     if (message.guild.me.nickname === null) {
     if (message.guild.me.permissions.has('CHANGE_NICKNAME')) {
     //    if (true) {
