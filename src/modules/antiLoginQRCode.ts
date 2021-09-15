@@ -103,7 +103,7 @@ async function handleMessage(message) {
 async function toBitmap(buffer) {
     //const sharpBitmap = await sharp(buffer).raw().toBuffer({ resolveWithObject: true })
     var bitmapReturn:any;
-    logger.discordInfoLogger.info({type: "buffer", buffer})
+   // logger.discordInfoLogger.info({type: "buffer", buffer})
 
     var fileType = await FileType.fromBuffer(buffer)
 
