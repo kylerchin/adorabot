@@ -8,7 +8,7 @@ import { inspect, inspectservercmd } from './inspect';
 import { logger } from './logger'
 import { uniq } from './util'
 import { Client, Message, Guild } from 'discord.js'
-import {cassandraclient} from './cassandraclient'
+import { cassandraclient } from './cassandraclient'
 //let file = editJsonFile(`${__dirname}/config.json`);
 //Generate time with TimeUuid.now();
 const emptylinesregex = /\n/ig;
@@ -31,7 +31,7 @@ export async function kickAdoraOutOfServerId(serverId, client) {
             })
             .catch();
     }, {
-            serverId: serverId
+        serverId: serverId
     }).then(results => {
         logger.discordInfoLogger.info(`Admin kicked Adora out of ${results.guildleft.name}`, { type: "adminTriggeredKickFromServer", guildleft: results.guildleft })
     })
@@ -346,13 +346,13 @@ export async function processAllModerationCommands(message, command, args, confi
             var resultsFromUserId = arrayOfUserIdsFromMessage(message)
 
             forEach(resultsFromUserId.arrayOfIds, function (userid) {
-                client.shard.broadcastEval((client,context) => client.unBanOnAllAdoraSubbedServers({ "userid": context.userid, "reason": context.reason }),
-                {
-                    "context": {
-                        "userid": userid,
-                        "reason": resultsFromUserId.reason
-                    }
-                })
+                client.shard.broadcastEval((client, context) => client.unBanOnAllAdoraSubbedServers({ "userid": context.userid, "reason": context.reason }),
+                    {
+                        "context": {
+                            "userid": userid,
+                            "reason": resultsFromUserId.reason
+                        }
+                    })
             })
 
             message.reply(`Unbanned ${resultsFromUserId.arrayOfIds.length} from all subscribed servers`)
@@ -445,40 +445,33 @@ export async function processAllModerationCommands(message, command, args, confi
         })
     }
 
-    if (command === "adminhelp") {
-            if (isAuthorizedAdmin(message.author.id)) {
-                await message.reply({embeds: [{
-                    "title": "Adora Admins Only Help Page",
-                    "description": "Only Admins of can see this page",
-                    "fields": [
-                      {
-                        "name": "`a!adoraban`",
-                        "value": "a!adoraban <user id list/tags> <reason (max 512 chars)>`: Inserts bans into database and completes bans on all shards"
-                      },
-                      {
-                          "name": `a!adoraunban`,
-                          "value": "a!adoraunban <user id list/tags> <reason (max 512 chars)>`: Unbans on all subscribed servers, then removes from database"
-                      },
-                      {
-                        "name": `a!adorakickoutofserver <list of server ids>`,
-                        "value": "Kicks a guild off the platform. This is not a ban! They can add it back in a second ahahah"
-                    },
-                    {
-                        "name": `a!currentinfo`,
-                        "value": "Shows the current message id, channel id, and guild id"
-                    },
-                    {
-                        "name": `a!updatebans`,
-                        "value": " Force all guilds in all shards to check for bans"
-                    },
-                    {
-                        "name": `a!updatepresence`,
-                        "value": "Refreshes the presence on all guilds."
-                    }
-                    ]
-                  }]})
+
+    if (command === "adorabadlink" || command === "adorabadlinks") {
+        if (isAuthorizedAdmin(message.author.id)) {
+            message.reply(`:unlock: You are authorized to run adorabadlink`)
+            //message.reply(message.content)
+            var arrayOfUrls = message.content.match(/(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?/gm)
+
+            if (arrayOfUrls === null) {
+                message.reply(`No Urls Found. Please insert urls seperated by spaces.`)
+            } else {
+                var arrayOfUrlsCleaned = arrayOfUrls.map(link => link.replace(/https:\/\//, "").replace(/http:\/\//, ""))
+
+                arrayOfUrlsCleaned.forEach(async (url) => {
+                    const query = 'INSERT INTO adoramoderation.badlinks (link, type, addedbyid, addtime) VALUES (?, ?, ?, ?)';
+                    var params;
+                    params = [url, "discordphishing", message.author.id, TimeUuid.now()];
+
+                    await cassandraclient.execute(query, params, { prepare: true }, await function (err) {
+                        console.log(err);
+                        //Inserted in the cluster
+                    });
+                })
+
+                message.reply(`Added ${arrayOfUrls.length} to the badlinks database.`)
             }
-            
+
+        }
     }
 
     if (command === "adoraban") {
