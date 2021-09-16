@@ -37,7 +37,7 @@ var interactionLogger = {
 }
 
 if (args.interaction.inGuild()) {
-  interactionLogger["guildName"] = args.interaction.guildName;
+  interactionLogger["guildName"] = args.interaction.guild.name;
   interactionLogger["guildId"] = args.interaction.guildId;
 }
 
