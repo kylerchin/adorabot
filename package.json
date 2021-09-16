@@ -95,6 +95,7 @@
     "xkcd-pass-plus": "^0.1.2",
     "youtube-api": "^3.0.1",
     "youtube-validate": "^1.2.4",
+    "youtube.com-extended": "^2.0.4",
     "yt-scraper": "^2.1.0",
     "yt-search": "^2.5.1",
     "ytdl": "^1.4.1",
