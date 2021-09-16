@@ -148,7 +148,17 @@ export async function geniusShowOtherSongs(response,requesterid,isInteractionOrM
 
             logger.discordInfoLogger.info({type: 'songlyricshtml', message: songLyricsHTML})
 
-            var arrayOfTexts = await Util.splitMessage(songLyricsHTML);
+            var arrayOfTexts: Array<string> = [];
+
+            var arrayOfTextsSingleLined = await Util.splitMessage(songLyricsHTML, {char : `\n`});;
+            
+            var arrayOfTextsDoubleLined = await Util.splitMessage(songLyricsHTML, {char : `\n\n`});
+
+            if (arrayOfTextsDoubleLined === arrayOfTextsSingleLined) {
+                arrayOfTexts = arrayOfTextsDoubleLined
+            } else {
+                arrayOfTexts = arrayOfTextsSingleLined
+            }
 
             console.log(arrayOfTexts)
 
@@ -310,7 +320,7 @@ export async function geniusLyrics(message:Message,args, client) {
             var songLyricsHTML;
              songLyricsHTML = await geniusSongUrlHTMLExtract(response.data.response.hits[0].result.url);
             
-            console.log(songLyricsHTML)
+          //  console.log(songLyricsHTML)
 
             logger.discordInfoLogger.info({type: 'songlyricshtml', message: songLyricsHTML})
 
