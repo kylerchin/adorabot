@@ -363,15 +363,17 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
      // const isDM: boolean = msg.guild === null;
 
-      var commandToAdoraInfo 
+      var commandToAdoraInfo = {
+        type: "commandToAdora", 
+        Command: msg.content, 
+        msgObject: msg, 
+        msgObjectAuthorTag: msg.author.tag,
+        commandName: command
+      }
 
       if (msg.guild.available && isDM === false) {
-        commandToAdoraInfo = {
-          type: "commandToAdora", Command: msg.content, msgObject: msg, msgObjectAuthorTag: msg.author.tag, guildID : msg.guild.id, guildName : msg.guild.name
-        }
-      } else {
-        commandToAdoraInfo = {
-          type: "commandToAdora", Command: msg.content, msgObject: msg, msgObjectAuthorTag: msg.author.tag
+        commandToAdoraInfo["guildID"] = msg.guild.id;
+        commandToAdoraInfo["guildName"] = msg.guild.name;
         }
       }
 
