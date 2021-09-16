@@ -63,7 +63,7 @@ export async function processmalwarediscordmessage(message) {
                                     message.reply({
                                         "embeds": [{
                                             "title": ":warning: Warning! This is a dangerous link that can hack your discord account! :warning: ",
-                                            "description": "The link above is a Discord Login link, which if clicked, can allow an attacker to login and take over your account. Often scammers will pretend the links / qr codes are free nitro or other gifts. DO NOT SCAN IT!"
+                                            "description": "The link above is a Discord Login link, which if clicked, can allow an attacker to login and take over your account. Often scammers will pretend the links / qr codes are free nitro or other gifts. DO NOT CLICK IT!"
                                         }]
                                     }).catch((error) => undefined)
                                 ]).catch(error => undefined)
@@ -71,7 +71,9 @@ export async function processmalwarediscordmessage(message) {
                       
                             logger.discordInfoLogger.info({type: "alertbadurladora",
                             message: resultOfLinkCheck.rows[0].link,
-                            threat: resultOfLinkCheck.rows[0].type})
+                            threat: resultOfLinkCheck.rows[0].type,
+                            messageSenderTag: message.author.tag    
+                        })
 
                         }
                     }).catch((hashcheckerror) => {
