@@ -35,6 +35,7 @@ import { ytparty,fishing } from "./discordTogether";
 import { Message } from "discord.js";
 import { igprofile } from "./instagram";
 import { adminhelp } from "./adminhelp";
+import { makeGif } from "./gif";
 
 export async function commandHandler(msg, client, config, dogstatsd, startupTime) {
 
@@ -194,6 +195,10 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
       if (command === "bio" || command === "viewbio") {
         fetchProfile(client, msg, args, cassandraclient)
+      }
+
+      if (command === "gif") {
+        makeGif({message:msg,args})
       }
 
       if (command === "datadog") {
