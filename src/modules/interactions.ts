@@ -32,6 +32,7 @@ switch (expr) {
 
  await logger.discordInfoLogger.info({
    "interaction": args.interaction,
+   "authorName": args.interaction.user.tag,
    "type": 'interactionCreate'
  })
 
