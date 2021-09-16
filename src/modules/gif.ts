@@ -14,7 +14,7 @@ export async function makeGif(makeGifArgs:makeGifInterface) {
     Youtube(makeGifArgs.args[0]).gif(makeGifArgs.args[1], makeGifArgs.args[2], `./../../${genRanHex(8)}.gif`)
     .then(function () {
         console.log("Done");
-        makeGifArgs.reply({
+        makeGifArgs.message.reply({
             content: "Your gif is done!",
             files: [`./../../${genRanHex(8)}.gif`]
         })
