@@ -29,8 +29,8 @@ async function listChartsDownload() {
 }
 
 async function sendChartScrollable(chart,message: Message,err,chartCode) {
-    console.log(chart)
-    console.log(chart.songs)
+    //console.log(chart)
+    //console.log(chart.songs)
     if (err) console.log(err);
     //message.channel.send(chart.week)
 
