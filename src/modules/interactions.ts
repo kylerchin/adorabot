@@ -30,11 +30,23 @@ switch (expr) {
 
  }
 
- await logger.discordInfoLogger.info({
-   "interaction": args.interaction,
-   "authorName": args.interaction.user.tag,
-   "type": 'interactionCreate'
- })
+var interactionLogger = {
+  "interaction": args.interaction,
+  "authorName": args.interaction.user.tag,
+  "type": 'interactionCreate'
+}
+
+if (args.interaction.inGuild()) {
+  interactionLogger["guildName"] = args.interaction.guildName;
+  interactionLogger["guildId"] = args.interaction.guildId;
+}
+
+if (args.interaction.isCommand()) {
+  interactionLogger['commandOptions'] = interaction.options.data
+}
+
+ await logger.discordInfoLogger.info(interactionLogger)
+
 
  await logger.discordElasticLogger.info(`${JSON.stringify(interaction), {'type': 'interactionCreate'}}`)
 }
