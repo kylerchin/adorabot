@@ -95,7 +95,8 @@ async function moderationCassandra() {
 }
 
 client.on("debug",async (info) => {
-  const logDebug = await logger.discordDebugLogger.debug({clientEvent: "debug", debugInfo: info, type: "clientdebug"});
+  const logDebug = await logger.discordDebugLoggerNoConsole.debug({clientEvent: "debug", debugInfo: info, type: "clientdebug"});
+  console.log(info)
   tracer.inject(span,'log',logDebug)
   //console.log(info)
 })
@@ -136,6 +137,7 @@ client.on('interactionCreate', async interaction => {
 
 client.on('rateLimit', async rateLimitInfo => {
   await logger.discordRateLimitLogger.warn({ clientEvent: 'rateLimit', rateLimitInfo: rateLimitInfo, type: 'rateLimit' });
+  console.log(rateLimitInfo)
  // console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
 })
 
