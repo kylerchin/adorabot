@@ -32,6 +32,16 @@ export const logger = {
     level: 'debug',
     exitOnError: false,
     format: format.json(),
+    transports: [new DatadogWinston({
+      apiKey: config.datadogapi,
+      service: 'adora',
+      ddsource: 'nodejs',
+    })]
+  }),
+  discordDebugLoggerNoConsole: createLogger({
+    level: 'debug',
+    exitOnError: false,
+    format: format.json(),
     transports: transportsArray
   }),
   discordWarnLogger: createLogger({
