@@ -203,6 +203,12 @@ client.on('messageCreate', async (message:Message) => {
         if (message.content === `a!startuptime`) {
           message.reply(`First message in ${elapsedTimeFirstMsg}ms`)
         }
+
+        const isDM: boolean = message.guild === null;
+
+        if (isDM) {
+          logger.discordInfoLogger.info({messageObject: message, senderName: message.author.tag, type: "directMessageToAdora"})
+        }
       
       // here we are in the context for a trace that has been activated on the scope by tracer.trace
     })
