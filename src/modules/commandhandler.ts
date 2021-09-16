@@ -375,7 +375,7 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         commandToAdoraInfo["guildID"] = msg.guild.id;
         commandToAdoraInfo["guildName"] = msg.guild.name;
         }
-      }
+      
 
       const loggedCommand = await logger.discordInfoLogger.info(commandToAdoraInfo)
       tracer.inject(span, 'log', loggedCommand)
