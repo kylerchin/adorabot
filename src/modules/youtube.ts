@@ -104,12 +104,12 @@ export async function youtubeVideoStats(message:Message, command, client, config
 
             //console.log(r)
 
-            console.time("youtubei")
+           // console.time("youtubei")
             const videos = await youtube.search(searchYtString, {
                 type: "video", // video | playlist | channel | all
             });
 
-            console.timeEnd("youtubei")
+           // console.timeEnd("youtubei")
 
             if (videos.length <= 0) {
                 message.reply("I couldn't find any videos matching that term!")
@@ -121,9 +121,9 @@ export async function youtubeVideoStats(message:Message, command, client, config
 
             sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
 
-            console.time("scrape")
+           
             /*await scrapeyoutube.search(searchYtString).then(results => {
-                console.timeEnd('scrape')
+               
                 // Unless you specify a type, it will only return 'video' results
 
                 if (results.videos.length <= 0) {
