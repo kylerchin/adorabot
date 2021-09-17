@@ -20,18 +20,18 @@ export async function youtubeHelpMessageReply(message) {
 
 //fetch youtube videos
 
-export async function youtubeChannelStats(msg:Message, command, client, config, args) {
+export async function youtubeChannelStats(message:Message, command, client, config, args) {
    // const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
 
     console.log("searching for yt channel")
 
-    const searchYtString = msg.content.replace("a!", "").replace(command, "").trim()
+    const searchYtString = message.content.replace("a!", "").replace(command, "").trim()
 
     scrapeyoutube.search(searchYtString, { type: 'channel' }).then((results) => {
         console.log(results.channels[0]);
 
         var firstChannel = results.channels[0]
-        msg.reply({
+        message.reply({
             embeds: [
                 {
                     "thumbnail": {
@@ -61,7 +61,7 @@ export async function youtubeChannelStats(msg:Message, command, client, config, 
     
 }
 
-export async function youtubeVideoStats(msg:Message, command, client, config, args) {
+export async function youtubeVideoStats(message:Message, command, client, config, args) {
     const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
 
     var videoID = "dQw4w9WgXcQ"
@@ -73,16 +73,16 @@ export async function youtubeVideoStats(msg:Message, command, client, config, ar
             var precurser = args[0]
         }
         videoID = getQueryParam('v', precurser)
-        sendYtCountsEmbed(videoID, msg, youtubeApiKeyRandomlyChosen)
+        sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
     } else {
         // Invalid url
 
         console.log("invalid url")
 
-        const searchYtString = msg.content.replace("a!", "").replace(command, "").trim()
+        const searchYtString = message.content.replace("a!", "").replace(command, "").trim()
 
         if (searchYtString.length === 0) {
-            await youtubeHelpMessageReply(msg)
+            await youtubeHelpMessageReply(message)
         }
         else {
             /*
@@ -93,7 +93,7 @@ export async function youtubeVideoStats(msg:Message, command, client, config, ar
          console.log("URL is OK") // Print the google web page.
          videoID = getQueryParam('v', 'https://www.youtube.com/watch?v=' + searchYtString)
          console.log(videoID + " is the videoID")
-         sendYtCountsEmbed(videoID,msg,youtubeApiKeyRandomlyChosen)
+         sendYtCountsEmbed(videoID,message,youtubeApiKeyRandomlyChosen)
        }  else {*/
             //video ID is not valid
 
@@ -112,14 +112,14 @@ export async function youtubeVideoStats(msg:Message, command, client, config, ar
             console.timeEnd("youtubei")
 
             if (videos.length <= 0) {
-                msg.reply("I couldn't find any videos matching that term!")
+                message.reply("I couldn't find any videos matching that term!")
             }
 
             videoID = videos[0].id
            // logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: videos[0] })
             //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
 
-            sendYtCountsEmbed(videoID, msg, youtubeApiKeyRandomlyChosen)
+            sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
 
             console.time("scrape")
             /*await scrapeyoutube.search(searchYtString).then(results => {
@@ -127,14 +127,14 @@ export async function youtubeVideoStats(msg:Message, command, client, config, ar
                 // Unless you specify a type, it will only return 'video' results
 
                 if (results.videos.length <= 0) {
-                    msg.reply("I couldn't find any videos matching that term!")
+                    message.reply("I couldn't find any videos matching that term!")
                 }
 
                 videoID = results.videos[0].id
                 logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: results.videos[0] })
                 logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
 
-                //sendYtCountsEmbed(videoID, msg, youtubeApiKeyRandomlyChosen)
+                //sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
                
             });*/
             //}
