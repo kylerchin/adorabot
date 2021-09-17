@@ -200,7 +200,7 @@ export async function ytChart(id) {
 
 
 
-  const bufferinfo = canvas.toBuffer()
+  const bufferinfo = canvas.toBuffer('image/png',{compressionLevel:7})
         console.log(bufferinfo)
   resolve(bufferinfo)
   })
