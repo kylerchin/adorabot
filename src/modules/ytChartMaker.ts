@@ -1,10 +1,12 @@
 import { cassandraclient } from "./cassandraclient";
+import { tracer } from "./logger";
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const { createCanvas, loadImage } = require('canvas')
 
 export async function ytChart(id) {
 
     return new Promise(async (resolve, reject) => {
+      tracer.trace('youtubeMakeChart', () => {
         const canvas = createCanvas(3840, 2160)
         const ctx = canvas.getContext('2d')
         const x = canvas.width / 2;
@@ -210,5 +212,5 @@ export async function ytChart(id) {
  
       });
     
-  
+    });
 }
