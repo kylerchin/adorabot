@@ -1,3 +1,5 @@
+import { isAuthorizedAdmin } from "./moderation";
+
 export async function adminhelp(adminhelpargs) {
     if (isAuthorizedAdmin(adminhelpargs.message.author.id)) {
         await adminhelpargs.message.reply({embeds: [{

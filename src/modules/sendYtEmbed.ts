@@ -1,9 +1,13 @@
 const requestjson = require('request-json');
 import { storeYoutubeDataIntoDatabase } from "./storeYtStats"; 
 import {logger} from "./logger"
+import {ytChart} from './ytChartMaker'
 const ytScraper = require("yt-scraper")
 import * as Discord from "discord.js"
-import {addVideoToTrackList} from './../youtubeviewcountdaemon'
+import {addStatsToYtVideo, addVideoToTrackList} from './../youtubeviewcountdaemon'
+const editJsonFile = require("edit-json-file");
+const { MessageAttachment } = require('discord.js')
+var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 // Exporting the class which will be 
 // used in another file 
 // Export keyword or form should be 
@@ -47,6 +51,9 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
 
           const videostats = body.items[0].statistics;
 
+        //  var imageChartBuffer = ytChart(body.items[0].id)
+         // const attachmentChart = new MessageAttachment(imageChartBuffer, 'file.png')
+
           var urlForEmbed = "https://youtube.com/watch?v=" + body.items[0].id
   
             const embedYtStats:Discord.MessageEmbedOptions = 
@@ -87,19 +94,33 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
   
             await message.reply({embeds: [embedYtStats]}).then(async (repliedMessage) => {
               await addVideoToTrackList(body.items[0].id)
-              if(repliedMessage.guild.available) {
-                await logger.discordInfoLogger.info({type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, guildName: repliedMessage.guild.name, guildAnailable: repliedMessage.guild.available})
+
+              var loggerBody = {type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, 
+              titleOfVideo: body.items[0].snippet.title
+            }
+              
+
+              if(repliedMessage.guild) {
+                loggerBody["guildName"] = repliedMessage.guild.name,
+                loggerBody["guildId"] = repliedMessage.guild.id
               }
-              else {
-                await logger.discordInfoLogger.info({type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, guildAvailable: repliedMessage.guild.available})
-              }
+
+              await logger.discordInfoLogger.info(loggerBody)
             }).catch(
               async (sendMessageerror) => {
                 await logger.discordWarnLogger({type: "sendYoutubeEmbedFailed"}, sendMessageerror)
               }
             )
             
-            
+
+            var loadedRemovedData = importconfigfile.get()
+
+            loadedRemovedData = importconfigfile.get()
+
+            if (loadedRemovedData.removedvids.indexOf(body.items[0].id) == -1 && 
+            loadedRemovedData.removedytchannels.indexOf(channelIdOfVideo) == -1) {
+              addStatsToYtVideo(body.items[0].id,parseInt(videostats.viewCount,10),parseInt(videostats.likeCount,10),parseInt(videostats.dislikeCount,10),parseInt(videostats.commentCount,10))
+            }
 
             //return console.log(body);
   

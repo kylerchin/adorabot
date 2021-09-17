@@ -9,7 +9,7 @@ import { geniusLyrics } from "./genius"
 import { billboardCharts } from "./billboard"
 import { processAllModerationCommands, howManyUsersInBanDatabase } from "./moderation"
 import { updateDiscordBotsGG, updateDatadogCount } from "./uploadStatsToBotsGg"
-import {youtubeVideoStats} from "./youtube"
+import {youtubeChannelStats, youtubeVideoStats} from "./youtube"
 import {sendVoteLinks,showListOfVotersTimes,showTopVoters} from "./vote"
 import {helpDirectory, helpDirectoryTest} from "./help"
 import {manuallyAddVote} from './adminvotes'
@@ -136,6 +136,8 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         var parametersForSubscribedServers = [true]
         var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
         var lookuphowmanyphishinglinks = "SELECT COUNT(*) FROM adoramoderation.badlinks;"
+        var lookuphowmanyytvidstracked = "SELECT COUNT(*) FROM adorastats.trackedytvideosids;"
+        var lookuphowmanyytvidsstats = "SELECT COUNT(*) FROM adorastats.ytvideostats;"
         //return numberofrowsindatabase;
 
         const promises = [
@@ -143,47 +145,65 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
           client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)),
           cassandraclient.execute(queryNumberOfSubscribedServers, parametersForSubscribedServers),
           cassandraclient.execute(lookuphowmanybannedusersquery),
-          cassandraclient.execute(lookuphowmanyphishinglinks)
+          cassandraclient.execute(lookuphowmanyphishinglinks),
+          cassandraclient.execute(lookuphowmanyytvidstracked),
+          cassandraclient.execute(lookuphowmanyytvidsstats)
         ];
 
         return Promise.all(promises)
           .then(results => {
             const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
             const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
-            var returnSubscribedServersCount = results[2]
+            var returnSubscribedServersCount = results[2];
             var subscribedServerCount = returnSubscribedServersCount.rows[0].count.low
-            var returnBanDatabaseAmount = results[3]
+            var returnBanDatabaseAmount = results[3];
             var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
             var numberofrowsphishing = results[4].rows[0].count.low
+            var numberofrowsytvids = results[5].rows[0].count.low
+            var numberofrowsytstats = results[6].rows[0].count.low
             var bob = `Bot Statistics`
             return msg.channel.send({embeds: [{description: bob,"fields": [
               {
-                "name": "Num. of Servers",
+                "name": "Servers",
                 "value": `${totalGuilds}`
               },
               {
-                "name": "Num. of Members",
+                "name": "Members",
                 "value": `${totalMembers}`
               },
               {
-                "name": "Num. of Shards",
+                "name": "Shards",
                 "value": `${client.shard.count}`
               },
               {
-                "name": "Num. of Bans in Database",
+                "name": "Bans in Database",
                 "value": `${numberofrowsindatabase}`,
                 "inline": true
               },
               {
-                "name": "Num. of Servers Subscribed to Autoban",
+                "name": "Servers Subscribed to Autoban",
                 "value": `${subscribedServerCount}`,
                 "inline": true
               },
               {
-                "name": "Num. of phishing links blocked",
+                "name": "Phishing links blocked",
                 "value": `${numberofrowsphishing}`
               }
-            ]}]});
+            ]},
+            {
+              "fields": [
+                {
+                  "name": "Tracked YouTube Videos",
+                  "value": `${numberofrowsytvids}`,
+                  "inline": true
+                },
+                {
+                  "name": "Video Statistic Points",
+                  "value": `${numberofrowsytstats}`,
+                  "inline": true
+                }
+              ]
+            }]
           })
           .catch(console.error);
 
@@ -191,7 +211,7 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
 
 
-      }
+      })}
 
       if (command === "bio" || command === "viewbio") {
         fetchProfile(client, msg, args, cassandraclient)
@@ -308,6 +328,10 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
       if (command === "youtubestats" || command === "ytstat" || command === "ytstats" || command === "youtube" || command === "yt") {
         await youtubeVideoStats(msg,command,client,config,args)
+      }
+
+      if (command === "channel" || command === "ch" || command === "youtubechannel") {
+        await youtubeChannelStats(msg, command, client, config, args)
       }
 
       if (command === 'wiktionary') {

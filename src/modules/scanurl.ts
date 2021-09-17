@@ -9,7 +9,7 @@ const { config } = require('./../../config.json');
 import {cassandraclient} from'./cassandraclient'
 import { result } from 'lodash';
 import { ActionRowBuilder } from 'slash-commands';
-import _ = require('lodash');
+import * as _ from 'lodash'
 
   export async function createDatabase() {
     //Goes inside adora moderation keyspace, makes the table "guildssubscribedtoautoban"

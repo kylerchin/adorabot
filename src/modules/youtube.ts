@@ -17,6 +17,47 @@ export async function youtubeHelpMessageReply(message) {
 
 //fetch youtube videos
 
+export async function youtubeChannelStats(msg:Message, command, client, config, args) {
+   // const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
+
+    console.log("searching for yt channel")
+
+    const searchYtString = msg.content.replace("a!", "").replace(command, "").trim()
+
+    scrapeyoutube.search(searchYtString, { type: 'channel' }).then((results) => {
+        console.log(results.channels[0]);
+
+        var firstChannel = results.channels[0]
+        msg.reply({
+            embeds: [
+                {
+                    "thumbnail": {
+                        url: firstChannel.thumbnail
+                    },
+                    "title": firstChannel.name,
+                    "description": firstChannel.description.substring(0, 1000),
+                    "fields": [
+                        {
+                            "name": "Video Count",
+                            "value": `${firstChannel.videoCount}`
+                        },
+                        {
+                            "name": "Subscribers",
+                            "value": `${firstChannel.subscribers}`
+                        },
+                        {
+                            "name": "id",
+                            "value": `${firstChannel.id}`
+                        }
+                    ]
+                }
+            ]
+        })
+    });
+
+    
+}
+
 export async function youtubeVideoStats(msg:Message, command, client, config, args) {
     const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
 
@@ -72,6 +113,7 @@ export async function youtubeVideoStats(msg:Message, command, client, config, ar
                 logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
 
                 sendYtCountsEmbed(videoID, msg, youtubeApiKeyRandomlyChosen)
+               
             });
             //}
         }

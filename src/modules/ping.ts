@@ -69,7 +69,7 @@ export async function pingInteraction(interaction:CommandInteraction,client) {
         await interaction.reply("Ping?")
         
         
-        await interaction.fetchReply().then(async pingReturn => {
+        await interaction.fetchReply().then(async (pingReturn:Message) => {
 
           var pingEmbedResponse:MessageOptions;
 

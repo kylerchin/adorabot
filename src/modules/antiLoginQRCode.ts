@@ -1,5 +1,4 @@
 const Jimp = require('jimp');
-const sharp = require('sharp');
 const jsQR = require('jsqr');
 const request = require('request-promise-native');
 const QrScanner = require('qr-scanner')
@@ -7,7 +6,7 @@ import { logger } from './logger';
 const discordScamRegex = new RegExp('(ptb|canary)?discord(app)?\.com\/ra(\/)?', 'g');
 const isWebp = require('is-webp');
 const FileType = require('file-type');
-const sharp = require('sharp');
+import * as sharp from 'sharp'
 
 process.on('unhandledRejection', console.error);
 

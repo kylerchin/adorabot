@@ -5,6 +5,11 @@ const ytScraper = require("yt-scraper")
 const axios = require('axios')
 const cio = require('cheerio-without-node-native');
 
+const CloudflareBypasser = require('cloudflare-bypasser');
+ 
+let cf = new CloudflareBypasser();
+ 
+
 export async function createDatabases() {
     //This Function will automatically create the adorastats keyspace if it doesn't exist, otherwise, carry on
     await cassandraclient.execute("CREATE KEYSPACE IF NOT EXISTS adorastats WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy',  'datacenter1': 1  };")
@@ -21,7 +26,7 @@ export async function createDatabases() {
         }).catch(error => console.error(error));
 
     //Goes inside adorastats keyspace, makes the table "ytvideostats"
-    await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adorastats.ytvideostats (videoid text, time timeuuid, views bigint, likes bigint, dislikes bigint, PRIMARY KEY (videoid, time));")
+    await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adorastats.ytvideostats (videoid text, time timeuuid, views bigint, likes bigint, dislikes bigint, comments bigint, PRIMARY KEY (videoid, time));")
         .then(async result => {
             await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
         }).catch(error => console.error(error));
@@ -39,9 +44,9 @@ export async function addVideoToTrackList(videoid) {
     }).catch(error => console.error(error));
 }
 
-export async function addStatsToYtVideo(videoid,views,likes,dislikes) {
-    var query = "INSERT INTO adorastats.ytvideostats (videoid, time, views, likes, dislikes) VALUES (?,?,?,?,?)"
-    var params = [videoid, TimeUuid.now(),views,likes,dislikes]
+export async function addStatsToYtVideo(videoid,views,likes,dislikes,comments) {
+    var query = "INSERT INTO adorastats.ytvideostats (videoid, time, views, likes, dislikes, comments) VALUES (?,?,?,?,?,?)"
+    var params = [videoid, TimeUuid.now(),views,likes,dislikes,comments]
     await cassandraclient.execute(query, params)
     .then(async result => {
         await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
@@ -61,6 +66,7 @@ export async function fetchStatsForAll() {
      
       // process row
        // logger.discordInfoLogger.info(row.videoid + ' in the database')
+
 
         //var videoResult = await ytScraper.video('row.videoid')
         var fullUrlOfVideo = `https://www.youtube.com/watch?v=${row.videoid}`
@@ -88,7 +94,7 @@ export async function fetchStatsForAll() {
         console.log(viewCount)
         console.log("likeCount",likeCount)
         console.log("dislikeCount",dislikeCount)
-        await addStatsToYtVideo(row.videoid,viewCount,likeCount,dislikeCount)
+        await addStatsToYtVideo(row.videoid,viewCount,likeCount,dislikeCount,undefined)
         //Cherio inerpretation of HTML contents
        // const $ = cio.load(data);
         //find lyrics inside div element, trim off whitespace

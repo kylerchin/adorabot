@@ -1,5 +1,6 @@
 const { config } = require('./../config.json');
-import _ = require('lodash');
+//import _ = require('lodash');
+import * as _ from 'lodash'
 import { logger, tracer, span } from './modules/logger'
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const cassandra = require('cassandra-driver');
