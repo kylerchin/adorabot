@@ -8,6 +8,7 @@ import {addStatsToYtVideo, addVideoToTrackList} from './../youtubeviewcountdaemo
 const editJsonFile = require("edit-json-file");
 const { MessageAttachment } = require('discord.js')
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
+const axios = require('axios').default;
 // Exporting the class which will be 
 // used in another file 
 // Export keyword or form should be 
@@ -29,8 +30,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
 
           //console.log("body.items")
           //console.log(body.items)
-
-          await logger.discordDebugLogger.debug({
+          logger.discordDebugLogger.debug({
             type: "ytclientvideorequest", 
             body: body,
             message: "Retrevied Youtube Video Information"
@@ -40,10 +40,17 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
 
           const pathForChannelOfVideoRequest = "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2Cstatistics%2Cstatus%2CtopicDetails&id=" + channelIdOfVideo + "&key=" + apikey
 
-        await  youtubeclient.get(pathForChannelOfVideoRequest, async function(channelErr, channelRes, channelBody) {
+          var promiseresults = await Promise.all([
+            axios.get(pathForChannelOfVideoRequest),
+            ytChart(body.items[0].id)
+          ])
+        
+          var channelBody = promiseresults[0]
+          var imageChartBuffer = promiseresults[1]
+
 
           //console.dir(body)
-          await logger.discordDebugLogger.debug({
+          logger.discordDebugLogger.debug({
             type: "ytclientchannelrequest", 
             body: channelBody,
             message: "Retrevied Youtube Channel Information"
@@ -51,7 +58,6 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
 
           const videostats = body.items[0].statistics;
 
-         var imageChartBuffer = await ytChart(body.items[0].id)
          var imageChartAttachment = new Discord.MessageAttachment(imageChartBuffer, 'chart.png')
          // const attachmentChart = new MessageAttachment(imageChartBuffer, 'file.png')
 
@@ -128,7 +134,6 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
 
             //return console.log(body);
   
-          });
         });
       } 
       catch {

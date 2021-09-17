@@ -33,6 +33,14 @@ export async function adminhelp(adminhelpargs) {
             {
                 "name": `a!adorabadlink <list of urls seperated by spaces>`,
                 "value": "Adds scam nitro urls to the adora phishing database."
+            },
+            {
+                "name": `a!removevideo <id of video to remove>`,
+                "value": "Removes video from Youtube tracking database"
+            },
+            {
+                "name": "a!listvideos",
+                "value": "List all tracked YouTube videos"
             }
             ]
           }]})
