@@ -3,6 +3,9 @@ const scrapeyoutube = require('scrape-youtube').default;
 import { sendYtCountsEmbed } from "./sendYtEmbed";
 import { logger } from "./logger";
 const getQueryParam = require('get-query-param')
+import * as youtubei from "youtubei";
+const youtube = new youtubei.Client();
+
 
 import {Message} from 'discord.js'
 
@@ -101,7 +104,26 @@ export async function youtubeVideoStats(msg:Message, command, client, config, ar
 
             //console.log(r)
 
+            console.time("youtubei")
+            const videos = await youtube.search(searchYtString, {
+                type: "video", // video | playlist | channel | all
+            });
+
+            console.timeEnd("youtubei")
+
+            if (videos.length <= 0) {
+                msg.reply("I couldn't find any videos matching that term!")
+            }
+
+            videoID = videos[0].id
+           // logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: videos[0] })
+            //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
+
+            sendYtCountsEmbed(videoID, msg, youtubeApiKeyRandomlyChosen)
+
+            console.time("scrape")
             await scrapeyoutube.search(searchYtString).then(results => {
+                console.timeEnd('scrape')
                 // Unless you specify a type, it will only return 'video' results
 
                 if (results.videos.length <= 0) {
@@ -112,7 +134,7 @@ export async function youtubeVideoStats(msg:Message, command, client, config, ar
                 logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: results.videos[0] })
                 logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
 
-                sendYtCountsEmbed(videoID, msg, youtubeApiKeyRandomlyChosen)
+                //sendYtCountsEmbed(videoID, msg, youtubeApiKeyRandomlyChosen)
                
             });
             //}
