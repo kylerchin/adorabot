@@ -11,43 +11,48 @@ dogstatsd = new StatsD({
     port: 8125,
     globalTags: { env: process.env.NODE_ENV }
 });
+
+const { config } = require('./../../config.json');
   
 export async function updateDatadogCount(client,config) {
-
+  
+if (config.uploadStats) {
   tracer.trace('updateDatadogCount', () => {
 
-  var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban"
-        var parametersForSubscribedServers = [true]
-        var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
-
-  if(true) {
-    const promises = [
-      client.shard.fetchClientValues('guilds.cache.size'),
-      client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)),
-      cassandraclient.execute(queryNumberOfSubscribedServers),
-      cassandraclient.execute(lookuphowmanybannedusersquery)
- ];
-
-  return Promise.all(promises)
-      .then(async (results) => {
-          const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
-          const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
-          var returnSubscribedServersCount = results[2]
-          var subscribedServerCount = returnSubscribedServersCount.rows[0].count.low
-          var returnBanDatabaseAmount = results[3]
-          var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
-
-          dogstatsd.gauge('adorabot.totalstats.totalGuilds', totalGuilds);
-          dogstatsd.gauge('adorabot.totalstats.totalMembers', totalMembers);
-          dogstatsd.gauge('adorabot.totalstats.totalShards', client.shard.count);
-          dogstatsd.gauge('adorabot.totalstats.subscribedBanList', subscribedServerCount)
-          dogstatsd.gauge('adorabot.totalstats.adoraBanned', numberofrowsindatabase)
-          //return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}\nNumber of Shards: ${client.shard.count}\nNumber of Bans in Database:${numberofrowsindatabase}`);
-
-  })
-
+    var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban"
+          var parametersForSubscribedServers = [true]
+          var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
+  
+    if(true) {
+      const promises = [
+        client.shard.fetchClientValues('guilds.cache.size'),
+        client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)),
+        cassandraclient.execute(queryNumberOfSubscribedServers),
+        cassandraclient.execute(lookuphowmanybannedusersquery)
+   ];
+  
+    return Promise.all(promises)
+        .then(async (results) => {
+            const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
+            const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
+            var returnSubscribedServersCount = results[2]
+            var subscribedServerCount = returnSubscribedServersCount.rows[0].count.low
+            var returnBanDatabaseAmount = results[3]
+            var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
+  
+            dogstatsd.gauge('adorabot.totalstats.totalGuilds', totalGuilds);
+            dogstatsd.gauge('adorabot.totalstats.totalMembers', totalMembers);
+            dogstatsd.gauge('adorabot.totalstats.totalShards', client.shard.count);
+            dogstatsd.gauge('adorabot.totalstats.subscribedBanList', subscribedServerCount)
+            dogstatsd.gauge('adorabot.totalstats.adoraBanned', numberofrowsindatabase)
+            //return msg.channel.send(`Server count: ${totalGuilds}\nMember count: ${totalMembers}\nNumber of Shards: ${client.shard.count}\nNumber of Bans in Database:${numberofrowsindatabase}`);
+  
+    })
+  
+  }
+    })
 }
-  })
+
 }
 
 export async function updateDiscordBotsGG(client,config) {
@@ -56,7 +61,7 @@ export async function updateDiscordBotsGG(client,config) {
     
  
 
-  if(true) {
+  if(config.uploadStats) {
     const promises = [
       client.shard.fetchClientValues('guilds.cache.size'),
       client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0))
@@ -137,21 +142,25 @@ await logger.discordWarnLogger.warn({type: "uploadStatsToBotsGg", error: error})
 }
 
 export async function updateDiscordBotsGGRateLimited(client,config) {
-  //has the system recently uploaded stats to discord bots gg
-  if (rateLimitsInShard.has("discordbotsgg")) {
-  } else {
-    Promise.all([updateDiscordBotsGG(client,config),
-    // Adds the user to the set so that they can't talk for 7sec
-    rateLimitsInShard.add("discordbotsgg")]);
-    setTimeout(() => {
-      // Removes the user from the set after 7sec
-      rateLimitsInShard.delete("discordbotsgg");
-    }, 7000);
+  if (config.uploadStats) {
+    //has the system recently uploaded stats to discord bots gg
+    if (rateLimitsInShard.has("discordbotsgg")) {
+    } else {
+      Promise.all([updateDiscordBotsGG(client,config),
+      // Adds the user to the set so that they can't talk for 7sec
+      rateLimitsInShard.add("discordbotsgg")]);
+      setTimeout(() => {
+        // Removes the user from the set after 7sec
+        rateLimitsInShard.delete("discordbotsgg");
+      }, 7000);
+    }
   }
+ 
 }
 
 
 export async function updateDatadogCountRateLimited(client,config) {
+  if (config.uploadStats) {
   //has the system recently fetched the database
   if (rateLimitsInShard.has("datadogcount")) {
   } else {
@@ -162,4 +171,5 @@ export async function updateDatadogCountRateLimited(client,config) {
       rateLimitsInShard.delete("datadogcount");
     }, 1000);
   }
+}
 }

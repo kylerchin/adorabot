@@ -51,7 +51,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
 
           const videostats = body.items[0].statistics;
 
-        //  var imageChartBuffer = ytChart(body.items[0].id)
+         var imageChartBuffer = await ytChart(body.items[0].id)
          // const attachmentChart = new MessageAttachment(imageChartBuffer, 'file.png')
 
           var urlForEmbed = "https://youtube.com/watch?v=" + body.items[0].id
@@ -92,7 +92,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
               }
             
   
-            await message.reply({embeds: [embedYtStats]}).then(async (repliedMessage) => {
+            await message.reply({embeds: [embedYtStats], files: [imageChartBuffer]}).then(async (repliedMessage) => {
               await addVideoToTrackList(body.items[0].id)
 
               var loggerBody = {type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, 
