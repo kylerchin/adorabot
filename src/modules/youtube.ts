@@ -122,7 +122,7 @@ export async function youtubeVideoStats(msg:Message, command, client, config, ar
             sendYtCountsEmbed(videoID, msg, youtubeApiKeyRandomlyChosen)
 
             console.time("scrape")
-            await scrapeyoutube.search(searchYtString).then(results => {
+            /*await scrapeyoutube.search(searchYtString).then(results => {
                 console.timeEnd('scrape')
                 // Unless you specify a type, it will only return 'video' results
 
@@ -136,7 +136,7 @@ export async function youtubeVideoStats(msg:Message, command, client, config, ar
 
                 //sendYtCountsEmbed(videoID, msg, youtubeApiKeyRandomlyChosen)
                
-            });
+            });*/
             //}
         }
     }
