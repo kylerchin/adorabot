@@ -1,6 +1,6 @@
 const requestjson = require('request-json');
 import { storeYoutubeDataIntoDatabase } from "./storeYtStats"; 
-import {logger} from "./logger"
+import {logger, tracer} from "./logger"
 import {ytChart} from './ytChartMaker'
 const ytScraper = require("yt-scraper")
 import * as Discord from "discord.js"
@@ -17,7 +17,7 @@ const axios = require('axios').default;
     // Class method which prints the 
     // user called in another file 
 export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) { 
-
+  tracer.trace('ytEmbedMaker', () => {
   try {
 
         const pathForYtRequest = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet,statistics,status,liveStreamingDetails&id=" + id + "&key=" + apikey
@@ -45,7 +45,8 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
             ytChart(body.items[0].id)
           ])
         
-          var channelBody = promiseresults[0]
+          var channelBody = promiseresults[0].data
+          //console.log(channelBody)
           var imageChartBuffer = promiseresults[1]
 
 
@@ -139,5 +140,5 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
       catch {
         message.reply("Ooops, Youtube crashed... try again?")
       }
-
+    });
     } 
