@@ -9,6 +9,8 @@ export async function ytChart(id) {
         const ctx = canvas.getContext('2d')
         const x = canvas.width / 2;
 
+        var legendDepth = 50;
+
         var paddingLeft = 200;
         var paddingRight = 100;
         var paddingTop = 100;
@@ -70,8 +72,6 @@ export async function ytChart(id) {
          // Stream ended, there aren't any more rows
          ctx.fillStyle = "#282828";
          ctx.fillRect(0, 0, canvas.width, canvas.height);
-         
-             
              //return bufferinfo;
 
             var leastAndGreatestObject = {
@@ -128,10 +128,10 @@ export async function ytChart(id) {
     if (numberOfRows === 0) {
         // Write "Not Enough Data"
         ctx.fillStyle = "#ffffff"; 
-        ctx.font = '100px Helvetica'
+        ctx.font = '200px Helvetica'
        // ctx.rotate(0.1)
        ctx.textAlign = 'center';
-        ctx.fillText('Not enough data\nto render this chart.', x, 500)
+        ctx.fillText('Not enough data\nto render this chart.', x, (canvas.height/2) - 100)
     } else {
         console.log('leastTime',  leastAndGreatestObject['leastTime'])
         console.log('greatestTime',  leastAndGreatestObject['greatestTime'])
@@ -139,7 +139,33 @@ export async function ytChart(id) {
       
           var timeRange =  leastAndGreatestObject['greatestTime'] -  leastAndGreatestObject['leastTime']; 
           var viewRange =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews']; 
-          
+
+          var leastTimeDateObject = new Date(leastAndGreatestObject['leastTime'])
+
+          var lowestDateToChart = new Date(Date.UTC(leastTimeDateObject.getUTCFullYear(),leastTimeDateObject.getUTCMonth(), leastTimeDateObject.getUTCDate())).getTime();
+
+          var timeLegend = lowestDateToChart;
+
+          var pointybottom = canvas.height - paddingBottom + legendDepth;
+          var pointytop = canvas.height - paddingBottom - legendDepth;
+
+          const ctxSubLegend = canvas.getContext('2d')
+          ctxSubLegend.strokeStyle = '#a1a1a1'
+
+          timeLegend += 60 * 60 * 24 * 1000
+
+          while (timeLegend < leastAndGreatestObject['greatestTime']) {
+            //console.log("draw legend")
+            var percxlegend = (timeLegend- leastAndGreatestObject['leastTime']) / timeRange
+            var pointx = (canvasWidthRange * percxlegend) + paddingLeft
+            ctxSubLegend.moveTo(pointx,pointytop)
+            ctxSubLegend.lineTo(pointx,pointybottom)
+            ctxSubLegend.stroke()
+
+            timeLegend += 60 * 60 * 24 * 1000
+          }
+
+
         var connectingline = arrayOfStats.map((stat) => {
             var percentageOffsetFromLeft = (stat.unixtime -  leastAndGreatestObject['leastTime'])/timeRange;
               var percentageOffsetFromBottomViews = (stat.views -  leastAndGreatestObject['leastViews'])/viewRange;

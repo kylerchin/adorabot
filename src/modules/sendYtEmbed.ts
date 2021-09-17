@@ -97,7 +97,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
             
   
             await message.reply({embeds: [embedYtStats], files: [imageChartAttachment]}).then(async (repliedMessage) => {
-              await addVideoToTrackList(body.items[0].id)
+              await addVideoToTrackList(body.items[0].id,body.items[0].snippet.title)
 
               var loggerBody = {type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, 
               titleOfVideo: body.items[0].snippet.title

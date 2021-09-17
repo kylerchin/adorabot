@@ -19,7 +19,7 @@ export async function createDatabases() {
         }).catch(error => console.error(error));
 
     //Goes inside adora moderation keyspace, makes the table "trackedytvideoids"
-    await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adorastats.trackedytvideosids (videoid text PRIMARY KEY, added timeuuid);")
+    await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adorastats.trackedytvideosids (videoid text PRIMARY KEY, added timeuuid, videoname text);")
         .then(async result => {
             await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
             /*console.log(result)*/
@@ -32,12 +32,12 @@ export async function createDatabases() {
         }).catch(error => console.error(error));
 
         //add paint the town to the list of default videos
-    await addVideoToTrackList("_EEo-iE5u_A")
+   // await addVideoToTrackList("_EEo-iE5u_A",undefined)
 }
 
-export async function addVideoToTrackList(videoid) {
-    var query = "INSERT INTO adorastats.trackedytvideosids (videoid, added) VALUES (?,?)"
-    var params = [videoid, TimeUuid.now()]
+export async function addVideoToTrackList(videoid,name) {
+    var query = "INSERT INTO adorastats.trackedytvideosids (videoid, added, videoname) VALUES (?,?,?)"
+    var params = [videoid, TimeUuid.now(),name]
     await cassandraclient.execute(query, params)
     .then(async result => {
         await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
