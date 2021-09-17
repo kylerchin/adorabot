@@ -36,6 +36,7 @@ import { Message } from "discord.js";
 import { igprofile } from "./instagram";
 import { adminhelp } from "./adminhelp";
 import { makeGif } from "./gif";
+import { removeVideoId, spitoutlist } from "./trackedListManager";
 
 export async function commandHandler(msg, client, config, dogstatsd, startupTime) {
 
@@ -333,6 +334,19 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
       if (command === "channel" || command === "ch" || command === "youtubechannel") {
         await youtubeChannelStats(msg, command, client, config, args)
       }
+
+      //listing all the tracked videos
+      if (command === 'listvideos') {
+       if ( isAuthorizedAdmin(msg.author.id) ) {
+        spitoutlist(msg)
+       }
+      }
+
+      if (command === "removevideo") {
+        if ( isAuthorizedAdmin(msg.author.id) ) {
+          removeVideoId(args[0],msg)
+         }
+      } 
 
       if (command === 'wiktionary') {
         const wikitionaryQuery = msg.content.replace("a!wiktionary", "").replace("a! wiktionary", "").trim()
