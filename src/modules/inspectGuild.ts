@@ -7,10 +7,13 @@ const getServer = async (guildID,client) => {
     // try to get guild from all the shards
     const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => {
         var guild = clientBroadcasted.guilds.cache.get(contextParam.guildid)
-        return {
-            name: guild.name,
-            iconurl: guild.iconURL()
+        var objToReturn = {
+            name: guild.name
         }
+        if (guild.iconURL()) {
+            objToReturn['iconurl'] = guild.iconURL({dynamic: true})
+        }
+        return objToReturn;
     },
     {
         "context": {
@@ -33,7 +36,7 @@ export async function inspectGuild(message,guildid,client) {
                 "title": guild.name
             });
     
-            if (guild.iconURL()) {
+            if (guild.iconurl) {
                 guildEmbed.setThumbnail(`${guild.iconurl}`)
             }
     
