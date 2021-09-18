@@ -5,9 +5,18 @@ import { isAuthorizedAdmin } from "./moderation";
 
 const getServer = async (guildID,client) => {
     // try to get guild from all the shards
-    const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => clientBroadcasted.guilds.cache.get(contextParam.guildid),
+    const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => {
+        var guild = clientBroadcasted.guilds.cache.get(contextParam.guildid)
+        return {
+            name: guild.name,
+            iconurl: guild.iconURL()
+        }
+    },
     {
-        guildid: guildID
+        "context": {
+            guildid: guildID
+        }
+        
     });
 
     //uild or null if not found
@@ -24,7 +33,9 @@ export async function inspectGuild(message,guildid,client) {
                 "title": guild.name
             });
     
-            guildEmbed.setThumbnail(`${guild.iconURL()}`)
+            if (guild.iconURL()) {
+                guildEmbed.setThumbnail(`${guild.iconurl}`)
+            }
     
             message.reply({
                 embeds: [
