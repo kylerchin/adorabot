@@ -21,7 +21,7 @@ export function spitoutlist(message) {
         result.rows.forEach(async (row) => {
            // const video = await youtube.getVideo(row.videoid);
 
-                var stringToAdd = `\`${row.videoid}\`| ${row.videoname}`
+                var stringToAdd = `\`${row.videoid}\`| ${Util.escapeMarkdown(row.videoname)}`
     
                 console.log(stringToAdd)
             arrayOfVideos.push(stringToAdd)
