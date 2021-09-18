@@ -3,6 +3,7 @@ import * as youtubei from "youtubei";
 import { addVideoToTrackList } from "./../youtubeviewcountdaemon";
 const youtube = new youtubei.Client();
 import * as Discord from 'discord.js'
+const TimeUuid = require('cassandra-driver').types.TimeUuid;
 
 // Import MessageEmbed from discord.js
 import { Message, MessageEmbed,Util } from "discord.js"
@@ -106,4 +107,35 @@ export function removeVideoId(idToRemove,message) {
     cassandraclient.execute(deleteRowQuery,deleteRowParam).then(async (result) => {
         message.reply(`${idToRemove} removed from tracked videos`)
     })
+}
+export function removeAllPoints(idToRemove,message) {
+  var rowsRemoved = 0
+
+  var listOfQueries = []
+
+  const deleteRowQuery = "DELETE FROM adorastats.ytvideostats WHERE videoid=? and time = ? IF EXISTS;"
+  
+
+  cassandraclient.stream('SELECT * FROM adorastats.ytvideostats WHERE videoid=?', [ idToRemove ])
+  .on('readable', function () {
+    // 'readable' is emitted as soon a row is received and parsed
+    var row;
+    while (row = this.read()) {
+      rowsRemoved += 1;
+
+      listOfQueries.push({
+        query: deleteRowQuery,
+        params: [idToRemove,row.time]
+      })
+    }
+  })
+  .on('end', function () {
+    cassandraclient.batch(listOfQueries, { prepare: true }).catch(error => console.log(error));
+   // console.log('Data updated on cluster');
+    // Stream ended, there aren't any more rows
+    message.reply(`${idToRemove} removed from tracked videos, removed ${listOfQueries.length} rows`)
+  })
+  .on('error', function (err) {
+    // Something went wrong: err is a response error from Cassandra
+  });
 }

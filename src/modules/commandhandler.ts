@@ -36,7 +36,7 @@ import { Message } from "discord.js";
 import { igprofile } from "./instagram";
 import { adminhelp } from "./adminhelp";
 import { makeGif } from "./gif";
-import { removeVideoId, spitoutlist } from "./trackedListManager";
+import { removeAllPoints, removeVideoId, spitoutlist } from "./trackedListManager";
 import { banFromGuild, inspectGuild, turnOnAdorabanInGuild } from "./inspectGuild";
 
 export async function commandHandler(msg, client, config, dogstatsd, startupTime) {
@@ -348,6 +348,12 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
           removeVideoId(args[0],msg)
          }
       } 
+
+      if (command === "removepoints") {
+        if (isAuthorizedAdmin(msg.author.id)) {
+          removeAllPoints(args[0], msg)
+        }
+      }
 
       if (command === 'wiktionary') {
         const wikitionaryQuery = msg.content.replace("a!wiktionary", "").replace("a! wiktionary", "").trim()
