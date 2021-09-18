@@ -102,11 +102,13 @@ export async function banFromGuild(message,guildid,client,banid) {
 
 
 export async function turnOnAdorabanInGuild(message,guildid,client) {
-    var subscribeStateToWrite: boolean;
+  
+    if (isAuthorizedAdmin(message.author.id)) {
+
+        var subscribeStateToWrite: boolean;
         var isNewEntry: boolean;
         var firstchangedbyidfirststate;
         var firstchangedtimefirststate;
-    if (true) {
         //check if server is registered
         const lookupexistingsubscriptionquery = 'SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid = ?';
 
