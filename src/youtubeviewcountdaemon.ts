@@ -4,6 +4,8 @@ const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const ytScraper = require("yt-scraper")
 const axios = require('axios')
 const cio = require('cheerio-without-node-native');
+import * as youtubei from "youtubei";
+const youtube = new youtubei.Client();
 
 const CloudflareBypasser = require('cloudflare-bypasser');
  
@@ -63,43 +65,19 @@ export async function fetchStatsForAll() {
     let row;
     while (row = this.read()) {
         try {
-     
       // process row
        // logger.discordInfoLogger.info(row.videoid + ' in the database')
 
 
         //var videoResult = await ytScraper.video('row.videoid')
-        var fullUrlOfVideo = `https://www.youtube.com/watch?v=${row.videoid}`
-        let { data } = await axios.get(fullUrlOfVideo);
-
-        //logger.discordInfoLogger.info(data, {type: 'youtubeHtmlRespond'})
-       // var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="[^"]">/g)[0],10)
-       var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="([^">]*)">/g)[0].replace(/<meta itemprop="interactionCount" content="/g,"").replace(/">/,""),10)
-
-       var likedisliketooltipMatches = data.match(/"tooltip":"(\d||,)+ \/ (\d||,)+"/g)
-
-       console.log('likeddisliketooltipmatches', likedisliketooltipMatches)
-
-       var likedisliketooltip = likedisliketooltipMatches[0].replace(/"tooltip": ?"/g,"").replace(/"/g,"")
-
-       var likeanddislikearray = likedisliketooltip.split("/");
-
-       console.log('splittedArray', likeanddislikearray)
-
-       console.log("likeCountAttempt",likeanddislikearray[0])
-       var likeCount = parseInt(likeanddislikearray[0].trim().replace(/,/g,""),10)
-
-       var dislikeCount = parseInt(likeanddislikearray[1].trim().replace(/,/g,""),10)
-
-        console.log(viewCount)
-        console.log("likeCount",likeCount)
-        console.log("dislikeCount",dislikeCount)
-        await addStatsToYtVideo(row.videoid,viewCount,likeCount,dislikeCount,undefined)
+        const video = await youtube.getVideo(row.videoid)
+        console.log(`Video: ${video.title} has ${video.viewCount} views`)
+        addStatsToYtVideo(row.videoid,video.viewCount,video.likeCount,video.dislikeCount,undefined)
         //Cherio inerpretation of HTML contents
        // const $ = cio.load(data);
         //find lyrics inside div element, trim off whitespace
         //let lyrics = $('div[class="lyrics"]').text().trim();
-
+       // sleep(1000)
     }
     catch {
         

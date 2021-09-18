@@ -4,15 +4,19 @@ const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require('canvas')
 registerFont(`${__dirname}/../../LexendDecaMedium.ttf`, { family: 'Lexend Deca' })
 
+const phi = 1.618033988749895
+
 export async function ytChart(id) {
 
     return new Promise(async (resolve, reject) => {
       tracer.trace('youtubeMakeChart', () => {
         const canvas = createCanvas(3840, 2160)
         const ctx = canvas.getContext('2d')
+        const ctxLegendXLabel = canvas.getContext('2d')
         const x = canvas.width / 2;
 
-        var legendDepth = 50;
+        var legendDepth = 100;
+        var legendDepthSub = 60;
 
         var paddingLeft = 200;
         var paddingRight = 100;
@@ -22,7 +26,7 @@ export async function ytChart(id) {
         var canvasWidthRange = canvas.width - paddingLeft - paddingRight;
 
 
-        var pointSize = 5;
+        var pointSize = 9;
 
         function drawCoordinates(x,y){	
           //  var ctx = canvas.getContext("2d");
@@ -46,7 +50,7 @@ export async function ytChart(id) {
 
         const ctxline = canvas.getContext('2d');
 
-        ctxline.lineWidth = 7;
+        ctxline.lineWidth = 9;
 
         ctxline.strokeStyle = "#a1a1a1";
 
@@ -156,13 +160,17 @@ export async function ytChart(id) {
 
           var timeLegend = lowestDateToChart;
 
-          var pointybottom = canvas.height - paddingBottom + legendDepth;
-          var pointytop = canvas.height - paddingBottom - legendDepth;
+          var pointybottom = canvas.height - paddingBottom + (legendDepth * (1/phi));
+          var pointytop = canvas.height - paddingBottom - (legendDepth * (1-(1/phi)));
+
+          var pointybottomminor = canvas.height - paddingBottom + (legendDepthSub * (1/phi));
+          var pointytopminor = canvas.height - paddingBottom - (legendDepthSub * (1-(1/phi)));
 
           const ctxSubLegend = canvas.getContext('2d')
-          ctxSubLegend.strokeStyle = '#a1a1a1'
+          ctxSubLegend.strokeStyle = '#b1b1b1'
 
-          timeLegend += 60 * 60 * 24 * 1000
+       // timeLegend += 60 * 60 * 24 * 1000
+
 
           while (timeLegend < leastAndGreatestObject['greatestTime']) {
             //console.log("draw legend")
@@ -173,6 +181,49 @@ export async function ytChart(id) {
             ctxSubLegend.stroke()
 
             timeLegend += 60 * 60 * 24 * 1000
+          }
+
+          //under 5 days
+          var hourDerivative = 60 * 60 * 1000;
+
+          var modulusHourInterval = 1;
+
+          // if the time window is less than 5 days, draw the hours
+          if (timeRange < (5*60*60*24*1000)) {
+            if (timeRange < (2 * 60 * 60 * 24 * 1000)) {
+              //if the time window is less than 24 hours, draw ticks every hour
+             modulusHourInterval = 1;
+            } else {
+              //draw ticks every 2 hours
+              modulusHourInterval = 2;
+            }
+            var lowestHourToChart = new Date(Date.UTC(leastTimeDateObject.getUTCFullYear(),leastTimeDateObject.getUTCMonth(), leastTimeDateObject.getUTCDate(), leastTimeDateObject.getUTCHours())).getTime();
+          var timeHourLegend = lowestHourToChart;
+
+          const ctxSubMinorLegend = canvas.getContext('2d')
+          ctxSubMinorLegend.strokeStyle = "#414141"
+
+          ctxLegendXLabel.fillStyle = "#a1a1a1"; 
+        ctxLegendXLabel.font = '50px Lexend Deca'
+       // ctx.rotate(0.1)
+       ctxLegendXLabel.textAlign = 'center';
+
+          while (timeHourLegend < leastAndGreatestObject['greatestTime']) {
+            if (new Date(timeHourLegend).getUTCHours() % modulusHourInterval === 0) {
+              var percxlegend = (timeHourLegend- leastAndGreatestObject['leastTime']) / timeRange
+              var pointx = (canvasWidthRange * percxlegend) + paddingLeft
+              ctxSubMinorLegend.moveTo(pointx,pointytopminor)
+              ctxSubMinorLegend.lineTo(pointx,pointybottomminor)
+              ctxSubMinorLegend.stroke()
+              //console.log('utchours', new Date(timeHourLegend).getUTCHours())
+              ctxLegendXLabel.fillText(`${new Date(timeHourLegend).getUTCHours()}:00`, pointx, (canvas.height) - 100)
+          
+            }
+            //console.log("draw legend")
+           
+            timeHourLegend += hourDerivative;
+          }
+            
           }
 
 
