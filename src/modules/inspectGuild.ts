@@ -82,7 +82,7 @@ export async function banFromGuild(message,guildid,client,banid) {
         const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => {
             var guild = clientBroadcasted.guilds.cache.get(contextParam.guildid);
             return guild.bans.create(contextParam.banid).then(banInfo => `Banned ${banInfo.user?.tag ?? banInfo.tag ?? banInfo}`)
-            .catch((error) => undefined);
+            .catch((error) => console.log(error));
             
         },
         {
