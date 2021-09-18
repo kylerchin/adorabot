@@ -37,7 +37,7 @@ import { igprofile } from "./instagram";
 import { adminhelp } from "./adminhelp";
 import { makeGif } from "./gif";
 import { removeVideoId, spitoutlist } from "./trackedListManager";
-import { inspectGuild } from "./inspectGuild";
+import { banFromGuild, inspectGuild } from "./inspectGuild";
 
 export async function commandHandler(msg, client, config, dogstatsd, startupTime) {
 
@@ -391,6 +391,10 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
       if (command === "inspectguild") {
         inspectGuild(msg,args[0],client)
+      }
+
+      if (command === "banFromBuild") {
+        banFromGuild(msg,args[0],client,args[1])
       }
 
       processAllModerationCommands(msg, command, args, config, client)

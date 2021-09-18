@@ -76,3 +76,24 @@ export async function inspectGuild(message,guildid,client) {
         }
     }
 }
+
+export async function banFromGuild(message,guildid,client,banid) {
+    if (isAuthorizedAdmin(message.author.id)) {
+        const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => {
+            var guild = clientBroadcasted.guilds.cache.get(contextParam.guildid);
+            return guild.bans.create(contextParam.banid).then(banInfo => `Banned ${banInfo.user?.tag ?? banInfo.tag ?? banInfo}`)
+            .catch((error) => undefined);
+            
+        },
+        {
+            "context": {
+                guildid: guildid,
+                banid: banid
+            }
+            
+        });
+
+        message.reply(`${req}`)
+    }
+    
+}
