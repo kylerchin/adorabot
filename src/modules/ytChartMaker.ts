@@ -188,14 +188,24 @@ export async function ytChart(id) {
 
           var modulusHourInterval = 1;
 
+          var modulusHourIntervalLabel = 2;
+
           // if the time window is less than 5 days, draw the hours
           if (timeRange < (5*60*60*24*1000)) {
             if (timeRange < (2 * 60 * 60 * 24 * 1000)) {
-              //if the time window is less than 24 hours, draw ticks every hour
+              //if the time window is less than 48 hours, draw ticks every hour
              modulusHourInterval = 1;
             } else {
               //draw ticks every 2 hours
               modulusHourInterval = 2;
+            }
+
+            if (timeRange < (60 * 60 * 24 * 1000)) {
+              //if the time window is less than 24 hours, draw labels every hour
+             modulusHourIntervalLabel = 1;
+            } else {
+              //draw labels every 2 hours
+              modulusHourIntervalLabel = 2;
             }
             var lowestHourToChart = new Date(Date.UTC(leastTimeDateObject.getUTCFullYear(),leastTimeDateObject.getUTCMonth(), leastTimeDateObject.getUTCDate(), leastTimeDateObject.getUTCHours())).getTime();
           var timeHourLegend = lowestHourToChart;
@@ -209,14 +219,17 @@ export async function ytChart(id) {
        ctxLegendXLabel.textAlign = 'center';
 
           while (timeHourLegend < leastAndGreatestObject['greatestTime']) {
-            if (new Date(timeHourLegend).getUTCHours() % modulusHourInterval === 0) {
+            var utchour = new Date(timeHourLegend).getUTCHours()
+            if (utchour % modulusHourInterval === 0) {
               var percxlegend = (timeHourLegend- leastAndGreatestObject['leastTime']) / timeRange
               var pointx = (canvasWidthRange * percxlegend) + paddingLeft
               ctxSubMinorLegend.moveTo(pointx,pointytopminor)
               ctxSubMinorLegend.lineTo(pointx,pointybottomminor)
               ctxSubMinorLegend.stroke()
               //console.log('utchours', new Date(timeHourLegend).getUTCHours())
-              ctxLegendXLabel.fillText(`${new Date(timeHourLegend).getUTCHours()}:00`, pointx, (canvas.height) - 100)
+              if (utchour % modulusHourIntervalLabel === 0) {
+                ctxLegendXLabel.fillText(`${new Date(timeHourLegend).getUTCHours()}:00`, pointx, (canvas.height) - 100)
+              }
           
             }
             //console.log("draw legend")
