@@ -5,6 +5,7 @@ import {ytChart} from './ytChartMaker'
 const ytScraper = require("yt-scraper")
 import * as Discord from "discord.js"
 import {addStatsToYtVideo, addVideoToTrackList} from './../youtubeviewcountdaemon'
+import { Util } from "discord.js";
 const editJsonFile = require("edit-json-file");
 const { MessageAttachment } = require('discord.js')
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
@@ -59,6 +60,8 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
 
           const videostats = body.items[0].statistics;
 
+          var discordDate = `<t:${Math.round(new Date(body.items[0].snippet.publishedAt).getTime()/1000)}:F>`
+
          var imageChartAttachment = new Discord.MessageAttachment(imageChartBuffer, 'chart.png')
          // const attachmentChart = new MessageAttachment(imageChartBuffer, 'file.png')
 
@@ -67,7 +70,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
             const embedYtStats:Discord.MessageEmbedOptions = 
               {
                 "url": urlForEmbed,
-                "description": "*" + channelBody.items[0].snippet.title + "*\n" + "https://youtu.be/" + body.items[0].id,
+                "description": "*" + Util.escapeMarkdown(channelBody.items[0].snippet.title) + "*\n" + "https://youtu.be/" + body.items[0].id,
                 "color": 16711680,
                 "thumbnail": {
                   "url": body.items[0].snippet.thumbnails.default.url
@@ -76,7 +79,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
                   "url": `attachment://${imageChartAttachment.name}`,
                 },
                 "author": {
-                  "name": body.items[0].snippet.title,
+                  "name": Util.escapeMarkdown(body.items[0].snippet.title),
                   "url": "https://youtube.com/watch?v=" + body.items[0].id,
                   "icon_url": channelBody.items[0].snippet.thumbnails.default.url
                 },
@@ -98,6 +101,10 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
                   {
                     "name": "Comments :speech_balloon:",
                     "value": parseInt(videostats.commentCount).toLocaleString('en-US')
+                  },
+                  {
+                    "name": "Published at",
+                    "value":`${discordDate}`
                   }
                 ]
               }
