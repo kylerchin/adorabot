@@ -28,34 +28,40 @@ export async function youtubeChannelStats(message:Message, command, client, conf
     const searchYtString = message.content.replace("a!", "").replace(command, "").trim()
 
     scrapeyoutube.search(searchYtString, { type: 'channel' }).then((results) => {
-        console.log(results.channels[0]);
+        //console.log(results.channels[0]);
 
-        var firstChannel = results.channels[0]
-        message.reply({
-            embeds: [
-                {
-                    "thumbnail": {
-                        url: firstChannel.thumbnail
-                    },
-                    "title": firstChannel.name,
-                    "description": firstChannel.description.substring(0, 1000),
-                    "fields": [
-                        {
-                            "name": "Video Count",
-                            "value": `${firstChannel.videoCount}`
+        if (results.channels.length > 0) {
+            var firstChannel = results.channels[0]
+            message.reply({
+                embeds: [
+                    {
+                        "thumbnail": {
+                            url: firstChannel.thumbnail
                         },
-                        {
-                            "name": "Subscribers",
-                            "value": `${firstChannel.subscribers}`
-                        },
-                        {
-                            "name": "id",
-                            "value": `${firstChannel.id}`
-                        }
-                    ]
-                }
-            ]
-        })
+                        "title": firstChannel.name,
+                        "description": firstChannel.description.substring(0, 1000),
+                        "fields": [
+                            {
+                                "name": "Video Count",
+                                "value": `${firstChannel.videoCount}`
+                            },
+                            {
+                                "name": "Subscribers",
+                                "value": `${firstChannel.subscribers}`
+                            },
+                            {
+                                "name": "id",
+                                "value": `${firstChannel.id}`
+                            }
+                        ]
+                    }
+                ]
+            })
+        } else {
+            message.reply("No channels found with that name! Please modify your search and try again.")
+        }
+
+       
     });
 
     
