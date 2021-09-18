@@ -226,7 +226,7 @@ export async function unbanGuildMember(message: Message) {
     if (isDM) {
         message.channel.send("You can't ban or unban users in DMs, this comamnd only applies to servers!")
     } else {
-        if (message.member.permissions.has('BAN_MEMBERS')) {
+        if (message.member.permissions.has('BAN_MEMBERS') || isAuthorizedAdmin(message.author.id)) {
             //message.reply("You have the permission to ban!")
 
             //this line prevents accidental role mentions from being added
