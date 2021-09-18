@@ -1,6 +1,7 @@
 import { MessageEmbed } from "discord.js";
 import * as Discord from "discord.js"
 import { isAuthorizedAdmin } from "./moderation";
+import { cassandraclient } from "./cassandraclient";
 
 
 const getServer = async (guildID,client) => {
@@ -25,10 +26,24 @@ const getServer = async (guildID,client) => {
     //uild or null if not found
     return req.find(res => !!res) || null;
 }
+const lookupexistingsubscriptionquery = 'SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid = ?';
 
 export async function inspectGuild(message,guildid,client) {
+    var readExistingSubscriptionStatus: boolean = false;
     if (isAuthorizedAdmin(message.author.id)) {
         var guild = await getServer(guildid,client)
+      
+        await cassandraclient.execute(lookupexistingsubscriptionquery, [guildid]).then(fetchExistingSubscriptionResult => {
+            //console.log(fetchExistingSubscriptionResult)
+            if (fetchExistingSubscriptionResult.rows.length === 0) {
+                //entry hasn't happened before
+                readExistingSubscriptionStatus = false;
+            }
+            else {
+                readExistingSubscriptionStatus = fetchExistingSubscriptionResult.rows[0].subscribed;
+            }
+        });
+        
         if (guild === null) {
             message.reply("This guild can't be found.")
         } else {
