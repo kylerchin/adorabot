@@ -2,6 +2,7 @@ import { MessageEmbed } from "discord.js";
 import * as Discord from "discord.js"
 import { isAuthorizedAdmin } from "./moderation";
 import { cassandraclient } from "./cassandraclient";
+import { logger } from "./logger";
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 
 const getServer = async (guildID,client) => {
@@ -141,6 +142,8 @@ export async function turnOnAdorabanInGuild(message,guildid,client) {
             await cassandraclient.execute(query, params, { prepare: true }, function (err) {
                 console.log(err);
                 //Inserted in the cluster
+            }).then((result) => {
                 message.reply(`${guildid} has been subscribed to autoban!`)
+               logger.discordInfoLogger.info(`${guildid} has been subscribed to autoban!`,{type: "subscribeToAutobanForced", cassandralog: result, })
             });
 }}
