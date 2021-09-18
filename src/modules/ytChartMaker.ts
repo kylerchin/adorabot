@@ -21,7 +21,7 @@ export async function ytChart(id) {
         var canvasWidthRange = canvas.width - paddingLeft - paddingRight;
 
 
-        var pointSize = 9;
+        var pointSize = 5;
 
         function drawCoordinates(x,y){	
           //  var ctx = canvas.getContext("2d");
