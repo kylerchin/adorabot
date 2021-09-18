@@ -630,7 +630,7 @@ export async function processAllModerationCommands(message, command, args, confi
                                             //trim the reason text to 512 char just in case it fails because the reason is too long
                                             toBanReason = toBanReason.substring(0, 511)
                                             if (individualservertodoeachban.available) {
-                                                individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
+                                                individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'days': 7, 'reason': toBanReason })
                                                     .then((user) => {
                                                         numberOfSuccessfulBansOnThisOperation = numberOfSuccessfulBansOnThisOperation + 1;
                                                         logger.discordDebugLogger.debug({ message: `Banned ${user.username || user.id || user} from ${individualservertodoeachban.name}`, userObject: user })
