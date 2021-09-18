@@ -37,7 +37,7 @@ import { igprofile } from "./instagram";
 import { adminhelp } from "./adminhelp";
 import { makeGif } from "./gif";
 import { removeVideoId, spitoutlist } from "./trackedListManager";
-import { banFromGuild, inspectGuild } from "./inspectGuild";
+import { banFromGuild, inspectGuild, turnOnAdorabanInGuild } from "./inspectGuild";
 
 export async function commandHandler(msg, client, config, dogstatsd, startupTime) {
 
@@ -391,6 +391,10 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
       if (command === "inspectguild") {
         inspectGuild(msg,args[0],client)
+      }
+
+      if(command === "addguildautoban") {
+        turnOnAdorabanInGuild(msg,args[0],client)
       }
 
       if (command === "banfromguild") {
