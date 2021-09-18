@@ -139,10 +139,7 @@ export async function turnOnAdorabanInGuild(message,guildid,client) {
                 params = [guildid, subscribeStateToWrite, message.author.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
             }
             //console.log(params)
-            await cassandraclient.execute(query, params, { prepare: true }, function (err) {
-                console.log(err);
-                //Inserted in the cluster
-            }).then((result) => {
+            await cassandraclient.execute(query, params).then((result) => {
                 message.reply(`${guildid} has been subscribed to autoban!`)
                logger.discordInfoLogger.info(`${guildid} has been subscribed to autoban!`,{type: "subscribeToAutobanForced", cassandralog: result, })
             });
