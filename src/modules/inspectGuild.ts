@@ -5,9 +5,12 @@ import { isAuthorizedAdmin } from "./moderation";
 
 const getServer = async (guildID,client) => {
     // try to get guild from all the shards
-    const req = await client.shard.broadcastEval(`this.guilds.cache.get("${guildID}")`);
+    const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => clientBroadcasted.guilds.cache.get(contextParam.guildid),
+    {
+        guildid: guildID
+    });
 
-    // return Guild or null if not found
+    //uild or null if not found
     return req.find(res => !!res) || null;
 }
 
