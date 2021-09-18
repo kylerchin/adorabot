@@ -393,7 +393,7 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         inspectGuild(msg,args[0],client)
       }
 
-      if (command === "banFromBuild") {
+      if (command === "banFromguild") {
         banFromGuild(msg,args[0],client,args[1])
       }
 
