@@ -37,6 +37,7 @@ import { igprofile } from "./instagram";
 import { adminhelp } from "./adminhelp";
 import { makeGif } from "./gif";
 import { removeVideoId, spitoutlist } from "./trackedListManager";
+import { inspectGuild } from "./inspectGuild";
 
 export async function commandHandler(msg, client, config, dogstatsd, startupTime) {
 
@@ -386,6 +387,10 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
       if (command === "play") {
         playMusic({command,message: msg,args,client})
+      }
+
+      if (command === "inspectguild") {
+        inspectGuild(msg,args[0],client)
       }
 
       processAllModerationCommands(msg, command, args, config, client)
