@@ -1,7 +1,8 @@
 import { cassandraclient } from "./cassandraclient";
 import { tracer } from "./logger";
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
-const { createCanvas, loadImage } = require('canvas')
+const { createCanvas, registerFont, loadImage } = require('canvas')
+registerFont(`${__dirname}/../../LexendDecaMedium.ttf`, { family: 'Lexend Deca' })
 
 export async function ytChart(id) {
 
@@ -130,11 +131,18 @@ export async function ytChart(id) {
     if (numberOfRows === 0) {
         // Write "Not Enough Data"
         ctx.fillStyle = "#ffffff"; 
-        ctx.font = '200px Helvetica'
+        ctx.font = '200px Lexend Deca'
        // ctx.rotate(0.1)
        ctx.textAlign = 'center';
         ctx.fillText('Not enough data\nto render this chart.', x, (canvas.height/2) - 100)
     } else {
+      ctx.fillStyle = "#ffffff"; 
+      ctx.font = '150px Lexend Deca'
+     // ctx.rotate(0.1)
+     ctx.textAlign = 'center';
+      ctx.fillText(`View Count Chart`, x, 200)
+     // ctx.fillText(``, x, 300)
+
         console.log('leastTime',  leastAndGreatestObject['leastTime'])
         console.log('greatestTime',  leastAndGreatestObject['greatestTime'])
         console.log('numberOfRows', numberOfRows)
