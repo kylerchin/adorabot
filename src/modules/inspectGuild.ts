@@ -44,11 +44,24 @@ export async function inspectGuild(message,guildid,client) {
             }
         });
         
+        var autobanstatustext: string;
+                    if (readExistingSubscriptionStatus) {
+                        autobanstatustext = "On"
+                    } else {
+                        autobanstatustext = "Off"
+                    }
+
         if (guild === null) {
             message.reply("This guild can't be found.")
         } else {
             var guildEmbed:MessageEmbed = new Discord.MessageEmbed({
-                "title": guild.name
+                "title": guild.name,
+                "fields": [
+                    {
+                        "name": "Is Autoban On for this server?",
+                        "value": `${autobanstatustext}`
+                    },
+                ]
             });
     
             if (guild.iconurl) {
