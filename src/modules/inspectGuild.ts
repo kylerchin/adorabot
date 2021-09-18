@@ -134,9 +134,9 @@ export async function turnOnAdorabanInGuild(message,guildid,client) {
             const query = 'INSERT INTO adoramoderation.guildssubscribedtoautoban (serverid, subscribed, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime) VALUES (?, ?, ?, ?, ?, ?)';
             var params;
             if (isNewEntry) {
-                params = [guildid, subscribeStateToWrite, message.author.id, firstchangedtimefirststate, firstchangedbyidfirststate, firstchangedtimefirststate];
+                params = [guildid, true, message.author.id, firstchangedtimefirststate, firstchangedbyidfirststate, firstchangedtimefirststate];
             } else {
-                params = [guildid, subscribeStateToWrite, message.author.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
+                params = [guildid, true, message.author.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
             }
             //console.log(params)
             await cassandraclient.execute(query, params).then((result) => {
