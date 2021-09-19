@@ -61,7 +61,7 @@ export async function addStatsToYtVideo(videoid,views,likes,dislikes,comments) {
         longOrEmpty(likes),
         longOrEmpty(dislikes),
         commentsLong]
-    await cassandraclient.execute(query, params)
+    await cassandraclient.execute(query, params, {prepare: true})
     .then(async result => {
         await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
     }).catch(error => console.error(error));
