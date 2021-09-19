@@ -129,7 +129,7 @@ export async function ytChart(id,optionsObject:optionsInterface) {
          var time = row.time.getDate().getTime()
          leastAndGreatestCheck(time, "leastTime","greatestTime")
          console.log("views", row.views)
-          var views = row.views.high
+          var views = row.views.low
           leastAndGreatestCheck(views,"leastViews","greatestViews")
 
           arrayOfStats.push({
