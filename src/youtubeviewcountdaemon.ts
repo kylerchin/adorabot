@@ -5,8 +5,9 @@ const ytScraper = require("yt-scraper")
 const axios = require('axios')
 const cio = require('cheerio-without-node-native');
 import * as youtubei from "youtubei";
+const editJsonFile = require("edit-json-file");
 const youtube = new youtubei.Client();
-
+var importconfigfile = editJsonFile(`${__dirname}/../removedytvids.json`);
 const CloudflareBypasser = require('cloudflare-bypasser');
  
 let cf = new CloudflareBypasser();
@@ -67,17 +68,23 @@ export async function fetchStatsForAll() {
         try {
       // process row
        // logger.discordInfoLogger.info(row.videoid + ' in the database')
-
-
-        //var videoResult = await ytScraper.video('row.videoid')
         const video = await youtube.getVideo(row.videoid)
         console.log(`Video: ${video.title} has ${video.viewCount} views`)
-        addStatsToYtVideo(row.videoid,video.viewCount,video.likeCount,video.dislikeCount,undefined)
-        //Cherio inerpretation of HTML contents
-       // const $ = cio.load(data);
-        //find lyrics inside div element, trim off whitespace
-        //let lyrics = $('div[class="lyrics"]').text().trim();
-       // sleep(1000)
+
+        var loadedRemovedData = importconfigfile.get()
+
+        if (loadedRemovedData.removedvids.indexOf(row.videoid) == -1) {
+            const video = await youtube.getVideo(row.videoid)
+            console.log(`Video: ${video.title} has ${video.viewCount} views`)
+
+            if (loadedRemovedData.removedvids.indexOf(row.videoid) == -1 && 
+            loadedRemovedData.removedytchannels.indexOf(video.channel.id) == -1) {
+               addStatsToYtVideo(row.videoid,video.viewCount,video.likeCount,video.dislikeCount,undefined)
+            }
+        }
+
+        // loadedRemovedData = importconfigfile.get()
+
     }
     catch {
         

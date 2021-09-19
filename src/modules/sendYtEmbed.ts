@@ -133,7 +133,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
 
             var loadedRemovedData = importconfigfile.get()
 
-            loadedRemovedData = importconfigfile.get()
+           // loadedRemovedData = importconfigfile.get()
 
             if (loadedRemovedData.removedvids.indexOf(body.items[0].id) == -1 && 
             loadedRemovedData.removedytchannels.indexOf(channelIdOfVideo) == -1) {
