@@ -3,10 +3,17 @@ import { tracer } from "./logger";
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require('canvas')
 registerFont(`${__dirname}/../../LexendDecaMedium.ttf`, { family: 'Lexend Deca' })
+const editJsonFile = require("edit-json-file");
+var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 
 const phi = 1.618033988749895
 
-export async function ytChart(id) {
+interface optionsInterface {
+  channelId?: string;
+  [key:string]: any;
+}
+
+export async function ytChart(id,optionsObject:optionsInterface) {
 
     return new Promise(async (resolve, reject) => {
       tracer.trace('youtubeMakeChart', () => {
@@ -132,14 +139,42 @@ export async function ytChart(id) {
   })
   .on('end', function () {
     // Stream ended, there aren't any more rows
-    var viewRange =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews']; 
-    if (numberOfRows === 0 || viewRange < 3) {
+    var viewRange:number =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews']; 
+    var timeRange:number =  leastAndGreatestObject['greatestTime'] -  leastAndGreatestObject['leastTime']; 
+
+    var loadedRemovedData = importconfigfile.get()
+
+    var isBlocked = false;
+
+    try {
+        if (!(loadedRemovedData.removedvids.indexOf(id) == -1)) {
+           isBlocked = true;
+        }
+
+        if (optionsObject.channelId) {
+          if (!(loadedRemovedData.removedytchannels.indexOf(optionsObject.channelId) == -1)) {
+            isBlocked = true;
+          }
+        }
+      }
+      catch (error) {
+        console.log(error)
+      }
+    if (numberOfRows === 0 || viewRange < 3 || isBlocked) {
         // Write "Not Enough Data"
         ctx.fillStyle = "#ffffff"; 
         ctx.font = '200px Lexend Deca'
        // ctx.rotate(0.1)
        ctx.textAlign = 'center';
         ctx.fillText('Not enough data\nto render this chart.', x, (canvas.height/2) - 100)
+
+        ctx.font = '70px Lexend Deca'
+        const yToDrawSubtitle = (canvas.height/2) + 270
+        if (isBlocked) {
+          ctx.fillText('This video / channel has been restricted from rendering a chart', x, yToDrawSubtitle)
+        } else {
+          ctx.fillText('This might improve in a few seconds, minutes or hours when new data is recieved from YouTube.\n Run the command again to confirm.', x, yToDrawSubtitle)
+        }
     } else {
       ctx.fillStyle = "#ffffff"; 
       ctx.font = '150px Lexend Deca'
@@ -148,12 +183,12 @@ export async function ytChart(id) {
       ctx.fillText(`View Count Chart`, x, 200)
      // ctx.fillText(``, x, 300)
 
+     //var viewRange:number =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews']; 
+     //var timeRange:number =  leastAndGreatestObject['greatestTime'] -  leastAndGreatestObject['leastTime']; 
+
         console.log('leastTime',  leastAndGreatestObject['leastTime'])
         console.log('greatestTime',  leastAndGreatestObject['greatestTime'])
         console.log('numberOfRows', numberOfRows)
-      
-          var timeRange =  leastAndGreatestObject['greatestTime'] -  leastAndGreatestObject['leastTime']; 
-          //var viewRange =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews']; 
 
           var leastTimeDateObject = new Date(leastAndGreatestObject['leastTime'])
 
@@ -240,6 +275,24 @@ export async function ytChart(id) {
             
           }
 
+          const ctxSubYLineLegend = canvas.getContext('2d')
+          ctxSubYLineLegend.strokeStyle = "#313131"
+
+          // draw y axis graph
+          if (leastAndGreatestObject['greatestViews'] < (20 * 10^6)) {
+            //draw million lines
+            var yAxisDrawMillions = (Math.floor(leastAndGreatestObject['leastViews'] / 1.0e+6) + 1) * 1.0e6
+
+            while (yAxisDrawMillions < leastAndGreatestObject['greatestViews']) {
+              var percylegend = (yAxisDrawMillions - leastAndGreatestObject['leastViews']) / viewRange
+              var pointy = (canvasHeightRange * percylegend) + paddingBottom
+              ctxSubYLineLegend.moveTo(paddingLeft - 50,pointy)
+              ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy)
+              ctxSubYLineLegend.stroke()
+
+              yAxisDrawMillions += 1.0e6;
+            }
+          }
 
         var connectingline = arrayOfStats.map((stat) => {
             var percentageOffsetFromLeft = (stat.unixtime -  leastAndGreatestObject['leastTime'])/timeRange;

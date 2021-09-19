@@ -43,7 +43,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
 
           var promiseresults = await Promise.all([
             axios.get(pathForChannelOfVideoRequest),
-            ytChart(body.items[0].id)
+            ytChart(body.items[0].id,{channelId: body.items[0].snippet.channelId})
           ])
         
           var channelBody = promiseresults[0].data
