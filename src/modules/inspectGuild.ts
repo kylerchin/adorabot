@@ -73,7 +73,7 @@ export async function listAllGuilds(message,client) {
         }
     })});
 
-    
+
 }
 
 export async function inspectGuild(message,guildid,client) {
@@ -109,11 +109,19 @@ export async function inspectGuild(message,guildid,client) {
                         "name": "Is Autoban On for this server?",
                         "value": `${autobanstatustext}`
                     },
+                    {
+                        "name": "Member Count",
+                        "value": `${guild.memberCount}`
+                    }
                 ]
             });
     
             if (guild.iconurl) {
                 guildEmbed.setThumbnail(`${guild.iconurl}`)
+            }
+
+            if (guild.bannerurl) {
+                guildEmbed.setImage(`${guild.bannerurl}`)
             }
     
             message.reply({
