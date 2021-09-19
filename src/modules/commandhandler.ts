@@ -403,7 +403,10 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
       }
 
       if (command === "guilds") {
-        listAllGuilds(msg,client)
+        if (isAuthorizedAdmin(msg.author.id)) {
+          listAllGuilds(msg,client)
+        } 
+       
       }
 
       if(command === "addguildautoban") {

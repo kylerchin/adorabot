@@ -61,7 +61,7 @@ export async function listAllGuilds(message,client) {
 
     var sortedGuildList = merged.sort((a,b) => (a.memberCount > b.memberCount) ? 1: -1)
 
-    var arrayOfTextGuildsInString = sortedGuildList((eachGuild) => {
+    var arrayOfTextGuildsInString = sortedGuildList.map((eachGuild) => {
         return `\`${eachGuild.id}\` | \`${eachGuild.memberCount}\` ${Util.escapeMarkdown(eachGuild.name)}`
     })
 
