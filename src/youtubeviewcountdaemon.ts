@@ -48,7 +48,7 @@ export async function addVideoToTrackList(videoid,name) {
     }).catch(error => console.error(error));
 }
 
-export async function longOrEmpty(number) {
+export function longOrEmpty(number) {
     return ((number === null || number === undefined || number === NaN) ? undefined : Long.fromNumber(number))
 }
 
@@ -57,7 +57,9 @@ export async function addStatsToYtVideo(videoid,views,likes,dislikes,comments) {
     
     var commentsLong = longOrEmpty(comments)
     
-    var params = [videoid, TimeUuid.now(),longOrEmpty(views),
+    var params = [videoid, 
+        TimeUuid.now(),
+        longOrEmpty(views),
         longOrEmpty(likes),
         longOrEmpty(dislikes),
         commentsLong]
