@@ -128,7 +128,8 @@ export async function ytChart(id,optionsObject:optionsInterface) {
           //console.log(result)
          var time = row.time.getDate().getTime()
          leastAndGreatestCheck(time, "leastTime","greatestTime")
-          var views = row.views
+         console.log("views", row.views)
+          var views = row.views.high
           leastAndGreatestCheck(views,"leastViews","greatestViews")
 
           arrayOfStats.push({
@@ -276,14 +277,17 @@ export async function ytChart(id,optionsObject:optionsInterface) {
           }
 
           const ctxSubYLineLegend = canvas.getContext('2d')
-          ctxSubYLineLegend.strokeStyle = "#313131"
+          ctxSubYLineLegend.strokeStyle = "#414141"
 
           // draw y axis graph
-          if (leastAndGreatestObject['greatestViews'] < (20 * 10^6)) {
-            //draw million lines
+         // if (leastAndGreatestObject['greatestViews'] < (20 * 1.0e6)) {
+          if (true) {
+            //draw million lines 
             var yAxisDrawMillions = (Math.floor(leastAndGreatestObject['leastViews'] / 1.0e+6) + 1) * 1.0e6
+            console.log('yaxisdraw', yAxisDrawMillions)
 
             while (yAxisDrawMillions < leastAndGreatestObject['greatestViews']) {
+             // console.log('yaxisdraw', yAxisDrawMillions)
               var percylegend = (yAxisDrawMillions - leastAndGreatestObject['leastViews']) / viewRange
               var pointy = (canvasHeightRange * percylegend) + paddingBottom
               ctxSubYLineLegend.moveTo(paddingLeft - 50,pointy)

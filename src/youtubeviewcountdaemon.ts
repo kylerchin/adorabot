@@ -8,6 +8,7 @@ import * as youtubei from "youtubei";
 const editJsonFile = require("edit-json-file");
 const youtube = new youtubei.Client();
 var importconfigfile = editJsonFile(`${__dirname}/../removedytvids.json`);
+const Long = require('cassandra-driver').types.Long;
 const CloudflareBypasser = require('cloudflare-bypasser');
  
 let cf = new CloudflareBypasser();
@@ -49,7 +50,9 @@ export async function addVideoToTrackList(videoid,name) {
 
 export async function addStatsToYtVideo(videoid,views,likes,dislikes,comments) {
     var query = "INSERT INTO adorastats.ytvideostats (videoid, time, views, likes, dislikes, comments) VALUES (?,?,?,?,?,?)"
-    var params = [videoid, TimeUuid.now(),views,likes,dislikes,comments]
+    var params = [videoid, TimeUuid.now(),Long.fromNumber(views),
+        Long.fromNumber(likes),
+        Long.fromNumber(dislikes),Long.fromNumber(comments)]
     await cassandraclient.execute(query, params)
     .then(async result => {
         await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
