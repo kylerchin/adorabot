@@ -5,6 +5,7 @@ import { cassandraclient } from "./cassandraclient";
 import { logger } from "./logger";
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 import { Message, MessageEmbed,Util } from "discord.js"
+import { sendPages } from "./pages";
 
 const getServer = async (guildID,client) => {
     // try to get guild from all the shards
@@ -57,9 +58,10 @@ export async function listAllGuilds(message,client) {
 
     var merged = [].concat.apply([], req);
 
-    console.log(merged);
+    //console.log(merged);
 
-    var sortedGuildList = merged.sort((a,b) => (a.memberCount > b.memberCount) ? 1: -1)
+    //sort greatest to least member count
+    var sortedGuildList = merged.sort((a,b) => (a.memberCount > b.memberCount) ? -1: 1)
 
     var arrayOfTextGuildsInString = sortedGuildList.map((eachGuild) => {
         return `\`${eachGuild.id}\` | \`${eachGuild.memberCount}\` ${Util.escapeMarkdown(eachGuild.name)}`
@@ -73,7 +75,7 @@ export async function listAllGuilds(message,client) {
         }
     })});
 
-
+    await sendPages(message.channel,arrayOfPages,message,"Adora Guilds")
 }
 
 export async function inspectGuild(message,guildid,client) {
