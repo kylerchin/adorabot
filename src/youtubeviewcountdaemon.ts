@@ -49,7 +49,7 @@ export async function addVideoToTrackList(videoid,name) {
 }
 
 export async function longOrEmpty(number) {
-    return ((number === null || number === undefined) ? undefined : Long.fromNumber(number))
+    return ((number === null || number === undefined || number === NaN) ? undefined : Long.fromNumber(number))
 }
 
 export async function addStatsToYtVideo(videoid,views,likes,dislikes,comments) {
@@ -57,9 +57,9 @@ export async function addStatsToYtVideo(videoid,views,likes,dislikes,comments) {
     
     var commentsLong = longOrEmpty(comments)
     
-    var params = [videoid, TimeUuid.now(),Long.fromNumber(views),
-        Long.fromNumber(likes),
-        Long.fromNumber(dislikes),
+    var params = [videoid, TimeUuid.now(),longOrEmpty(views),
+        longOrEmpty(likes),
+        longOrEmpty(dislikes),
         commentsLong]
     await cassandraclient.execute(query, params)
     .then(async result => {
