@@ -1,6 +1,6 @@
 {
-  "name": "adoracanary",
-  "version": "1.0.2",
+  "name": "adora",
+  "version": "1.0.3",
   "description": "Kpop Music Discord.js bot for streaming / tracking / help",
   "main": "./dist/app.js",
   "scripts": {
