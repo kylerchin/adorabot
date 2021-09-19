@@ -42,7 +42,7 @@ export function spitoutlist(message) {
     })})
 
        // console.log(arrayOfPages)
-       sendPages(message.channel,arrayOfPages,message,"Guilds")
+       sendPages(message.channel,arrayOfPages,message,"List of Tracked YouTube Videos")
 
     })
 }

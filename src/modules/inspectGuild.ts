@@ -7,6 +7,10 @@ const TimeUuid = require('cassandra-driver').types.TimeUuid;
 import { Message, MessageEmbed,Util } from "discord.js"
 import { sendPages } from "./pages";
 
+function boolToEmoji(bool) {
+    return (bool ? ':white_check_mark: ' : ':x:')
+}
+
 const getServer = async (guildID,client) => {
     // try to get guild from all the shards
     const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => {
@@ -15,7 +19,9 @@ const getServer = async (guildID,client) => {
             name: guild.name,
             memberCount: guild.memberCount,
             verified: guild.verified,
-            joinedTimestamp: guild.joinedTimestamp
+            joinedTimestamp: guild.joinedTimestamp,
+            isAdmin: guild.me.permissions.has('ADMINISTRATOR'),
+            canBan: guild.me.permissions.has('BAN_MEMBERS')
         }
         if (guild.iconURL()) {
             objToReturn['iconurl'] = guild.iconURL({dynamic: true})
@@ -109,11 +115,19 @@ export async function inspectGuild(message,guildid,client) {
                 "fields": [
                     {
                         "name": "Is Autoban On for this server?",
-                        "value": `${autobanstatustext}`
+                        "value": `${boolToEmoji(readExistingSubscriptionStatus)}`
                     },
                     {
                         "name": "Member Count",
                         "value": `${guild.memberCount}`
+                    },
+                    {
+                        "name": "Adora Join Time",
+                        "value": `<t:${Math.round(guild.joinedTimestamp/1000)}:F>`
+                    },
+                    {
+                        "name": "Adora Permissions",
+                        "value": `Admin: ${boolToEmoji(guild.isAdmin)}\nBan: ${boolToEmoji(guild.canBan)}`
                     }
                 ]
             });

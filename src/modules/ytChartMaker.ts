@@ -132,7 +132,8 @@ export async function ytChart(id) {
   })
   .on('end', function () {
     // Stream ended, there aren't any more rows
-    if (numberOfRows === 0 || viewRange < 5) {
+    var viewRange =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews']; 
+    if (numberOfRows === 0 || viewRange < 3) {
         // Write "Not Enough Data"
         ctx.fillStyle = "#ffffff"; 
         ctx.font = '200px Lexend Deca'
@@ -152,7 +153,7 @@ export async function ytChart(id) {
         console.log('numberOfRows', numberOfRows)
       
           var timeRange =  leastAndGreatestObject['greatestTime'] -  leastAndGreatestObject['leastTime']; 
-          var viewRange =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews']; 
+          //var viewRange =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews']; 
 
           var leastTimeDateObject = new Date(leastAndGreatestObject['leastTime'])
 
