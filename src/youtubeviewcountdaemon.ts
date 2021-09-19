@@ -48,11 +48,19 @@ export async function addVideoToTrackList(videoid,name) {
     }).catch(error => console.error(error));
 }
 
+export async function longOrEmpty(number) {
+    return ((number === null || number === undefined) ? undefined : Long.fromNumber(number))
+}
+
 export async function addStatsToYtVideo(videoid,views,likes,dislikes,comments) {
     var query = "INSERT INTO adorastats.ytvideostats (videoid, time, views, likes, dislikes, comments) VALUES (?,?,?,?,?,?)"
+    
+    var commentsLong = longOrEmpty(comments)
+    
     var params = [videoid, TimeUuid.now(),Long.fromNumber(views),
         Long.fromNumber(likes),
-        Long.fromNumber(dislikes),Long.fromNumber(comments)]
+        Long.fromNumber(dislikes),
+        commentsLong]
     await cassandraclient.execute(query, params)
     .then(async result => {
         await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
