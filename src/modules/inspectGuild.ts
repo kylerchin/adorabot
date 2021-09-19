@@ -4,16 +4,24 @@ import { isAuthorizedAdmin } from "./moderation";
 import { cassandraclient } from "./cassandraclient";
 import { logger } from "./logger";
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
+import { Message, MessageEmbed,Util } from "discord.js"
 
 const getServer = async (guildID,client) => {
     // try to get guild from all the shards
     const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => {
         var guild = clientBroadcasted.guilds.cache.get(contextParam.guildid)
         var objToReturn = {
-            name: guild.name
+            name: guild.name,
+            memberCount: guild.memberCount,
+            verified: guild.verified,
+            joinedTimestamp: guild.joinedTimestamp
         }
         if (guild.iconURL()) {
             objToReturn['iconurl'] = guild.iconURL({dynamic: true})
+        }
+
+        if (guild.bannerURL()) {
+            objToReturn['bannerurl'] = guild.bannerURL({size: 4096})
         }
         return objToReturn;
     },
@@ -28,6 +36,45 @@ const getServer = async (guildID,client) => {
     return req.find(res => !!res) || null;
 }
 const lookupexistingsubscriptionquery = 'SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid = ?';
+
+export async function listAllGuilds(message,client) {
+    const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => {
+        var arrayOfGuilds = clientBroadcasted.guilds.cache.map((eachGuild) => {
+            return {
+                id: eachGuild.id,
+                memberCount: eachGuild.memberCount,
+                name: eachGuild.name
+            }
+        })
+        return arrayOfGuilds;
+    },
+    {
+        "context": {
+           
+        }
+        
+    });
+
+    var merged = [].concat.apply([], req);
+
+    console.log(merged);
+
+    var sortedGuildList = merged.sort((a,b) => (a.memberCount > b.memberCount) ? 1: -1)
+
+    var arrayOfTextGuildsInString = sortedGuildList((eachGuild) => {
+        return `\`${eachGuild.id}\` | \`${eachGuild.memberCount}\` ${Util.escapeMarkdown(eachGuild.name)}`
+    })
+
+    var arrayOfSplitStrings = Util.splitMessage(arrayOfTextGuildsInString.join("\n"))
+
+    var arrayOfPages = arrayOfSplitStrings.map((string,n) => {return new Discord.MessageEmbed({"description": string,
+        "footer": {
+            "text": `Page ${n+1}/${arrayOfSplitStrings.length}`
+        }
+    })});
+
+    
+}
 
 export async function inspectGuild(message,guildid,client) {
     var readExistingSubscriptionStatus: boolean = false;
