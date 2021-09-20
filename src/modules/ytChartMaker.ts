@@ -308,6 +308,7 @@ export async function ytChart(id,optionsObject:optionsInterface) {
           const ctxLegendYLabel = canvas.getContext('2d')
           ctxLegendYLabel.fillStyle = "#a1a1a1"; 
           ctxLegendYLabel.font = '50px Lexend Deca'
+          ctxLegendYLabel.textBaseline = 'middle';
          // ctx.rotate(0.1)
          ctxLegendYLabel.textAlign = 'center';
           // draw y axis graph
@@ -329,7 +330,7 @@ export async function ytChart(id,optionsObject:optionsInterface) {
 
               yAxisDrawMillions += 1.0e6;
 
-              ctxLegendYLabel.fillText(`${yAxisDrawMillions/1.0e6}`, paddingLeft-150, pointy)
+              ctxLegendYLabel.fillText(`${yAxisDrawMillions/1.0e6}M`, paddingLeft-150, pointy)
             }
           }
 
