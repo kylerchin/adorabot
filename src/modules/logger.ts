@@ -4,7 +4,8 @@ const { ElasticsearchTransport } = require('winston-elasticsearch');
 var DatadogWinston = require('datadog-winston')
 
 export const tracer = require('dd-trace').init({
-  logInjection: true
+  logInjection: true,
+  runtimeMetrics: true
 });
 
 const httpTransportOptions = {
