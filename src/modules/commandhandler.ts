@@ -36,6 +36,7 @@ import { Message } from "discord.js";
 import { igprofile } from "./instagram";
 import { adminhelp } from "./adminhelp";
 import { makeGif } from "./gif";
+const { query } = require("mathram");
 import { removeAllPoints, removeVideoId, spitoutlist } from "./trackedListManager";
 import { banFromGuild, inspectGuild, listAllGuilds, turnOnAdorabanInGuild } from "./inspectGuild";
 
@@ -64,7 +65,8 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
       const command = args.shift().toLowerCase();
       console.log("Command is " + command)
-
+      const currentspan = tracer.scope().active()
+      currentspan.setTag("commandName", command)
       if (command === "ping") {
        await ping(msg,client);
       }
@@ -122,7 +124,7 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         }]})
       }
 
-      if (command === 'ytparty') {
+      if (command === 'ytparty' || command === "youtubetogether" || command === "yttogether") {
         ytparty({message: msg, client: client})
       }
 
@@ -353,6 +355,20 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         if (isAuthorizedAdmin(msg.author.id)) {
           removeAllPoints(args[0], msg)
         }
+      }
+
+      if (command === "wolf") {
+        const mathramquery =  msg.content.replace(config.prefix, "").replace(command, "").trim()
+
+        let answer = await query(mathramquery);
+
+        console.log('answer', answer)
+
+        msg.reply({
+          embeds: {
+            "description": answer
+          }
+        })
       }
 
       if (command === 'wiktionary') {
