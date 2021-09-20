@@ -336,6 +336,32 @@ export async function ytChart(id,optionsObject:optionsInterface) {
             }
           }
 
+          var hundredthousandint = (Math.floor(leastAndGreatestObject['leastViews'] / 1.0e5) + 1) * 1.0e5;
+          if (viewRange < 2.0e6) {
+            while (hundredthousandint < leastAndGreatestObject['greatestViews']) {
+              if (hundredthousandint % 1.0e6 === 0) {
+
+              } else {
+                // console.log('yaxisdraw', yAxisDrawMillions)
+               var percylegend = (hundredthousandint - leastAndGreatestObject['leastViews']) / viewRange
+               var pointy = (canvasHeightRange * percylegend) + paddingBottom
+               ctxSubYLineLegend.moveTo(paddingLeft - 50,pointy)
+               ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy)
+               ctxSubYLineLegend.stroke()
+ 
+               hundredthousandint += 1.0e5;
+                var nameOfNumber = ""
+                if (hundredthousandint < 1.0e6) {
+                  nameOfNumber = `${hundredthousandint/1.0e3}K`
+                } else {
+                  nameOfNumber = `${hundredthousandint/1.0e6}M`
+                }
+
+               ctxLegendYLabel.fillText(`${nameOfNumber}`, paddingLeft-120, pointy)
+              }
+             }
+          }
+
         var connectingline = arrayOfStats.map((stat) => {
             var percentageOffsetFromLeft = (stat.unixtime -  leastAndGreatestObject['leastTime'])/timeRange;
               var percentageOffsetFromBottomViews = (stat.views -  leastAndGreatestObject['leastViews'])/viewRange;
