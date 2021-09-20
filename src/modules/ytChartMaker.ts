@@ -244,6 +244,8 @@ export async function ytChart(id,optionsObject:optionsInterface) {
             ctxSubLegend.stroke()
 
             timeLegend += 60 * 60 * 24 * 1000
+
+            
           }
 
           //under 5 days
