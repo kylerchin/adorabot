@@ -305,8 +305,15 @@ export async function ytChart(id,optionsObject:optionsInterface) {
           const ctxSubYLineLegend = canvas.getContext('2d')
           ctxSubYLineLegend.strokeStyle = "#414141"
 
+          const ctxLegendYLabel = canvas.getContext('2d')
+          ctxLegendYLabel.fillStyle = "#a1a1a1"; 
+          ctxLegendYLabel.font = '50px Lexend Deca'
+         // ctx.rotate(0.1)
+         ctxLegendYLabel.textAlign = 'center';
           // draw y axis graph
          // if (leastAndGreatestObject['greatestViews'] < (20 * 1.0e6)) {
+
+
           if (true) {
             //draw million lines 
             var yAxisDrawMillions = (Math.floor(leastAndGreatestObject['leastViews'] / 1.0e+6) + 1) * 1.0e6
@@ -321,6 +328,8 @@ export async function ytChart(id,optionsObject:optionsInterface) {
               ctxSubYLineLegend.stroke()
 
               yAxisDrawMillions += 1.0e6;
+
+              ctxLegendYLabel.fillText(`${yAxisDrawMillions/1.0e6}`, paddingLeft-150, pointy)
             }
           }
 
