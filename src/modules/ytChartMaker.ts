@@ -330,7 +330,7 @@ export async function ytChart(id,optionsObject:optionsInterface) {
 
               yAxisDrawMillions += 1.0e6;
 
-              ctxLegendYLabel.fillText(`${yAxisDrawMillions/1.0e6}M`, paddingLeft-150, pointy)
+              ctxLegendYLabel.fillText(`${yAxisDrawMillions/1.0e6}M`, paddingLeft-120, pointy)
             }
           }
 
