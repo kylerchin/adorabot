@@ -8,9 +8,9 @@ export function ytparty(ytpartyargs: ytpartyargs) {
       //  console.log(ytpartyargs.message.member.voice)
      //   if(ytpartyargs.message.member.voice.channel) {
          if (ytpartyargs.message.member.voice.channel) {
-            ytpartyargs.client.discordTogether.createTogetherCode(ytpartyargs.message.member.voice.channel.id, 'youtube').then(async invite => {
+            ytpartyargs.client.discordTogether.createTogetherCode(ytpartyargs.message.member.voice.channel.id, 'youtubeDev').then(async invite => {
                 return ytpartyargs.message.reply({embeds: [{
-                    "title": `Click here to start the YouTube Party in ${ytpartyargs.message.member.voice.channel.name}`,
+                    "title": `Click here to join YouTube Party in ${ytpartyargs.message.member.voice.channel.name}`,
                     "url": `${invite.code}`
                 }]});
             });
@@ -30,7 +30,7 @@ export function fishing(ytpartyargs: ytpartyargs) {
          if (ytpartyargs.message.member.voice.channel) {
             ytpartyargs.client.discordTogether.createTogetherCode(ytpartyargs.message.member.voice.channel.id, 'fishing').then(async invite => {
                 return ytpartyargs.message.reply({embeds: [{
-                    "title": `Click here to start the Fishing Game in ${ytpartyargs.message.member.voice.channel.name}`,
+                    "title": `Click here to join Fishington in ${ytpartyargs.message.member.voice.channel.name}`,
                     "url": `${invite.code}`
                 }]});
             });
