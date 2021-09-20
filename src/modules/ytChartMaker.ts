@@ -11,8 +11,17 @@ const phi = 1.618033988749895
 interface optionsInterface {
   channelId?: string;
   [key:string]: any;
+  addOnPoints? : (AddOnPointsEntity)[] | null;
 }
 
+interface AddOnPointsEntity
+ {
+   views: number;
+   time: number;
+   comments?: number | null | undefined;
+   likes?: number;
+   dislikes?: number;
+ }
 export async function ytChart(id,optionsObject:optionsInterface) {
 
     return new Promise(async (resolve, reject) => {
@@ -128,7 +137,7 @@ export async function ytChart(id,optionsObject:optionsInterface) {
           //console.log(result)
          var time = row.time.getDate().getTime()
          leastAndGreatestCheck(time, "leastTime","greatestTime")
-         console.log("views", row.views)
+        // console.log("views", row.views)
           var views = parseInt(row.views.toString())
           leastAndGreatestCheck(views,"leastViews","greatestViews")
 
@@ -139,6 +148,23 @@ export async function ytChart(id,optionsObject:optionsInterface) {
     }
   })
   .on('end', function () {
+
+    if(optionsObject.addOnPoints) {
+      optionsObject.addOnPoints.forEach(eachPoint => {
+        numberOfRows += 1;
+
+      var addontime = eachPoint.time
+      leastAndGreatestCheck(addontime, "leastTime","greatestTime")
+     // console.log("views", row.views)
+       var addonviews = eachPoint.views;
+       leastAndGreatestCheck(addonviews,"leastViews","greatestViews")
+
+       arrayOfStats.push({
+           unixtime: addontime,
+           views: addonviews
+       })
+      })
+    }
     // Stream ended, there aren't any more rows
     var viewRange:number =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews']; 
     var timeRange:number =  leastAndGreatestObject['greatestTime'] -  leastAndGreatestObject['leastTime']; 
@@ -284,7 +310,7 @@ export async function ytChart(id,optionsObject:optionsInterface) {
           if (true) {
             //draw million lines 
             var yAxisDrawMillions = (Math.floor(leastAndGreatestObject['leastViews'] / 1.0e+6) + 1) * 1.0e6
-            console.log('yaxisdraw', yAxisDrawMillions)
+            //console.log('yaxisdraw', yAxisDrawMillions)
 
             while (yAxisDrawMillions < leastAndGreatestObject['greatestViews']) {
              // console.log('yaxisdraw', yAxisDrawMillions)

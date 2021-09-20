@@ -37,13 +37,21 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
             message: "Retrevied Youtube Video Information"
           })
 
+          const videostats = body.items[0].statistics;
+
           const channelIdOfVideo = body.items[0].snippet.channelId
 
           const pathForChannelOfVideoRequest = "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2Cstatistics%2Cstatus%2CtopicDetails&id=" + channelIdOfVideo + "&key=" + apikey
 
           var promiseresults = await Promise.all([
             axios.get(pathForChannelOfVideoRequest),
-            ytChart(body.items[0].id,{channelId: body.items[0].snippet.channelId})
+            ytChart(body.items[0].id,{channelId: body.items[0].snippet.channelId, 
+            addOnPoints: [
+              {
+                time:Date.now(),
+                views: videostats.viewCount
+              }
+            ]})
           ])
         
           var channelBody = promiseresults[0].data
@@ -58,7 +66,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
             message: "Retrevied Youtube Channel Information"
           })
 
-          const videostats = body.items[0].statistics;
+        
 
           var discordDate = `<t:${Math.round(new Date(body.items[0].snippet.publishedAt).getTime()/1000)}:F>`
 
