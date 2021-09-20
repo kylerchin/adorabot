@@ -192,10 +192,10 @@ client.on('messageCreate', async (message:Message) => {
   }
 
   try {
-    tracer.trace('clientMessage', () => {
+    tracer.trace('clientMessage',async () => {
       //const logTrace = logger.info(body);
       //const traceId = logTrace.dd.trace_id;
-      Promise.all[commandHandler(message,client,config,dogstatsd,startupTime), 
+     await Promise.all[commandHandler(message,client,config,dogstatsd,startupTime), 
         onMessageForQR(message), 
         updateDatadogCountRateLimited(client,config),
         dogstatsd.increment('adorabot.client.message')]
@@ -213,25 +213,23 @@ client.on('messageCreate', async (message:Message) => {
         }
       
       // here we are in the context for a trace that has been activated on the scope by tracer.trace
+
+      if (message.guild.available) {
+        if (message.guild.me.nickname === null) {
+        if (message.guild.me.permissions.has('CHANGE_NICKNAME')) {
+        //    if (true) {
+            await message.guild.me.setNickname("Adora 앋오라")
+            logger.discordInfoLogger.info(`Renamed to correct username in server ${message.guild.name} ID ${message.guild.id}`)
+          }
+        }
+        if (message.guild.me.nickname === undefined) {
+        }
+        }
     })
     //
   }
     catch {
       console.log("Command failed");
-    }
-    
-    if (message.guild.available) {
-    if (message.guild.me.nickname === null) {
-    if (message.guild.me.permissions.has('CHANGE_NICKNAME')) {
-    //    if (true) {
-        await message.guild.me.setNickname("Adora 앋오라")
-        logger.discordInfoLogger.info(`Renamed to correct username in server ${message.guild.name} ID ${message.guild.id}`)
-      }
-    }
-    if (message.guild.me.nickname === undefined) {
-    }
-    } else {
-      //  clientMessageToUploadToDatadog = {type: "clientMessage", messageObject: message}
     }
 
     //await logger.discordSillyLogger.silly(clientMessageToUploadToDatadog);
