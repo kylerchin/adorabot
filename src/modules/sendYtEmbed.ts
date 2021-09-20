@@ -13,7 +13,7 @@ const axios = require('axios').default;
 // Exporting the class which will be 
 // used in another file 
 // Export keyword or form should be 
-// used to use the class  
+// used to use the class
   
     // Class method which prints the 
     // user called in another file 
