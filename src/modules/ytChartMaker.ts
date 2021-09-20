@@ -349,7 +349,6 @@ export async function ytChart(id,optionsObject:optionsInterface) {
                ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy)
                ctxSubYLineLegend.stroke()
  
-               hundredthousandint += 1.0e5;
                 var nameOfNumber = ""
                 if (hundredthousandint < 1.0e6) {
                   nameOfNumber = `${hundredthousandint/1.0e3}K`
@@ -359,6 +358,7 @@ export async function ytChart(id,optionsObject:optionsInterface) {
 
                ctxLegendYLabel.fillText(`${nameOfNumber}`, paddingLeft-120, pointy)
               }
+              hundredthousandint += 1.0e5;
              }
           }
 
