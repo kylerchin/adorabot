@@ -109,8 +109,10 @@ export async function youtubeVideoStats(message:Message, command, client, config
             //const r = await yts( searchYtString )
 
             //console.log(r)
-
-           // console.time("youtubei")
+            if (searchYtString === "the view") {
+                sendYtCountsEmbed("v202rmUuBis", message, youtubeApiKeyRandomlyChosen)
+            } else {
+                // console.time("youtubei")
             const videos = await youtube.search(searchYtString, {
                 type: "video", // video | playlist | channel | all
             });
@@ -126,6 +128,7 @@ export async function youtubeVideoStats(message:Message, command, client, config
             //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
 
             sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
+            }
 
            
             /*await scrapeyoutube.search(searchYtString).then(results => {
