@@ -1,6 +1,7 @@
 const requestjson = require('request-json');
 import { storeYoutubeDataIntoDatabase } from "./storeYtStats"; 
 import {logger, tracer} from "./logger"
+import { dogstatsd } from "./dogstats";
 import {ytChart} from './ytChartMaker'
 const ytScraper = require("yt-scraper")
 import * as Discord from "discord.js"
@@ -149,7 +150,9 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
             }
 
             //return console.log(body);
-  
+            dogstatsd.increment('adorabot.youtube.apivideo')
+
+            dogstatsd.increment('adorabot.youtube.apichannel')
         });
       } 
       catch {
