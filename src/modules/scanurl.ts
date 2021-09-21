@@ -1,17 +1,16 @@
 import {uniq} from './util'
-const { canonicalize, getPrefixes } = require('webrisk-hash');
+const { canonicalize, getPrefixes, suffixPostfixExpressions  } = require('webrisk-hash');
 import {logger} from './logger'
 var forEach = require("for-each")
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const cassandra = require('cassandra-driver');
-const { suffixPostfixExpressions } = require('webrisk-hash');
 const { config } = require('./../../config.json');
 import {cassandraclient} from'./cassandraclient'
 import { result } from 'lodash';
 import { ActionRowBuilder } from 'slash-commands';
 import * as _ from 'lodash'
 
-  export async function createDatabase() {
+  export async function createUrlDatabase() {
     //Goes inside adora moderation keyspace, makes the table "guildssubscribedtoautoban"
     await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.badlinks (link text PRIMARY KEY, type text, addedbyid text, addtime timeuuid);")
         .then(async result => {
@@ -19,8 +18,6 @@ import * as _ from 'lodash'
             /*console.log(result)*/
         }).catch(error => console.error(error));
 }
-
-createDatabase()
 
 export async function processmalwarediscordmessage(message) {
     var arrayOfUrls = _.uniq(message.content.match(/(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?/gm))

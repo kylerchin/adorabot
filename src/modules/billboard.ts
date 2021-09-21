@@ -10,7 +10,7 @@ import {hexCodeToColorNumber} from './util'
 
 var chartShortObject = {}
 
-async function listChartsDownload() {
+export async function listChartsDownload() {
   await listCharts((err, charts)=> {
     forEach(charts, function (eachChart) {
   
@@ -330,5 +330,3 @@ export async function billboardCharts(message,command,args,client) {
 
       
 }
-
-listChartsDownload()
