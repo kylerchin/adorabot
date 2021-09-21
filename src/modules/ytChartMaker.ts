@@ -286,6 +286,7 @@ export async function ytChart(id,optionsObject:optionsInterface) {
           while (timeHourLegend < leastAndGreatestObject['greatestTime']) {
             var utchour = new Date(timeHourLegend).getUTCHours()
             if (utchour % modulusHourInterval === 0) {
+              if (timeHourLegend > leastAndGreatestObject['leastTime']) {
               var percxlegend = (timeHourLegend- leastAndGreatestObject['leastTime']) / timeRange
               var pointx = (canvasWidthRange * percxlegend) + paddingLeft
               ctxSubMinorLegend.moveTo(pointx,pointytopminor)
@@ -295,7 +296,7 @@ export async function ytChart(id,optionsObject:optionsInterface) {
               if (utchour % modulusHourIntervalLabel === 0) {
                 ctxLegendXLabel.fillText(`${new Date(timeHourLegend).getUTCHours()}:00`, pointx, (canvas.height) - 100)
               }
-          
+            }
             }
             //console.log("draw legend")
            
