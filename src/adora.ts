@@ -47,6 +47,8 @@ import { Message } from 'discord.js'
 //datadog
 import {dogstatsd} from './modules/dogstats'
 import { alertBotAdder } from './modules/alertBotAdder';
+import { listChartsDownload } from './modules/billboard';
+import { createDatabase } from './modules/antiPhishingLinks';
 
 client.everyServerRecheckBansOnThisShard = async () => {
   everyServerRecheckBans(cassandraclient, client, false);
@@ -121,7 +123,9 @@ client.on('ready',async () => {
     
   //set the presence, create moderation databases and then check all servers for ban updates, and then upload guild count
     await Promise.all([
+      listChartsDownload(),
       setPresenceForAdora(),
+      createDatabase(),
       moderationCassandra(),
       await updateDiscordBotsGG(client,config)
     ])
