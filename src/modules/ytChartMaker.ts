@@ -330,33 +330,35 @@ export async function ytChart(id,optionsObject:optionsInterface) {
               ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy)
               ctxSubYLineLegend.stroke()
 
-              yAxisDrawMillions += 1.0e6;
-
               ctxLegendYLabel.fillText(`${yAxisDrawMillions/1.0e6}M`, paddingLeft-120, pointy)
+              yAxisDrawMillions += 1.0e6;
             }
           }
 
           var hundredthousandint = (Math.floor(leastAndGreatestObject['leastViews'] / 1.0e5) + 1) * 1.0e5;
           if (viewRange < 2.0e6) {
+            console.log('view range under 2 million')
             while (hundredthousandint < leastAndGreatestObject['greatestViews']) {
               if (hundredthousandint % 1.0e6 === 0) {
-
+                console.log('skip cuz it\'s 1 million')
               } else {
-                // console.log('yaxisdraw', yAxisDrawMillions)
-               var percylegend = (hundredthousandint - leastAndGreatestObject['leastViews']) / viewRange
-               var pointy = (canvasHeightRange * percylegend) + paddingBottom
-               ctxSubYLineLegend.moveTo(paddingLeft - 50,pointy)
-               ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy)
-               ctxSubYLineLegend.stroke()
- 
-                var nameOfNumber = ""
-                if (hundredthousandint < 1.0e6) {
-                  nameOfNumber = `${hundredthousandint/1.0e3}K`
-                } else {
-                  nameOfNumber = `${hundredthousandint/1.0e6}M`
+                if (hundredthousandint > leastAndGreatestObject['leastViews']) {
+                  console.log('draw 100 interval')
+                  // console.log('yaxisdraw', yAxisDrawMillions)
+                 var percylegend = (hundredthousandint - leastAndGreatestObject['leastViews']) / viewRange
+                 var pointy = (canvasHeightRange * percylegend) + paddingBottom
+                 ctxSubYLineLegend.moveTo(paddingLeft - 50,pointy)
+                 ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy)
+                 ctxSubYLineLegend.stroke()
+   
+                  var nameOfNumber = ""
+                  if (hundredthousandint < 1.0e6) {
+                    nameOfNumber = `${hundredthousandint/1.0e3}K`
+                  } else {
+                    nameOfNumber = `${hundredthousandint/1.0e6}M`
+                  }
+                 ctxLegendYLabel.fillText(`${nameOfNumber}`, paddingLeft-120, pointy)
                 }
-
-               ctxLegendYLabel.fillText(`${nameOfNumber}`, paddingLeft-120, pointy)
               }
               hundredthousandint += 1.0e5;
              }
