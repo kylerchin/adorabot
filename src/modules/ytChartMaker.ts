@@ -326,7 +326,7 @@ export async function ytChart(id,optionsObject:optionsInterface) {
             while (yAxisDrawMillions < leastAndGreatestObject['greatestViews']) {
              // console.log('yaxisdraw', yAxisDrawMillions)
               var percylegend = (yAxisDrawMillions - leastAndGreatestObject['leastViews']) / viewRange
-              var pointy = (canvasHeightRange * percylegend) + paddingBottom
+              var pointy = (canvasHeightRange - ((canvasHeightRange * percylegend))) + paddingBottom
               ctxSubYLineLegend.moveTo(paddingLeft - 50,pointy)
               ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy)
               ctxSubYLineLegend.stroke()
@@ -347,7 +347,7 @@ export async function ytChart(id,optionsObject:optionsInterface) {
                   console.log('draw 100 interval')
                   // console.log('yaxisdraw', yAxisDrawMillions)
                  var percylegend = (hundredthousandint - leastAndGreatestObject['leastViews']) / viewRange
-                 var pointy = (canvasHeightRange * percylegend) + paddingBottom
+                 var pointy = (canvasHeightRange - (canvasHeightRange * percylegend)) + paddingBottom
                  ctxSubYLineLegend.moveTo(paddingLeft - 50,pointy)
                  ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy)
                  ctxSubYLineLegend.stroke()
