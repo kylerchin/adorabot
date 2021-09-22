@@ -368,7 +368,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
             ctxLegendYLabel.font = "50px Lexend Deca";
             ctxLegendYLabel.textBaseline = "middle";
             // ctx.rotate(0.1)
-            ctxLegendYLabel.textAlign = "center";
+            ctxLegendYLabel.textAlign = "left";
             // draw y axis graph
             // if (leastAndGreatestObject['greatestViews'] < (20 * 1.0e6)) {
 
@@ -396,7 +396,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
 
                 ctxLegendYLabel.fillText(
                   `${yAxisDrawMillions / 1.0e6}M`,
-                  paddingLeft - 120,
+                  30,
                   pointy
                 );
                 yAxisDrawMillions += 1.0e6;
@@ -442,7 +442,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                     }
                     ctxLegendYLabel.fillText(
                       `${nameOfNumber}`,
-                      paddingLeft - 120,
+                      30,
                       pointy
                     );
                   }
@@ -478,7 +478,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
 
             //now draw legends
             const ctxlegend = canvas.getContext("2d");
-            ctxlegend.strokeStyle = "#c1c1c1";
+            ctxlegend.strokeStyle = "#e7acc2";
 
             //y axis
             ctxlegend.moveTo(paddingLeft, paddingTop);
@@ -491,6 +491,8 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               canvas.height - paddingBottom
             );
             ctxlegend.stroke();
+
+            ctxlegend.moveTo(0,0)
           }
 
           const bufferinfo = canvas.toBuffer("image/png", {

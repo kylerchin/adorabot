@@ -6,6 +6,7 @@ const ytdl = require('ytdl-core');
 import { logger } from "./logger";
 const getQueryParam = require('get-query-param')
 import {Message} from 'discord.js'
+const { config } = require('./../../config.json');
 
 interface musicParamsInterface {
     message: Message;
@@ -17,7 +18,7 @@ interface musicParamsInterface {
 const queue = new Map();
 
 export async function getYoutubeIDFromMessage(musicParams: musicParamsInterface) {
-    const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
+    //const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
 
         var videoID = "dQw4w9WgXcQ"
         if (isUrl(musicParams.args[0])) {
