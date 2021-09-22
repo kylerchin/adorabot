@@ -2,7 +2,8 @@
     "compilerOptions": {
         "outDir": "dist/",
         "extendedDiagnostics": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "lib": ["es2020"]
     },
     "include": ["src/**/*"],
 }
