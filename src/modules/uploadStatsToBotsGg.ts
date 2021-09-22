@@ -58,9 +58,7 @@ if (config.uploadStats) {
 export async function updateDiscordBotsGG(client,config) {
 
   tracer.trace('updateDiscordBotsGG', () => {
-    
- 
-
+  
   if(config.uploadStats) {
     const promises = [
       client.shard.fetchClientValues('guilds.cache.size'),
@@ -107,38 +105,43 @@ var uploaddiscordbotlistconfig = {
   data : dataDBL
 }
 
-await axios(uploaddiscordbotlistconfig)
+var discordBotListPromise = new Promise(async function(resolve, reject) {
+  axios(uploaddiscordbotlistconfig)
       .then(async (response) => {
        // await logger.discordDebugLogger.debug({type: "uploadStatsToDiscordBotList", response: response})
+       resolve(response)
       }).catch(
         async (error) => {
           //console.log(error);
           await logger.discordWarnLogger.warn({type: "uploadStatsToDiscordBotList", error: error})
+          reject(error)
           }
       )
+});
 
-await axios(uploadconfig)
+var uploadStatsToBotsGgPromise = new Promise(await function(resolve, reject) {
+  axios(uploadconfig)
 .then(async (response) => {
 //console.log(JSON.stringify(response.data));
 //await logger.discordDebugLogger.debug({type: "uploadStatsToBotsGg", response: response})
+resolve(response)
 })
 .catch(async (error) => {
 //console.log(error);
 await logger.discordWarnLogger.warn({type: "uploadStatsToBotsGg", error: error})
+reject(error)
+})
 });
-      })
-      .catch(async (error) => {
-        //console.log(error);
-        await logger.discordWarnLogger.warn({type: "uploadStatsToBotsGg", error: error})
-      });
 
-      
+await Promise.allSettled([
+  uploadStatsToBotsGgPromise,
+  discordBotListPromise
+ ]);
 
+});    
 
-  }
-
-})      
-
+}
+  })
 }
 
 export async function updateDiscordBotsGGRateLimited(client,config) {
