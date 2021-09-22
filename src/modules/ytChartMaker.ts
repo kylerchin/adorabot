@@ -309,8 +309,13 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                 //if the time window is less than 48 hours, draw ticks every hour
                 modulusHourInterval = 1;
               } else {
-                //draw ticks every 2 hours
+                if (timeRange < 2 * 60 * 60 * 24 * 1000) {
+                                  //draw ticks every 2 hours
                 modulusHourInterval = 2;
+                } else {
+                                  //draw ticks every 3 hrs
+                modulusHourInterval = 3;
+                }
               }
 
               if (timeRange < 60 * 60 * 24 * 1000) {
@@ -319,6 +324,20 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               } else {
                 //draw labels every 2 hours
                 modulusHourIntervalLabel = 2;
+
+                if (timeRange < 2 * 60 * 60 * 24 * 1000) {
+                  //draw ticks every 2 hours
+                  modulusHourIntervalLabel = 2;
+                  } else {
+                    if (timeRange < 4 * 60 * 60 * 24 * 1000) { 
+                                        //draw ticks every 3 hrs
+                  modulusHourIntervalLabel = 3;
+                    } else {
+                                        //draw ticks every 3 hrs
+                  modulusHourIntervalLabel = 6;
+                    }
+                  
+                  }
               }
               var lowestHourToChart = new Date(
                 Date.UTC(
