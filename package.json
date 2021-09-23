@@ -78,6 +78,7 @@
     "mathram": "^1.0.5",
     "node-dogstatsd": "0.0.7",
     "node-fetch": "^2.6.1",
+    "number-to-base64": "^1.0.5",
     "opusscript": "^0.0.8",
     "password-generator": "^2.3.2",
     "puppeteer-instagram": "^0.0.1",
