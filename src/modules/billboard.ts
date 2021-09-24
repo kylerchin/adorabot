@@ -7,6 +7,7 @@ import {ReactionCollectorOptions,CollectorFilter} from 'discord.js'
 var _ = require('lodash')
 import {Message} from 'discord.js'
 import {hexCodeToColorNumber} from './util'
+const { config } = require('./../config.json');
 
 var chartShortObject = {}
 
@@ -290,6 +291,7 @@ export async function billboardListChartsScrollable(message,command,args) {
 }
 
 export async function billboardCharts(message,command,args,client) {
+    const searchString = message.content.replace(config.prefix).replace(command,"").replace(/ /gm,"")
     if(args.length < 1 || args[0] === "help") {
         await billboardChartsHelpPage(message,command,args)
     } else 
@@ -303,7 +305,7 @@ export async function billboardCharts(message,command,args,client) {
     } else {
       //message.channel.send("The billboard command is currently unstable. Certain pages may not work and we are working on an update. We apologize for the inconvenience\n Join the Adora Support Server via `a!invite` to get updates on when a fix will be delivered! ")
 
-      var chartCodeProcessed = adoraToOfficialBBcode(args[0])
+      var chartCodeProcessed = adoraToOfficialBBcode(searchString)
 
       if(typeof(chartCodeProcessed) === "undefined") {
         message.channel.send("Invalid chart, use `a!bb list` to see a full list of valid chart")
