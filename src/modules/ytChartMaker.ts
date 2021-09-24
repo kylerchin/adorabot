@@ -16,6 +16,7 @@ interface optionsInterface {
   channelId?: string;
   [key: string]: any;
   addOnPoints?: AddOnPointsEntity[] | null;
+  publishedAt?: any;
 }
 
 interface AddOnPointsEntity {
@@ -44,6 +45,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
       var canvasWidthRange = canvas.width - paddingLeft - paddingRight;
 
       var pointSize = 9;
+      var markerLineWidth = 10;
 
       function drawCoordinates(x, y) {
         //  var ctx = canvas.getContext("2d");
@@ -74,6 +76,8 @@ export async function ytChart(id, optionsObject: optionsInterface) {
 
         var hasStartedPoint = false;
 
+        ctxline.beginPath();
+
         array.forEach((point) => {
           var xDrawPlace = Math.round(
             canvasWidthRange * point.xper + paddingLeft
@@ -90,6 +94,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
         });
 
         ctxline.stroke();
+        ctxline.closePath();
       }
 
       var queryVideo =
@@ -273,7 +278,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
 
             // timeLegend += 60 * 60 * 24 * 1000
 
-            ctxLegendXLabel.fillStyle = "#a1a1a1";
+            ctxLegendXLabel.fillStyle = "#818181";
             ctxLegendXLabel.font = "50px Lexend Deca";
             // ctx.rotate(0.1)
             ctxLegendXLabel.textAlign = "center";
@@ -283,9 +288,11 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               var percxlegend =
                 (timeLegend - leastAndGreatestObject["leastTime"]) / timeRange;
               var pointx = canvasWidthRange * percxlegend + paddingLeft;
+              ctxSubLegend.beginPath();
               ctxSubLegend.moveTo(pointx, pointytop);
               ctxSubLegend.lineTo(pointx, pointybottom);
               ctxSubLegend.stroke();
+              ctxSubLegend.closePath();
 
               ctxLegendXLabel.fillText(
                 `${arrayOfMonthsEnglishShort[new Date(timeLegend).getUTCMonth()]} ${new Date(timeLegend).getUTCDate()}`,
@@ -350,8 +357,8 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               var timeHourLegend = lowestHourToChart;
 
               const ctxSubMinorLegend = canvas.getContext("2d");
-              ctxSubMinorLegend.strokeStyle = "#414141";
-
+              ctxSubMinorLegend.strokeStyle = "#a1a1a1";
+              ctxSubMinorLegend.lineWidth = markerLineWidth;
               while (timeHourLegend < leastAndGreatestObject["greatestTime"]) {
                 var utchour = new Date(timeHourLegend).getUTCHours();
                 if (utchour % modulusHourInterval === 0) {
@@ -360,6 +367,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                       (timeHourLegend - leastAndGreatestObject["leastTime"]) /
                       timeRange;
                     var pointx = canvasWidthRange * percxlegend + paddingLeft;
+                    
                     ctxSubMinorLegend.moveTo(pointx, pointytopminor);
                     ctxSubMinorLegend.lineTo(pointx, pointybottomminor);
                     ctxSubMinorLegend.stroke();
@@ -380,7 +388,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
             }
 
             const ctxSubYLineLegend = canvas.getContext("2d");
-            ctxSubYLineLegend.strokeStyle = "#414141";
+            ctxSubYLineLegend.strokeStyle = "#818181";
 
             const ctxLegendYLabel = canvas.getContext("2d");
             ctxLegendYLabel.fillStyle = "#a1a1a1";
@@ -495,9 +503,40 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               );
             });
 
+           
+            if(optionsObject.publishedAt) {
+              var publishedAtTime = optionsObject.publishedAt.getTime()
+              if (publishedAtTime > leastAndGreatestObject["leastTime"] && publishedAtTime < leastAndGreatestObject["greatestTime"]) {
+                var ctxRelease = canvas.getContext('2d')
+                ctxRelease.strokeStyle = '#fce464'
+                ctxRelease.lineWidth = 15;
+                var percxreleasetime =
+                        (publishedAtTime - leastAndGreatestObject["leastTime"]) /
+                        timeRange;
+                      var pointxreleasetime = canvasWidthRange * percxreleasetime + paddingLeft;
+                      ctxRelease.beginPath();
+                      ctxRelease.moveTo(pointxreleasetime, paddingTop);
+                      ctxRelease.lineTo(pointxreleasetime, canvas.height - paddingBottom);
+                      ctxRelease.stroke();
+                      ctxRelease.closePath();
+                      ctxRelease.textAlign = "right";
+                      ctxRelease.font = "150px Lexend Deca";
+                      ctxRelease.fillStyle = "#fce464";
+                      ctxRelease.fillText(
+                        "Release Time",
+                        pointxreleasetime - 80,
+                        canvas.height - paddingBottom - 150
+                      );
+              }
+              
+            }
+           
+
             //now draw legends
-            const ctxlegend = canvas.getContext("2d");
+            var ctxlegend = canvas.getContext("2d");
             ctxlegend.strokeStyle = "#e7acc2";
+
+            ctxlegend.beginPath();
 
             //y axis
             ctxlegend.moveTo(paddingLeft, paddingTop);
@@ -511,7 +550,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
             );
             ctxlegend.stroke();
 
-            ctxlegend.moveTo(0,0)
+            ctxlegend.closePath()
           }
 
           const bufferinfo = canvas.toBuffer("image/png", {

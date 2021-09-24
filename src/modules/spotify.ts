@@ -21,7 +21,7 @@ var config = {
     'authority': 'api-partner.spotify.com', 
     'origin': 'https://open.spotify.com/', 
     'referer': 'https://open.spotify.com/', 
-    'Authorization': 'Bearer BQA5yHfhPETB1QnIq_7F-b5LxqKe-8r-9M_x9Mpgpd84GPsFswc6TYfqgpyMD-pY8WwdwVsnPH_WTiaRjwaym4OePNbyw9RxB3nxYHkXgELE9efmO80buq4cesw7FuEFyl15tCzBsql0000i5X5S0n6rWCheu7eCkZSv4UIhlrP8MPkS1jUKfJhzT_f-OB32RAloF5SyK1PemILGxwldq9fOGbo236QxTKSGN8aUGI08CVSkuXIT5_GSFjK8l4UvhCs3yotT6LflzvjW0GtFCVqLPHrUdi9yyMTn2Kd7fIkw5FuWJWicac8l'
+    'Authorization': 'Bearer BQB-gVCSCxt1YdXdXKxupwoX2oeKs-pEekNG70kAHcd-6JgVL2ehFRI8ma8ixXV31BpJJnmAjG-VaR7SeZjsmEDEajUC3cibn8YvVLrQOHrGJiBme7NxsGIANlFkZmPHoRvaDxmNHziZwC7VdYag79VTDtcil6lmhHfTNlKR0QbJ_MDdNDgkMSTjDBrzrjTeU0gVAnfFYtFiqtZQIAzvFT6KsGflIENQ163RCEvhLRBNZnTR2g_ORNBH9_pQ_nTpTFnMxu9FYl8gPQpBcUU0uNjU7Tuxt7GisYTHCPj4j6Tz6aFIC5UrA1sL'
   }
 };
 

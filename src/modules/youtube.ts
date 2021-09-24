@@ -5,9 +5,27 @@ import { logger } from "./logger";
 const getQueryParam = require('get-query-param')
 import * as youtubei from "youtubei";
 const youtube = new youtubei.Client();
-
+const editJsonFile = require("edit-json-file");
+var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 
 import {Message} from 'discord.js'
+
+function skipChannel(channelid) {
+    try {
+    var loadedRemovedData = importconfigfile.get()
+
+    if (loadedRemovedData.removedytchannels.indexOf(channelid) == -1
+    && loadedRemovedData.skippedytchannels.indexOf(channelid) == -1
+    ) {
+               return false
+            } else {
+                return true;
+            }
+        }
+        catch (error) {
+            return false;
+        }
+}
 
 export async function youtubeHelpMessageReply(message) {
     message.reply("The correct format for Youtube Video Searches is `a!youtube [youtube url / search string]`\n" +
@@ -119,6 +137,7 @@ export async function youtubeVideoStats(message:Message, command, client, config
                         sendYtCountsEmbed("-5q5mZbe3V8", message, youtubeApiKeyRandomlyChosen)
                         break;
                     default:
+                     
                                                 // console.time("youtubei")
                             const videos = await youtube.search(searchYtString, {
                                 type: "video", // video | playlist | channel | all
@@ -130,13 +149,24 @@ export async function youtubeVideoStats(message:Message, command, client, config
                                 message.reply("I couldn't find any videos matching that term!")
                                 logger.discordInfoLogger.info({type: "searchYoutubeVideoTermNothingFound",query: searchYtString})
                             } else {
-                                videoID = videos[0].id
-                        // logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: videos[0] })
-                            //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
 
-                            sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
-                            logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${videos[0].title}`, videoid: `${videoID}`})
-                            }
+                                var videofound = false;
+                            videos.forEach((video,videoIndex) => {
+                                if (videofound === false) {
+                                    if (skipChannel(video.channel.id)) {
+                                        //skip channel
+                                    } else {
+                                        videoID = videos[videoIndex].id
+                                    // logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: videos[0] })
+                                        //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
+            
+                                    sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
+                                    logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}`})
+                                    videofound = true;
+                                    }
+                                }
+                            });
+                                                 }
                             
                             
                         break;
