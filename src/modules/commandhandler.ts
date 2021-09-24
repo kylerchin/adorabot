@@ -39,6 +39,7 @@ import { makeGif } from "./gif";
 const { query } = require("mathram");
 import { removeAllPoints, removeVideoId, spitoutlist } from "./trackedListManager";
 import { banFromGuild, inspectGuild, listAllGuilds, turnOnAdorabanInGuild } from "./inspectGuild";
+import { spotifySearchForStatsFromMessage } from "./spotify";
 
 export async function commandHandler(msg, client, config, dogstatsd, startupTime) {
 
@@ -130,6 +131,15 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
       if (command === 'fishing') {
         fishing({message: msg, client: client})
+      }
+
+      if (command === "spotify" || command === "spot" || command === "s" || command === "sp" || command === "spot") {
+        await spotifySearchForStatsFromMessage({
+          message: msg,
+          client: client,
+          config: config,
+          command: command
+        })
       }
 
       if (command === 'botstats') {

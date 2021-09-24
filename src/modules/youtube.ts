@@ -128,13 +128,17 @@ export async function youtubeVideoStats(message:Message, command, client, config
 
                             if (videos.length <= 0) {
                                 message.reply("I couldn't find any videos matching that term!")
-                            }
-
-                            videoID = videos[0].id
+                                logger.discordInfoLogger.info({type: "searchYoutubeVideoTermNothingFound",query: searchYtString})
+                            } else {
+                                videoID = videos[0].id
                         // logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: videos[0] })
                             //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
 
                             sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
+                            logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${videos[0].title}`, videoid: `${videoID}`})
+                            }
+                            
+                            
                         break;
                 }
 

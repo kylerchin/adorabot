@@ -122,12 +122,12 @@ client.on('ready',async () => {
   await logger.discordInfoLogger.info(howManyUsersFam, {type: 'clientReady'});
     
   //set the presence, create moderation databases and then check all servers for ban updates, and then upload guild count
-    await Promise.all([
+    await Promise.allSettled([
       listChartsDownload(),
       setPresenceForAdora(),
       createDatabase(),
       moderationCassandra(),
-      await updateDiscordBotsGG(client,config)
+      updateDiscordBotsGG(client,config)
     ])
 });
 
@@ -199,12 +199,12 @@ client.on('messageCreate', async (message:Message) => {
     tracer.trace('clientMessage',async () => {
       //const logTrace = logger.info(body);
       //const traceId = logTrace.dd.trace_id;
-     await Promise.all[commandHandler(message,client,config,dogstatsd,startupTime), 
+     await Promise.allSettled[
+        commandHandler(message,client,config,dogstatsd,startupTime), 
         onMessageForQR(message), 
+        processmalwarediscordmessage(message),
         updateDatadogCountRateLimited(client,config),
         dogstatsd.increment('adorabot.client.message')]
-
-        processmalwarediscordmessage(message)
 
         if (message.content === `a!startuptime`) {
           message.reply(`First message in ${elapsedTimeFirstMsg}ms`)
