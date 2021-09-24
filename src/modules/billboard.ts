@@ -7,7 +7,7 @@ import {ReactionCollectorOptions,CollectorFilter} from 'discord.js'
 var _ = require('lodash')
 import {Message} from 'discord.js'
 import {hexCodeToColorNumber} from './util'
-const { config } = require('./../config.json');
+const { config } = require('./../../config.json');
 
 var chartShortObject = {}
 
@@ -291,7 +291,8 @@ export async function billboardListChartsScrollable(message,command,args) {
 }
 
 export async function billboardCharts(message,command,args,client) {
-    const searchString = message.content.replace(config.prefix).replace(command,"").replace(/ /gm,"")
+    const searchString = message.content.trim().replace(config.token,"").replace(/a!/g,"").trim().replace(command,"").replace(/ /gm,"").trim()
+    message.reply(`searching for \`${searchString}\``)
     if(args.length < 1 || args[0] === "help") {
         await billboardChartsHelpPage(message,command,args)
     } else 
