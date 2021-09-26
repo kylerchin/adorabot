@@ -28,6 +28,8 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
       
         youtubeclient.get(pathForYtRequest, async function(err, res, body) {
 
+          const timeOfRequest = new Date();
+
           //console.log(body)
 
           //console.log("body.items")
@@ -47,7 +49,6 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
           var promiseresults = await Promise.all([
             axios.get(pathForChannelOfVideoRequest),
             ytChart(body.items[0].id,{channelId: body.items[0].snippet.channelId, 
-              publishedAt: new Date(body.items[0].snippet.publishedAt),
             addOnPoints: [
               {
                 time:Date.now(),
@@ -147,7 +148,16 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
 
             if (loadedRemovedData.removedvids.indexOf(body.items[0].id) == -1 && 
             loadedRemovedData.removedytchannels.indexOf(channelIdOfVideo) == -1) {
-              addStatsToYtVideo(body.items[0].id,parseInt(videostats.viewCount,10),parseInt(videostats.likeCount,10),parseInt(videostats.dislikeCount,10),parseInt(videostats.commentCount,10))
+             // addStatsToYtVideo(body.items[0].id,parseInt(videostats.viewCount,10),parseInt(videostats.likeCount,10),parseInt(videostats.dislikeCount,10),parseInt(videostats.commentCount,10))
+
+             addStatsToYtVideo({
+              videoid: body.items[0].id,
+              views: parseInt(videostats.viewCount,10),
+              likes: parseInt(videostats.likeCount,10),
+              dislikes: parseInt(videostats.dislikeCount,10),
+              comments: parseInt(videostats.commentCount,10),
+              time: timeOfRequest
+          })
             }
 
             //return console.log(body);

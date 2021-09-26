@@ -52,22 +52,37 @@ export function longOrEmpty(number) {
     return ((number === null || number === undefined || number === NaN) ? undefined : Long.fromNumber(number))
 }
 
-export async function addStatsToYtVideo(videoid,views,likes,dislikes,comments) {
+interface statInterface {
+    videoid: string;
+    time? : Date;
+    views: number | undefined;
+    likes: number | undefined;
+    dislikes: number | undefined;
+    comments: number | undefined;
+}
+
+export async function addStatsToYtVideo(statParams: statInterface) {
     var query = "INSERT INTO adorastats.ytvideostats (videoid, time, views, likes, dislikes, comments) VALUES (?,?,?,?,?,?)"
     
-    var commentsLong = longOrEmpty(comments)
+    var commentsLong = longOrEmpty(statParams.comments)
     
-    var params = [videoid, 
-        TimeUuid.now(),
-        longOrEmpty(views),
-        longOrEmpty(likes),
-        longOrEmpty(dislikes),
+    var timeUuid;
+
+    if (statParams.time) {
+        timeUuid = TimeUuid.fromDate(statParams.time)
+    }
+
+    var params = [statParams.videoid, 
+        timeUuid,
+        longOrEmpty(statParams.views),
+        longOrEmpty(statParams.likes),
+        longOrEmpty(statParams.dislikes),
         commentsLong]
     await cassandraclient.execute(query, params, {prepare: true})
     .then(async result => {
         await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
     }).catch(error => console.error(error));
-    logger.discordDebugLogger.debug(`videoid ${videoid} ${views} views ${likes} likes ${dislikes} dislikes`, {type: "videoStatsAddToDatabase"})
+    logger.discordDebugLogger.debug(`videoid ${statParams.videoid} ${statParams.views} views ${statParams.likes} likes ${statParams.dislikes} dislikes`, {type: "videoStatsAddToDatabase"})
 }
 
 export async function fetchStatsForAll() {
@@ -92,7 +107,14 @@ export async function fetchStatsForAll() {
 
             if (loadedRemovedData.removedvids.indexOf(row.videoid) == -1 && 
             loadedRemovedData.removedytchannels.indexOf(video.channel.id) == -1) {
-               addStatsToYtVideo(row.videoid,video.viewCount,video.likeCount,video.dislikeCount,undefined)
+              // addStatsToYtVideo(row.videoid,video.viewCount,video.likeCount,video.dislikeCount,undefined)
+                addStatsToYtVideo({
+                    videoid: row.videoid,
+                    views: video.viewCount,
+                    likes: video.likeCount,
+                    dislikes: video.dislikeCount,
+                    comments: undefined
+                })
             }
         }
 
