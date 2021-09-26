@@ -102,8 +102,9 @@ export async function youtubeVideoStats(message:Message, command, client, config
         // Invalid url
 
         console.log("invalid url")
+        const commandRegex = new RegExp(`${command}`,"i")
 
-        const searchYtString = message.content.replace("a!", "").replace(command, "").trim()
+        const searchYtString = message.content.replace(/a!/i, "").trim().replace(commandRegex, "").trim()
 
         if (searchYtString.length === 0) {
             await youtubeHelpMessageReply(message)
