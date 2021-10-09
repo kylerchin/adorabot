@@ -1,7 +1,7 @@
 const { config } = require('./../config.json');
 
 // Add this to the VERY top of the first file loaded in your app
-var apm = require('elastic-apm-node').start({
+/*var apm = require('elastic-apm-node').start({
   
   serviceName: config.elasticapm.serviceName,
 
@@ -13,7 +13,7 @@ var apm = require('elastic-apm-node').start({
   // Set the service environment
   environment: 'production'
   })
-
+*/
 /*
     The following code goes into it's own file, and you run this file
     instead of your main bot file.
