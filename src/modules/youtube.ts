@@ -136,7 +136,11 @@ export async function youtubeVideoStats(message:Message, command, client, config
                         break;
                     case "life goes on": case "life goes on mv": 
                         sendYtCountsEmbed("-5q5mZbe3V8", message, youtubeApiKeyRandomlyChosen)
-                        break;
+                    break;
+                case "help":
+                        youtubeHelpMessageReply(message)
+                    break;
+                    
                     default:
                      
                                                 // console.time("youtubei")
