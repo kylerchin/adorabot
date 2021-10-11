@@ -24,6 +24,8 @@ const { config } = require('./../config.json');
 import {ShardingManager} from 'discord.js'
 import {} from "./adora"; 
 import {logger,tracer} from './modules/logger'
+import { createDatabases } from './youtubeviewcountdaemon';
+import { initDatabases } from './updatesafebrowsingdatabase'
 //import {keepAlive} from './server'
 
 //keepAlive()
@@ -63,8 +65,11 @@ const manager = new ShardingManager('./dist/adora.js', {
     token: config.token
 });
 
+createDatabases()
+initDatabases()
+
 // Emitted when a shard is created
-manager.on('shardCreate',async (shard) => {
+manager.on('shardCreate', async (shard) => {
     console.log(`Shard ${shard.id} launched`);
     //logger.discordInfoLogger.info({type: "shardCreate", shard: shard});
 });

@@ -15,7 +15,7 @@ const cassandraclient = new cassandra.Client({
     .PlainTextAuthProvider(config.cassandra.plainTextUsername, config.cassandra.plainTextPassword)
 });
 
-function initDatabases() {
+export function initDatabases() {
   //This Function will automatically create the adoramoderation keyspace if it doesn't exist, otherwise, carry on
   cassandraclient.execute("CREATE KEYSPACE IF NOT EXISTS adorasafebrowsing WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy',  'datacenter1': 1  };")
     .then(async result => {
@@ -128,12 +128,14 @@ await axios(config)
             //  const params = [ new Date(1942, 10, 1), 'jimi-hendrix' ];
   
             // Set the prepare flag in the query options
+            /*
              await cassandraclient.execute(queryForPrefix, paramsForPrefix, { prepare: true })
              .then(result => {
              // logger.discordSillyLogger.silly({type: "threatprefixadd", message: result})
           }).catch((error) => {
             logger.discordErrorLogger.error({type: "threatprefixadderror", message: error})
           });
+          */
             // console.log('Row updated on the cluster');
           })
         }

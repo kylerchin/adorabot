@@ -27,7 +27,6 @@
     "typescript": "^4.3.4"
   },
   "dependencies": {
-    "@discordjs/opus": "^0.4.0",
     "@discordjs/rest": "*",
     "@discordjs/voice": "^0.5.3",
     "@google-cloud/translate": "^6.0.5",

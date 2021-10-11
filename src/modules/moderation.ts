@@ -162,6 +162,24 @@ export async function banGuildMember(message, command, args) {
         isPurgeBan = true;
     }
 
+    if (command === "syncbanswiththisguild") {
+        if (isAuthorizedAdmin(message.author.id)) {
+            try {
+                message.guild.bans.fetch()
+                .then((collectionOfBans) => {
+                console.log(collectionOfBans)
+                })
+                .catch(error => {
+                console.log(error)
+            })
+            } catch (errorTry) {
+                console.log(errorTry)
+            }
+        }
+       
+       
+    }
+
     const isDM: boolean = message.guild === null;
 
     if (isDM) {
