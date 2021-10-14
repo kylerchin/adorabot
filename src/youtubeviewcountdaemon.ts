@@ -1,18 +1,11 @@
 import {cassandraclient} from './modules/cassandraclient'
 import {logger} from './modules/logger'
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
-const ytScraper = require("yt-scraper")
-const axios = require('axios')
-const cio = require('cheerio-without-node-native');
 import * as youtubei from "youtubei";
 const editJsonFile = require("edit-json-file");
 const youtube = new youtubei.Client();
 var importconfigfile = editJsonFile(`${__dirname}/../removedytvids.json`);
 const Long = require('cassandra-driver').types.Long;
-const CloudflareBypasser = require('cloudflare-bypasser');
- 
-let cf = new CloudflareBypasser();
- 
 
 export async function createDatabases() {
     //This Function will automatically create the adorastats keyspace if it doesn't exist, otherwise, carry on
@@ -81,8 +74,13 @@ export async function addStatsToYtVideo(statParams: statInterface) {
     await cassandraclient.execute(query, params, {prepare: true})
     .then(async result => {
         await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
-    }).catch(error => console.error(error));
-    logger.discordDebugLogger.debug(`videoid ${statParams.videoid} ${statParams.views} views ${statParams.likes} likes ${statParams.dislikes} dislikes`, {type: "videoStatsAddToDatabase"})
+        logger.discordDebugLogger.debug(`videoid ${statParams.videoid} ${statParams.views} views ${statParams.likes} likes ${statParams.dislikes} dislikes`, { type: "videoStatsAddToDatabase" })
+        return true;
+    }).catch(error => {
+        console.error(error)
+        return error
+    });
+   
 }
 
 export async function fetchStatsForAll() {
@@ -93,7 +91,7 @@ export async function fetchStatsForAll() {
     // readable is emitted as soon a row is received and parsed
     let row;
     while (row = this.read()) {
-        try {
+ 
       // process row
        // logger.discordInfoLogger.info(row.videoid + ' in the database')
         const video = await youtube.getVideo(row.videoid)
@@ -119,11 +117,6 @@ export async function fetchStatsForAll() {
         }
 
         // loadedRemovedData = importconfigfile.get()
-
-    }
-    catch {
-        
-    }
 }
   })
   .on('end', function () {

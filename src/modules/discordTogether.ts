@@ -11,6 +11,7 @@ export function ytparty(ytpartyargs: ytpartyargs) {
             ytpartyargs.client.discordTogether.createTogetherCode(ytpartyargs.message.member.voice.channel.id, 'youtubeDev').then(async invite => {
                 return ytpartyargs.message.reply({embeds: [{
                     "title": `Click here to join YouTube Party in ${ytpartyargs.message.member.voice.channel.name}`,
+                    "description": "To watch simultaniously, turn on shared playback in the bottom left.",
                     "url": `${invite.code}`
                 }]});
             });
