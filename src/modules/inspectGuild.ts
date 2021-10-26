@@ -84,6 +84,59 @@ export async function listAllGuilds(message,client) {
     await sendPages(message.channel,arrayOfPages,message,"Adora Guilds")
 }
 
+export async function listAllGuildsAndInsertAutoban(message,client) {
+    const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => {
+        var arrayOfGuilds = clientBroadcasted.guilds.cache.map((eachGuild) => {
+            return {
+                id: eachGuild.id,
+                memberCount: eachGuild.memberCount,
+                name: eachGuild.name
+            }
+        })
+        return arrayOfGuilds;
+    },
+    {
+        "context": {
+           
+        }
+        
+    });
+
+    var merged = [].concat.apply([], req);
+
+    merged.forEach(row => {
+        //insert into cassandra
+        cassandraclient.execute(
+            "INSERT INTO adoramoderation.guildssubscribedtoautoban (serverid, subscribed, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime) VALUES (?,?,?,?,?,?)",
+            [row.id, true, message.author.id, TimeUuid.now(), message.author.id, TimeUuid.now()],
+            {prepare: true}
+        )
+            .then((result) => {
+                console.log('inserted')
+                console.log()
+        }).catch(error => {console.log(error)})
+    })
+
+    //console.log(merged);
+
+    //sort greatest to least member count
+    var sortedGuildList = merged.sort((a,b) => (a.memberCount > b.memberCount) ? -1: 1)
+
+    var arrayOfTextGuildsInString = sortedGuildList.map((eachGuild) => {
+        return `\`${eachGuild.id}\` | \`${eachGuild.memberCount}\` ${Util.escapeMarkdown(eachGuild.name)}`
+    })
+
+    var arrayOfSplitStrings = Util.splitMessage(arrayOfTextGuildsInString.join("\n"))
+
+    var arrayOfPages = arrayOfSplitStrings.map((string,n) => {return new Discord.MessageEmbed({"description": string,
+        "footer": {
+            "text": `Page ${n+1}/${arrayOfSplitStrings.length}`
+        }
+    })});
+
+    await sendPages(message.channel,arrayOfPages,message,"Adora Guilds")
+}
+
 export async function inspectGuild(message,guildid,client) {
     var readExistingSubscriptionStatus: boolean = false;
     if (isAuthorizedAdmin(message.author.id)) {

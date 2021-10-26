@@ -27,9 +27,23 @@ export async function createDatabases() {
         .then(async result => {
             await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
         }).catch(error => console.error(error));
+    
+    await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adorastats.statpoints (source text PRIMARY KEY, amount counter)")
+    .then(async result => {
+        await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
+    }).catch(error => console.error(error));
 
         //add paint the town to the list of default videos
    // await addVideoToTrackList("_EEo-iE5u_A",undefined)
+}
+
+export async function addstatpointcount(source) {
+    var query = "UPDATE adorastats.statpoints SET amount = amount + 1 WHERE source = ?;"
+    var params = [source]
+    await cassandraclient.execute(query, params, {prepare: true})
+    .then(async result => {
+        await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
+    }).catch(error => console.error(error));
 }
 
 export async function addVideoToTrackList(videoid,name) {
@@ -75,6 +89,12 @@ export async function addStatsToYtVideo(statParams: statInterface) {
     .then(async result => {
         await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
         logger.discordDebugLogger.debug(`videoid ${statParams.videoid} ${statParams.views} views ${statParams.likes} likes ${statParams.dislikes} dislikes`, { type: "videoStatsAddToDatabase" })
+        try {
+            addstatpointcount("youtube") 
+        }
+        catch (pointcounterr) {
+            console.log(pointcounterr)
+        }
         return true;
     }).catch(error => {
         console.error(error)
@@ -86,13 +106,11 @@ export async function addStatsToYtVideo(statParams: statInterface) {
 export async function fetchStatsForAll() {
 
     var queryFetchAllTrackedIds = "SELECT * FROM adorastats.trackedytvideosids"
-    cassandraclient.stream(queryFetchAllTrackedIds)
-  .on('readable',async function () {
-    // readable is emitted as soon a row is received and parsed
-    let row;
-    while (row = this.read()) {
- 
-      // process row
+
+    cassandraclient.execute(queryFetchAllTrackedIds, [], { prepare: true })
+        .then((result) => {
+            result.rows.forEach(async (row) => {
+             // process row
        // logger.discordInfoLogger.info(row.videoid + ' in the database')
         const video = await youtube.getVideo(row.videoid)
         console.log(`Video: ${video.title} has ${video.viewCount} views`)
@@ -115,15 +133,8 @@ export async function fetchStatsForAll() {
                 })
             }
         }
-
-        // loadedRemovedData = importconfigfile.get()
-}
-  })
-  .on('end', function () {
-    // emitted when all rows have been retrieved and read
-    logger.discordInfoLogger.info("all tracked youtube videos finished reading")
-  });
-}
+        })
+    }).catch((error) => {console.log(error)})
 // look up list of known songs
 
 //fetch for each song
