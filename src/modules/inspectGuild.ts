@@ -1,4 +1,3 @@
-import { MessageEmbed } from "discord.js";
 import * as Discord from "discord.js"
 import { isAuthorizedAdmin } from "./moderation";
 import { cassandraclient } from "./cassandraclient";

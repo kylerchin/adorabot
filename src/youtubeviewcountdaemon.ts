@@ -1,13 +1,17 @@
 import {cassandraclient} from './modules/cassandraclient'
 import {logger} from './modules/logger'
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
-import * as youtubei from "youtubei";
 const editJsonFile = require("edit-json-file");
-const youtube = new youtubei.Client();
+import { Client } from "youtubei";
+
+const youtube = new Client();
+
+const axios = require('axios');
 var importconfigfile = editJsonFile(`${__dirname}/../removedytvids.json`);
 const Long = require('cassandra-driver').types.Long;
 
 export async function createDatabases() {
+
     //This Function will automatically create the adorastats keyspace if it doesn't exist, otherwise, carry on
     await cassandraclient.execute("CREATE KEYSPACE IF NOT EXISTS adorastats WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy',  'datacenter1': 1  };")
         .then(async result => {
@@ -77,6 +81,8 @@ export async function addStatsToYtVideo(statParams: statInterface) {
 
     if (statParams.time) {
         timeUuid = TimeUuid.fromDate(statParams.time)
+    } else {
+        timeUuid = TimeUuid.now()
     }
 
     var params = [statParams.videoid, 
@@ -105,39 +111,61 @@ export async function addStatsToYtVideo(statParams: statInterface) {
 
 export async function fetchStatsForAll() {
 
+    var loadedRemovedData = importconfigfile.get()
+
     var queryFetchAllTrackedIds = "SELECT * FROM adorastats.trackedytvideosids"
 
-    cassandraclient.execute(queryFetchAllTrackedIds, [], { prepare: true })
+    cassandraclient.execute(queryFetchAllTrackedIds)
         .then((result) => {
+            console.log('recieved all tracked yt videos')
             result.rows.forEach(async (row) => {
-             // process row
-       // logger.discordInfoLogger.info(row.videoid + ' in the database')
-        const video = await youtube.getVideo(row.videoid)
-        console.log(`Video: ${video.title} has ${video.viewCount} views`)
+                console.log(row)
+                // process row
+                // logger.discordInfoLogger.info(row.videoid + ' in the database')
+                console.log('get video try')
 
-        var loadedRemovedData = importconfigfile.get()
+                if (loadedRemovedData.removedvids.indexOf(row.videoid) == -1) {
 
-        if (loadedRemovedData.removedvids.indexOf(row.videoid) == -1) {
-            const video = await youtube.getVideo(row.videoid)
-            console.log(`Video: ${video.title} has ${video.viewCount} views`)
 
-            if (loadedRemovedData.removedvids.indexOf(row.videoid) == -1 && 
-            loadedRemovedData.removedytchannels.indexOf(video.channel.id) == -1) {
-              // addStatsToYtVideo(row.videoid,video.viewCount,video.likeCount,video.dislikeCount,undefined)
-                addStatsToYtVideo({
-                    videoid: row.videoid,
-                    views: video.viewCount,
-                    likes: video.likeCount,
-                    dislikes: video.dislikeCount,
-                    comments: undefined
-                })
-            }
-        }
-        })
-    }).catch((error) => {console.log(error)})
-// look up list of known songs
+                    var fullUrlOfVideo = `https://www.youtube.com/watch?v=${row.videoid}`
+        let { data } = await axios.get(fullUrlOfVideo);
 
-//fetch for each song
+        //logger.discordInfoLogger.info(data, {type: 'youtubeHtmlRespond'})
+       // var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="[^"]">/g)[0],10)
+       var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="([^">]*)">/g)[0].replace(/<meta itemprop="interactionCount" content="/g,"").replace(/">/,""),10)
 
-// insert views, likes, dislike counts into database
+       var likedisliketooltipMatches = data.match(/"tooltip":"(\d||,)+ \/ (\d||,)+"/g)
 
+       console.log('likeddisliketooltipmatches', likedisliketooltipMatches)
+
+       var likedisliketooltip = likedisliketooltipMatches[0].replace(/"tooltip": ?"/g,"").replace(/"/g,"")
+
+       var likeanddislikearray = likedisliketooltip.split("/");
+
+       console.log('splittedArray', likeanddislikearray)
+
+       console.log("likeCountAttempt",likeanddislikearray[0])
+       var likeCount = parseInt(likeanddislikearray[0].trim().replace(/,/g,""),10)
+
+       var dislikeCount = parseInt(likeanddislikearray[1].trim().replace(/,/g,""),10)
+
+        console.log(viewCount)
+        console.log("likeCount",likeCount)
+        console.log("dislikeCount",dislikeCount)
+                    await  addStatsToYtVideo({
+                        videoid: row.videoid,
+                        views: viewCount,
+                        likes: likeCount,
+                        dislikes: dislikeCount,
+                        comments: undefined
+                    })
+                   
+                }
+            })
+        }).catch((error) => { console.log(error) })
+    // look up list of known songs
+
+    //fetch for each song
+
+    // insert views, likes, dislike counts into database
+}

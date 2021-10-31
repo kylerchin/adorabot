@@ -1,5 +1,7 @@
 import {createDatabases, fetchStatsForAll} from './youtubeviewcountdaemon'
 
+console.log('init')
+
 createDatabases()
 fetchStatsForAll()
 

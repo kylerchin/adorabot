@@ -12,7 +12,9 @@
     "updatesafebrowsing": "node ./dist/updatesafebrowsingdatabase.js",
     "registerslash": "node ./dist/registerslash.js",
     "deleteslash": "node ./dist/deleteslash.js",
-    "statsserver": "node ./dist/runstatsdaemon.js"
+    "statsserver": "node ./dist/runstatsdaemon.js",
+    "kylersync": "rsync -av --progress -e \"ssh -i /home/kyler/kylersdigitaloceankey\" $(pwd)/dist root@137.184.95.186:/root/adorabot",
+    "fullsync": "npm run build && npm run kylersync"
   },
   "author": "",
   "license": "ISC",
