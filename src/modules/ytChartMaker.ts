@@ -16,7 +16,7 @@ interface optionsInterface {
   channelId?: string;
   [key: string]: any;
   addOnPoints?: AddOnPointsEntity[] | null;
-  publishedAt?: any;
+  publishedAt?: Date;
 }
 
 interface AddOnPointsEntity {
@@ -170,6 +170,13 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               var addonviews = eachPoint.views;
               leastAndGreatestCheck(addonviews, "leastViews", "greatestViews");
 
+              if (optionsObject.publishedAt) {
+                if ( leastAndGreatestObject["leastTime"] < optionsObject.publishedAt.getTime() &&  leastAndGreatestObject["greatestTime"] > optionsObject.publishedAt.getTime() ) {
+                  leastAndGreatestObject["leastTime"] = optionsObject.publishedAt.getTime() - (1000 * 60)
+                }
+              }
+              
+
               arrayOfStats.push({
                 unixtime: addontime,
                 views: addonviews,
@@ -177,12 +184,20 @@ export async function ytChart(id, optionsObject: optionsInterface) {
             });
           }
           // Stream ended, there aren't any more rows
-          var viewRange: number =
-            leastAndGreatestObject["greatestViews"] -
+          var viewRange: number = 0;
+          if (leastAndGreatestObject["greatestViews"] &&  leastAndGreatestObject["leastViews"]) {
+          viewRange = leastAndGreatestObject["greatestViews"] -
             leastAndGreatestObject["leastViews"];
-          var timeRange: number =
-            leastAndGreatestObject["greatestTime"] -
-            leastAndGreatestObject["leastTime"];
+          } else {
+            viewRange = 0;
+          }
+          
+          var timeRange: number = 0;
+
+         if (leastAndGreatestObject["greatestTime"] &&  leastAndGreatestObject["leastTime"]) {
+          timeRange = leastAndGreatestObject["greatestTime"] -
+          leastAndGreatestObject["leastTime"];
+         }
 
           var loadedRemovedData = importconfigfile.get();
 
@@ -283,7 +298,10 @@ export async function ytChart(id, optionsObject: optionsInterface) {
             // ctx.rotate(0.1)
             ctxLegendXLabel.textAlign = "center";
 
+            var numberOfDaysDone = 0;
+
             while (timeLegend < leastAndGreatestObject["greatestTime"]) {
+
               //console.log("draw legend")
               var percxlegend =
                 (timeLegend - leastAndGreatestObject["leastTime"]) / timeRange;
@@ -294,13 +312,24 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               ctxSubLegend.stroke();
               ctxSubLegend.closePath();
 
-              ctxLegendXLabel.fillText(
-                `${arrayOfMonthsEnglishShort[new Date(timeLegend).getUTCMonth()]} ${new Date(timeLegend).getUTCDate()}`,
-                pointx,
-                canvas.height - 40
-              );
+              if (timeRange > 60 * 60 * 24 * 1000 * 20) {
+               if (numberOfDaysDone % 2 !== 0) {
+                ctxLegendXLabel.fillText(
+                  `${new Date(timeLegend).getUTCMonth()}/${new Date(timeLegend).getUTCDate()}`,
+                  pointx,
+                  canvas.height - 80
+                );
+               }
+              } else {
+                ctxLegendXLabel.fillText(
+                  `${new Date(timeLegend).getUTCMonth()}/${new Date(timeLegend).getUTCDate()}`,
+                  pointx,
+                  canvas.height - 40
+                );
+              }
 
               timeLegend += 60 * 60 * 24 * 1000;
+              numberOfDaysDone += 1;
             }
 
             //under 5 days
@@ -414,9 +443,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                   (yAxisDrawMillions - leastAndGreatestObject["leastViews"]) /
                   viewRange;
                 var pointy =
-                  canvasHeightRange -
-                  canvasHeightRange * percylegend +
-                  paddingBottom;
+                  canvasHeightRange - (canvasHeightRange * percylegend) + paddingTop;
                 ctxSubYLineLegend.moveTo(paddingLeft - 50, pointy);
                 ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy);
                 ctxSubYLineLegend.stroke();
@@ -453,7 +480,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                     var pointy =
                       canvasHeightRange -
                       canvasHeightRange * percylegend +
-                      paddingBottom;
+                      paddingTop;
                     ctxSubYLineLegend.moveTo(paddingLeft - 50, pointy);
                     ctxSubYLineLegend.lineTo(
                       canvas.width - paddingRight,
@@ -519,14 +546,24 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                       ctxRelease.lineTo(pointxreleasetime, canvas.height - paddingBottom);
                       ctxRelease.stroke();
                       ctxRelease.closePath();
+
                       ctxRelease.textAlign = "right";
+                      var xforreleasetext = pointxreleasetime - 80;
                       ctxRelease.font = "150px Lexend Deca";
+                      if (
+                        xforreleasetext < 500
+                      ) {
+                        ctxRelease.textAlign = "left";
+                        xforreleasetext = pointxreleasetime + 80;
+                      }
                       ctxRelease.fillStyle = "#fce464";
                       ctxRelease.fillText(
                         "Release Time",
-                        pointxreleasetime - 80,
+                        xforreleasetext,
                         canvas.height - paddingBottom - 150
                       );
+
+                     
               }
               
             }
