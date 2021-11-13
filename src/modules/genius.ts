@@ -1,16 +1,16 @@
-const encodeUrl = require('encodeurl')
+import encodeUrl = require('encodeurl');
 // Load the full build.
 var _ = require('lodash');
-const axios = require('axios')
-const cio = require('cheerio-without-node-native');
-const Discord = require('discord.js');
+import axios = require('axios');
+import cio = require('cheerio-without-node-native');
+import Discord = require('discord.js');
 import {Util,ReactionCollector,CommandInteraction,Message} from 'discord.js'
 import {decode} from 'html-entities';
 import { initial } from 'lodash';
 import { logger,tracer,span } from './logger';
 import { asyncForEach,hexCodeToColorNumber } from './util';
-const forEach = require("for-each")
-const { config } = require('./../../config.json');
+import forEach = require("for-each");
+import { config } from './../../config.json';
 
  // Set config defaults when creating the instance
  const geniusinstance = axios.create({
@@ -142,7 +142,7 @@ export async function geniusShowOtherSongs(response,requesterid,isInteractionOrM
          else {
             //found something
             var songLyricsHTML;
-             songLyricsHTML = await geniusSongUrlHTMLExtract(response.data.response.hits[0].result.url);
+             songLyricsHTML = await decideWhichGeniusUrlToUse(response);
             
             console.log(songLyricsHTML)
 
@@ -286,6 +286,70 @@ async function reactionsInitialSet(arrayOfMessagesSentForLyrics,lyricsRequester,
                     })
 }
 
+function isBadGeniusUrl(url) {
+    var arrayOfBadUrlsWeDontWant = [
+        "https://genius.com/Genius-korea-genius-korea-communitys-favorite-songs-of-2021-so-far-annotated"
+    ]
+
+    return arrayOfBadUrlsWeDontWant.includes(url)
+}
+
+function isBadGeniusArtistUrl(url) {
+    var arrayOfBadArtistUrlsWeDontWant = [
+        'https://genius.com/artists/Genius-korea'
+    ]
+
+    return arrayOfBadArtistUrlsWeDontWant.includes(url)
+}
+
+async function decideWhichGeniusUrlToUse(response) {
+    
+    console.log(response)
+
+        //not the http response.... the genius response
+    return new Promise(async (resolve, reject) => {
+        var hitNumberToUse = decideWhichGeniusNumberToUse(response);
+
+        geniusSongUrlHTMLExtract(response.hits[hitNumberToUse].result.url).then((geniusSongUrlExtract) => {
+            resolve(geniusSongUrlExtract)
+        })
+        .catch((error) => {
+            reject(error)
+        })
+      });
+}
+
+function decideWhichGeniusNumberToUse(response) {
+
+    //not the http response.... the genius response
+        var hitNumberCounter:number = 0;
+        var hitNumberToUse:number = 0;
+        var numberOfMaxHits = response.hits.length        
+
+        while ((hitNumberCounter < numberOfMaxHits)) {
+            var workingOnThisResult = response.hits[hitNumberCounter].result;
+            console.log(workingOnThisResult)
+            if (isBadGeniusUrl(workingOnThisResult.url) || isBadGeniusArtistUrl(workingOnThisResult.primary_artist.url)) {
+                //do nothing, skip to the next hit
+                console.log('skip genius hit', hitNumberCounter)
+
+                if (hitNumberCounter = numberOfMaxHits - 1) {
+                    //this entry is the last
+                    return 0;
+                }
+            } else {
+                hitNumberToUse = hitNumberCounter;
+                console.log('use this genius hit', hitNumberCounter)
+                break;
+            }
+            hitNumberCounter = hitNumberCounter + 1;
+        }
+
+        console.log('hitNumberToUse',  hitNumberToUse)
+ 
+        return hitNumberToUse;
+}
+
 export async function geniusLyrics(message:Message,args, client) {
 
      var geniusQuery = message.content.trim().replace("a! genius","").replace("a!genius","").replace("a!lyrics","").replace("a! lyrics","").replace("a! lyric","").replace("a!lyric","").trim()
@@ -308,7 +372,7 @@ export async function geniusLyrics(message:Message,args, client) {
     console.log(response);
     console.log(response.data)
     console.log(response.data.meta.status)
-    console.log(response.data.response.hits[0])
+ //   console.log(response.data.response.hits[0])
 
     if(response.data.meta.status === 200) {
         //genius responded successfully
@@ -318,7 +382,7 @@ export async function geniusLyrics(message:Message,args, client) {
         } else {
             //found something
             var songLyricsHTML;
-             songLyricsHTML = await geniusSongUrlHTMLExtract(response.data.response.hits[0].result.url);
+             songLyricsHTML = await decideWhichGeniusUrlToUse(response.data.response);
             
           //  console.log(songLyricsHTML)
 
@@ -334,13 +398,17 @@ export async function geniusLyrics(message:Message,args, client) {
                 };
             })
 
-            _.set(arrayOfEmbeds, '[0].title', response.data.response.hits[0].result.title_with_featured.substring(0, 255))
-            _.set(arrayOfEmbeds, '[0].author.name', response.data.response.hits[0].result.primary_artist.name.substring(0, 255))
-            _.set(arrayOfEmbeds, '[0].thumbnail.url', response.data.response.hits[0].result.song_art_image_url)
-            _.set(arrayOfEmbeds, '[0].url', response.data.response.hits[0].result.url)
-            _.set(arrayOfEmbeds, '[0].author.icon_url', response.data.response.hits[0].result.primary_artist.image_url)
+            var whichHitNumberToUse = decideWhichGeniusNumberToUse(response.data.response);
+
+            var resultToUse = response.data.response.hits[whichHitNumberToUse].result;
+
+            _.set(arrayOfEmbeds, '[0].title', resultToUse.title_with_featured.substring(0, 255))
+            _.set(arrayOfEmbeds, '[0].author.name', resultToUse.primary_artist.name.substring(0, 255))
+            _.set(arrayOfEmbeds, '[0].thumbnail.url', resultToUse.song_art_image_url)
+            _.set(arrayOfEmbeds, '[0].url', resultToUse.url)
+            _.set(arrayOfEmbeds, '[0].author.icon_url', resultToUse.primary_artist.image_url)
             const lastItem = arrayOfEmbeds[arrayOfEmbeds.length - 1]
-            _.set(lastItem, 'footer.text', `Powered by Genius | ${response.data.response.hits[0].result.stats.pageviews} pageviews.\nWrong song? Click ❓ to see other song options.`)
+            _.set(lastItem, 'footer.text', `Powered by Genius | ${resultToUse.stats.pageviews} pageviews.\nWrong song? Click ❓ to see other song options.`)
 
             //Get Color as Hex String from Genius API response, remove the hashtag
            // const extractHex = response.data.response.hits[0].result.song_art_primary_color.replace(/#/g, '')

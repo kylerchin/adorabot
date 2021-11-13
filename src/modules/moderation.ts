@@ -3,14 +3,16 @@ var forEach = require("for-each")
 // at the top of your file
 const { canonicalize, getPrefixes } = require('webrisk-hash');
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
-const editJsonFile = require("edit-json-file");
+import editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../config.json`);
 import { inspect, inspectservercmd } from './inspect';
 import { logger } from './logger'
 import { uniq } from './util'
 import { Client, Message, Guild } from 'discord.js'
 import { cassandraclient } from './cassandraclient'
+import {strikeBanHammer} from './strikeBanHammer'
 //let file = editJsonFile(`${__dirname}/config.json`);
+let fileOfBanTimeouts = editJsonFile(`${__dirname}/../../putgetbanstimeout.json`);
 //Generate time with TimeUuid.now();
 const emptylinesregex = /\n/ig;
 
@@ -875,16 +877,20 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
     var currentShardServerIDArray = []
 
     await client.guilds.cache.forEach(guild => {
-        //console.log(`${guild.name} | ${guild.id}`);
-        if (guild.avaliable) {
+        console.log(`${guild.name} | ${guild.id}`);
+        if (guild.available) {
             //ensure adora has these permissions
+            console.log('guild avaliable')
             if (guild.me.permissions.has("BAN_MEMBERS")) {
-                currentShardServerIDArray.push(guild.id)
+                console.log('has perms to ban')
+             //   currentShardServerIDArray.push(guild.id)
             }
          
        }
         //console.log("guild.id " + guild.id)
     })
+
+    console.log('server id list length: ' + currentShardServerIDArray.length)
 
 
     var queryForBanList = "SELECT * FROM adoramoderation.banneduserlist WHERE banned = ? ALLOW FILTERING;"
@@ -929,12 +935,15 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
 
             //for each server that the shard client is able to ban on...
             forEach(matchingServerList.rows, async function (eachServerThatIsSubscribed) {
+
                 //console.log("serverid to work on" + eachServerThatIsSubscribed.serverid)
                 var individualservertodoeachban = await client.guilds.cache.get(eachServerThatIsSubscribed.serverid);
 
                 //console.log(individualservertodoeachban)
 
                 var listofusersbannedinindividualserver = await individualservertodoeachban.bans.fetch();
+
+                var howManyBansHaveBeenSubmittedSoFar = 0;
 
                 //check if list of users has the user that we want to ban
                 forEach(globallistOfBannableUsers.rows, async function (eachBannableUserRow) {
@@ -966,36 +975,28 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                             else {
                                 //always check if the guild is avaliable before doing this
                                 if (individualservertodoeachban.available) {
-                                    await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
-                                        .then(async (user) => {
-                                            await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`, { userObject: user, banReason: toBanReason, individualservertodoeachban: individualservertodoeachban, type: "recheckBansAddBanSuccessful" })
-                                        })
-                                        .catch(async (error) => {
-                                            await logger.discordWarnLogger.warn({
-                                                type: "banCheckerFailed",
-                                                error: error
-                                            })
 
-                                            if (error.code === 10013) {
-                                                //this user is unknown
-                                                unknownuserlocalarray.push(eachBannableUserRow.banneduserid)
-                                                //push data to cassandra
-                                                var queryForUnknownUser = "INSERT INTO adoramoderation.banneduserlist (banneduserid, banned, reason, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime, unknownuser) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-                                                var paramsForUnknownUser = [eachBannableUserRow.banneduserid,
-                                                eachBannableUserRow.banned,
-                                                eachBannableUserRow.reason,
-                                                eachBannableUserRow.lastchangedbyid,
-                                                eachBannableUserRow.lastchangedtime,
-                                                eachBannableUserRow.firstchangedbyid,
-                                                eachBannableUserRow.firstchangedtime,
-                                                    true]
-                                                await cassandraclient.execute(queryForUnknownUser, paramsForUnknownUser)
-                                                    .then(async (cassandrclientmarkunknown) => {
-                                                        logger.discordDebugLogger.debug(`Marked ${eachBannableUserRow.banneduserid} as unknown`, { type: cassandraclient, result: cassandrclientmarkunknown })
-                                                    })
-                                                    .catch();
+                                    var timeoutAmount =  3000 * ( howManyBansHaveBeenSubmittedSoFar + 1)
+
+                                  //  console.log(`the current timeout amount is: ${timeoutAmount}`)
+
+                                  if (timeoutAmount < 1000 * 60 * 1) {
+                                    setTimeout(async () => {
+                                       //PUT STRIKE HERE
+                                        strikeBanHammer(
+                                            {
+                                                individualservertodoeachban,
+                                                eachBannableUserRow,
+                                                unknownuserlocalarray,
+                                                toBanReason
                                             }
-                                        });
+                                        )
+
+                                    }, timeoutAmount)
+                                  }
+                        
+
+                                    howManyBansHaveBeenSubmittedSoFar = howManyBansHaveBeenSubmittedSoFar + 1;
                                 }
                             }
 

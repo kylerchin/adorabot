@@ -1,10 +1,12 @@
-
+import editJsonFile = require("edit-json-file");
 var startupTime = Date.now()
 var recievedFirstMessageState:boolean = false;
 
+const regexBanRoute = /\/guilds\/\d*\/bans\/:id/g;
+
 // shut up warning
 process.setMaxListeners(0);
-
+let fileOfBanTimeouts = editJsonFile(`${__dirname}/../putgetbanstimeout.json`);
 const Discord = require('discord.js');
 const { DiscordTogether } = require('discord-together');
 var elapsedTimeFirstMsg;
@@ -140,7 +142,24 @@ client.on('interactionCreate', async interaction => {
 });
 
 client.on('rateLimit', async rateLimitInfo => {
-  await logger.discordRateLimitLogger.warn({ clientEvent: 'rateLimit', rateLimitInfo: rateLimitInfo, type: 'rateLimit' });
+  if (rateLimitInfo.route) {
+    if (rateLimitInfo.method === 'put') {
+      const foundRateLimitAddBan = rateLimitInfo.route.match(regexBanRoute);
+
+      if (foundRateLimitAddBan) {
+        var serverId =  rateLimitInfo.route.replace(/\/guilds\//g,'').replace(/\/bans\/:id/g,'')
+        fileOfBanTimeouts.set(serverId, {
+          time: Date.now(),
+          route: rateLimitInfo.route,
+          timeout: rateLimitInfo.timeout,
+          method: rateLimitInfo.method
+        });
+        fileOfBanTimeouts.save();
+      }
+    }
+  }
+
+  await logger.discordInfoLogger.warn({ clientEvent: 'rateLimit', rateLimitInfo: rateLimitInfo, type: 'rateLimit' })
   console.log(rateLimitInfo)
  // console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
 })

@@ -27,6 +27,22 @@ function skipChannel(channelid) {
         }
 }
 
+function skipVideo(videoid) {
+    try {
+    var loadedRemovedData = importconfigfile.get()
+
+    if (loadedRemovedData.skippedvids.indexOf(video) == -1
+    ) {
+               return false
+            } else {
+                return true;
+            }
+        }
+        catch (error) {
+            return false;
+        }
+}
+
 export async function youtubeHelpMessageReply(message) {
     message.reply("The correct format for Youtube Video Searches is `a!youtube [youtube url / search string]`\n" +
         "A search looks like `a!youtube BTS Dynamite`\n" +
@@ -158,7 +174,7 @@ export async function youtubeVideoStats(message:Message, command, client, config
                                 var videofound = false;
                             videos.forEach((video,videoIndex) => {
                                 if (videofound === false) {
-                                    if (skipChannel(video.channel.id)) {
+                                    if (skipChannel(video.channel.id) || skipVideo(video.id)) {
                                         //skip channel
                                     } else {
                                         videoID = videos[videoIndex].id

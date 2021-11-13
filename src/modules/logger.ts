@@ -66,6 +66,11 @@ export const logger = {
     exitOnError: false,
     format: format.json(),
     transports: transportsArray
+  }, 
+  {
+    level: 'warn',
+    format: format.json(),
+    transports: transportsArray
   }),
   discordElasticLogger: createLogger({
     level: 'info',
