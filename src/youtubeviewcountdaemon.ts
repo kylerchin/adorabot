@@ -138,27 +138,31 @@ export async function fetchStatsForAll() {
 
        console.log('likeddisliketooltipmatches', likedisliketooltipMatches)
 
-       var likedisliketooltip = likedisliketooltipMatches[0].replace(/"tooltip": ?"/g,"").replace(/"/g,"")
+       if (likedisliketooltipMatches && (likedisliketooltipMatches !== null)) {
+        var likedisliketooltip = likedisliketooltipMatches[0].replace(/"tooltip": ?"/g,"").replace(/"/g,"")
 
-       var likeanddislikearray = likedisliketooltip.split("/");
+        var likeanddislikearray = likedisliketooltip.split("/");
+ 
+        console.log('splittedArray', likeanddislikearray)
+ 
+        console.log("likeCountAttempt",likeanddislikearray[0])
+        var likeCount = parseInt(likeanddislikearray[0].trim().replace(/,/g,""),10)
+ 
+        var dislikeCount = parseInt(likeanddislikearray[1].trim().replace(/,/g,""),10)
+ 
+         console.log(viewCount)
+         console.log("likeCount",likeCount)
+         console.log("dislikeCount",dislikeCount)
+                     await  addStatsToYtVideo({
+                         videoid: row.videoid,
+                         views: viewCount,
+                         likes: likeCount,
+                         dislikes: dislikeCount,
+                         comments: undefined
+                     })
+       }
 
-       console.log('splittedArray', likeanddislikearray)
-
-       console.log("likeCountAttempt",likeanddislikearray[0])
-       var likeCount = parseInt(likeanddislikearray[0].trim().replace(/,/g,""),10)
-
-       var dislikeCount = parseInt(likeanddislikearray[1].trim().replace(/,/g,""),10)
-
-        console.log(viewCount)
-        console.log("likeCount",likeCount)
-        console.log("dislikeCount",dislikeCount)
-                    await  addStatsToYtVideo({
-                        videoid: row.videoid,
-                        views: viewCount,
-                        likes: likeCount,
-                        dislikes: dislikeCount,
-                        comments: undefined
-                    })
+     
                    
                 }
             })
