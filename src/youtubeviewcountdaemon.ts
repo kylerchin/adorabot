@@ -128,6 +128,11 @@ export async function fetchStatsForAll() {
 
 
                     var fullUrlOfVideo = `https://www.youtube.com/watch?v=${row.videoid}`
+
+
+                    try {
+
+                   
         let { data } = await axios.get(fullUrlOfVideo);
 
         //logger.discordInfoLogger.info(data, {type: 'youtubeHtmlRespond'})
@@ -164,7 +169,10 @@ export async function fetchStatsForAll() {
 
      
                    
+                } catch (erroraxios) {
+                    console.log(erroraxios)
                 }
+            } 
             })
         }).catch((error) => { console.log(error) })
     // look up list of known songs
