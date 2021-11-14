@@ -49,7 +49,8 @@ export async function youtubeHelpMessageReply(message) {
         "Acceptable URLS include\n" +
         "Youtube `a!yt https://youtube.com/watch?v=FFmdTU4Cpr8`\n" +
         "YouTu.be `a!youtube https://youtu.be/FFmdTU4Cpr8`\n" +
-        "Youtube Music `a!youtube https://music.youtube.com/watch?v=FFmdTU4Cpr8`")
+        "Youtube Music `a!youtube https://music.youtube.com/watch?v=FFmdTU4Cpr8`" +
+        "\n\nLooking to watch videos together? use `a!ytparty`")
 }
 
 //fetch youtube videos
