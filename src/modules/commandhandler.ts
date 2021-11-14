@@ -30,7 +30,7 @@ const https = require('https')
 const translate = require('@vitalets/google-translate-api');
 import { logger,tracer,span } from './logger'
 import { ping } from "./ping";
-import { playMusic } from "./music";
+//import { playMusic } from "./music";
 import { ytparty,fishing } from "./discordTogether";
 import { Message } from "discord.js";
 import { igprofile } from "./instagram";
@@ -416,10 +416,10 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
       if (command === "bbp") {
         billboardPollGetValue(msg, args)
       }
-
+/*
       if (command === "play") {
         playMusic({command,message: msg,args,client})
-      }
+      }*/
 
       if (command === "inspectguild") {
         if (isAuthorizedAdmin(msg.author.id)) {
