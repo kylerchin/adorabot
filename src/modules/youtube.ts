@@ -31,7 +31,7 @@ function skipVideo(videoid) {
     try {
     var loadedRemovedData = importconfigfile.get()
 
-    if (loadedRemovedData.skippedvids.indexOf(video) == -1
+    if (loadedRemovedData.skippedvids.indexOf(videoid) == -1
     ) {
                return false
             } else {
