@@ -10,7 +10,7 @@ import { logger } from './logger'
 import { uniq } from './util'
 import { Client, Message, Guild } from 'discord.js'
 import { cassandraclient } from './cassandraclient'
-import {strikeBanHammer} from './strikeBanHammer'
+import { strikeBanHammer } from './strikeBanHammer'
 //let file = editJsonFile(`${__dirname}/config.json`);
 let fileOfBanTimeouts = editJsonFile(`${__dirname}/../../putgetbanstimeout.json`);
 //Generate time with TimeUuid.now();
@@ -51,7 +51,8 @@ export async function kickAdoraOutOfServerId(serverId, client) {
             .catch();
     }, {
         "context": {
-            serverId: serverId}
+            serverId: serverId
+        }
     }).then(results => {
         logger.discordInfoLogger.info(`Admin kicked Adora out of ${results.guildleft.name}`, { type: "adminTriggeredKickFromServer", guildleft: results.guildleft })
     })
@@ -184,18 +185,18 @@ export async function banGuildMember(message, command, args) {
         if (isAuthorizedAdmin(message.author.id)) {
             try {
                 message.guild.bans.fetch()
-                .then((collectionOfBans) => {
-                console.log(collectionOfBans)
-                })
-                .catch(error => {
-                console.log(error)
-            })
+                    .then((collectionOfBans) => {
+                        console.log(collectionOfBans)
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
             } catch (errorTry) {
                 console.log(errorTry)
             }
         }
-       
-       
+
+
     }
 
     const isDM: boolean = message.guild === null;
@@ -899,10 +900,10 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
             console.log('guild avaliable')
             if (guild.me.permissions.has("BAN_MEMBERS")) {
                 console.log('has perms to ban')
-                  currentShardServerIDArray.push(guild.id)
+                currentShardServerIDArray.push(guild.id)
             }
-         
-       }
+
+        }
         //console.log("guild.id " + guild.id)
     })
 
@@ -957,74 +958,80 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
 
                 //console.log(individualservertodoeachban)
 
-                var listofusersbannedinindividualserver = await individualservertodoeachban.bans.fetch();
+                // var listofusersbannedinindividualserver = await individualservertodoeachban.bans.fetch();
+                await cassandraclient.execute("SELECT * FROM adoramoderation.completedbans WHERE guildid = ?", [individualservertodoeachban.id], { prepare: true })
+                    .then(async (listOfUsersRaw) => {
+                        const listofusersbannedinindividualserver = listOfUsersRaw.rows.map((eachRow) => eachRow.userid);
 
-                var howManyBansHaveBeenSubmittedSoFar = 0;
+                        var howManyBansHaveBeenSubmittedSoFar = 0;
 
-                //check if list of users has the user that we want to ban
-                forEach(globallistOfBannableUsers.rows, async function (eachBannableUserRow) {
-                    var isUserBannedFromThisGuild = listofusersbannedinindividualserver.has(eachBannableUserRow.banneduserid)
-                    //  console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
+                        //check if list of users has the user that we want to ban
+                        forEach(globallistOfBannableUsers.rows, async function (eachBannableUserRow) {
+                            var isUserBannedFromThisGuild = listofusersbannedinindividualserver.has(eachBannableUserRow.baneduserid)
+                            //  console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
 
-                    if (isUserBannedFromThisGuild) {
-                        //this user is already fuckin banned
-                    }
-                    else {
-
-                        if (eachBannableUserRow.unknownuser === true && recheckUnkownBan === false) {
-                            //unknown user, do absolutely fucking nothing
-                        } else {
-                            //THE BAN HAMMER STRIKES!
-
-                            var toBanReason: string;
-                            if (!eachBannableUserRow.reason || eachBannableUserRow.reason.length == 0) {
-                                toBanReason = "Banned by Adora's Automagical system!"
-                            } else {
-                                toBanReason = `${eachBannableUserRow.reason} | Banned by Adora's Automagical system!`
+                            if (isUserBannedFromThisGuild) {
+                                //this user is already banned
                             }
-
-                            //trim the reason text to 512 char just in case it fails because the reason is too long
-                            toBanReason = toBanReason.substring(0, 511)
-
-                            //if the cache of unknown users includes that banned user, don't do anything
-                            if (unknownuserlocalarray.includes(eachBannableUserRow.banneduserid)) { }
                             else {
-                                //always check if the guild is avaliable before doing this
-                                if (individualservertodoeachban.available) {
-                                    if (prioritizeGuildBanAlgo(individualservertodoeachban.approximateMemberCount)) {
-                                        var timeoutAmount =  3000 * ( howManyBansHaveBeenSubmittedSoFar + 1)
 
-                                        //  console.log(`the current timeout amount is: ${timeoutAmount}`)
-      
-                                        if (timeoutAmount < 1000 * 60 * 1) {
-                                          setTimeout(async () => {
-                                             //PUT STRIKE HERE
-                                             console.log('ban the user pre')
-                                              strikeBanHammer(
-                                                  {
-                                                      individualservertodoeachban,
-                                                      eachBannableUserRow,
-                                                      unknownuserlocalarray,
-                                                      toBanReason
-                                                  }
-                                              )
-      
-                                          }, timeoutAmount)
-                                        }
-                              
-      
-                                          howManyBansHaveBeenSubmittedSoFar = howManyBansHaveBeenSubmittedSoFar + 1;
+                                if (eachBannableUserRow.unknownuser === true && recheckUnkownBan === false) {
+                                    //unknown user, do absolutely nothing
+                                } else {
+                                    //THE BAN HAMMER STRIKES!
+
+                                    var toBanReason: string;
+                                    if (!eachBannableUserRow.reason || eachBannableUserRow.reason.length == 0) {
+                                        toBanReason = "Banned by Adora's Automagical system!"
+                                    } else {
+                                        toBanReason = `${eachBannableUserRow.reason} | Banned by Adora's Automagical system!`
                                     }
 
-                              
+                                    //trim the reason text to 512 char just in case it fails because the reason is too long
+                                    toBanReason = toBanReason.substring(0, 511)
+
+                                    //if the cache of unknown users includes that banned user, don't do anything
+                                    if (unknownuserlocalarray.includes(eachBannableUserRow.banneduserid)) { }
+                                    else {
+                                        //always check if the guild is avaliable before doing this
+                                        if (individualservertodoeachban.available) {
+                                            if (prioritizeGuildBanAlgo(individualservertodoeachban.approximateMemberCount)) {
+                                                var timeoutAmount = 3000 * (howManyBansHaveBeenSubmittedSoFar + 1)
+
+                                                //  console.log(`the current timeout amount is: ${timeoutAmount}`)
+
+                                                if (timeoutAmount < 1000 * 60 * 1) {
+                                                    setTimeout(async () => {
+                                                        //PUT STRIKE HERE
+                                                        console.log('ban the user pre')
+                                                        strikeBanHammer(
+                                                            {
+                                                                individualservertodoeachban,
+                                                                eachBannableUserRow,
+                                                                unknownuserlocalarray,
+                                                                toBanReason
+                                                            }
+                                                        )
+
+                                                    }, timeoutAmount)
+                                                }
+
+
+                                                howManyBansHaveBeenSubmittedSoFar = howManyBansHaveBeenSubmittedSoFar + 1;
+                                            }
+
+
+                                        }
+                                    }
+
+
                                 }
+
                             }
+                        })
+                    })
 
 
-                        }
-
-                    }
-                })
 
                 //console.log(listofusersbannedinindividualserver)
 
@@ -1063,6 +1070,8 @@ export async function runOnStartup(cassandraclient, client) {
         .then(async result => {
             await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
         }).catch(error => console.error(error));
+
+    await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.completedbans (guildid text, userid text, timeofban bigint, PRIMARY KEY (guildid, userid))")
 
     everyServerRecheckBans(cassandraclient, client, false)
 }

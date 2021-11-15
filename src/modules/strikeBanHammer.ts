@@ -13,6 +13,11 @@ export async function strikeBanHammer(options: optionsInterface) {
     await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
     .then(async (user) => {
         console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`)
+        await cassandraclient.execute("INSERT INTO adoramoderation.completedbans (guildid, userid, timeofban) VALUES (?,?,?) IF NOT EXISTS;",
+        [ individualservertodoeachban.id,eachBannableUserRow.banneduserid,Date.now()],
+        {prepare:true})
+        .catch((error) => {console.log(error)})
+        
         await logger.discordDebugLogger.debug(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`, { userObject: user, banReason: toBanReason, individualservertodoeachban: individualservertodoeachban, type: "recheckBansAddBanSuccessful" })
     })
     .catch(async (error) => {
