@@ -999,6 +999,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                                         if (timeoutAmount < 1000 * 60 * 1) {
                                           setTimeout(async () => {
                                              //PUT STRIKE HERE
+                                             console.log('ban the user pre')
                                               strikeBanHammer(
                                                   {
                                                       individualservertodoeachban,
