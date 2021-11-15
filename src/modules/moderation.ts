@@ -981,7 +981,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                                     //unknown user, do absolutely nothing
                                 } else {
                                     //THE BAN HAMMER STRIKES!
-                                    console.log('cassandra check not unknown user step 2')
+                                //console.log('cassandra check not unknown user step 2')
 
                                     var toBanReason: string;
                                     if (!eachBannableUserRow.reason || eachBannableUserRow.reason.length == 0) {
@@ -996,12 +996,12 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                                     //if the cache of unknown users includes that banned user, don't do anything
                                     if (unknownuserlocalarray.includes(eachBannableUserRow.banneduserid)) { }
                                     else {
-                                        console.log('step 3')
+                                      //  console.log('step 3')
                                         //always check if the guild is avaliable before doing this
                                         if (individualservertodoeachban.available) {
-                                            console.log('step 4: server available')
+                                        //    console.log('step 4: server available')
                                             if (true) {
-                                                console.log('step 5, pass algo')
+                                          //      console.log('step 5, pass algo')
                                                 var timeoutAmount = 2000 * (howManyBansHaveBeenSubmittedSoFar + 1)
 
                                                 //  console.log(`the current timeout amount is: ${timeoutAmount}`)
