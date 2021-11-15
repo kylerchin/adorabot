@@ -967,8 +967,6 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                     .then(async (listOfUsersRaw) => {
                         const listofusersbannedinindividualserver = listOfUsersRaw.rows.map((eachRow) => eachRow.userid);
 
-                      
-
                         //check if list of users has the user that we want to ban
                         forEach(globallistOfBannableUsers.rows, async function (eachBannableUserRow) {
                             var isUserBannedFromThisGuild = listofusersbannedinindividualserver.includes(eachBannableUserRow.baneduserid)
@@ -1008,7 +1006,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
 
                                                 //  console.log(`the current timeout amount is: ${timeoutAmount}`)
                                    
-                                                if (timeoutAmount < 1000 * 60 * 60 * 24) {                    
+                                                if (timeoutAmount < 1000 * 60 * 60 * 24 * 30) {                    
                                                     setTimeout(async () => {
                                                         //PUT STRIKE HERE
                                                         console.log('ban the user pre')
