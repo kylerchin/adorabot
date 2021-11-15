@@ -2,7 +2,7 @@ import { logger } from './logger'
 import { cassandraclient } from './cassandraclient'
 import editJsonFile = require("edit-json-file");
 import {isServerBanNotRateLimited} from './isserverratelimited'
-let fileOfBanTimeouts = editJsonFile(`${__dirname}/../putgetbanstimeout.json`);
+let fileOfBanTimeouts = editJsonFile(`${__dirname}/../../putgetbanstimeout.json`);
 
 interface optionsInterface {
     individualservertodoeachban: any,

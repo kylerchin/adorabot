@@ -1,5 +1,5 @@
 import editJsonFile = require("edit-json-file");
-let fileOfBanTimeouts = editJsonFile(`${__dirname}/../putgetbanstimeout.json`);
+let fileOfBanTimeouts = editJsonFile(`${__dirname}/../../putgetbanstimeout.json`);
 export function isServerBanNotRateLimited(serverid) {
     if ( fileOfBanTimeouts.get(serverid)) {
         var idRateInfo =  fileOfBanTimeouts.get(serverid)
