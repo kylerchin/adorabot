@@ -1002,6 +1002,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                                         //always check if the guild is avaliable before doing this
                                         if (individualservertodoeachban.available) {
                                             if (prioritizeGuildBanAlgo(individualservertodoeachban.approximateMemberCount)) {
+                                                console.log('step 5, pass algo')
                                                 var timeoutAmount = 3000 * (howManyBansHaveBeenSubmittedSoFar + 1)
 
                                                 //  console.log(`the current timeout amount is: ${timeoutAmount}`)
