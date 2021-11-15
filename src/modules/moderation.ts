@@ -969,7 +969,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
 
                         //check if list of users has the user that we want to ban
                         forEach(globallistOfBannableUsers.rows, async function (eachBannableUserRow) {
-                            var isUserBannedFromThisGuild = listofusersbannedinindividualserver.has(eachBannableUserRow.baneduserid)
+                            var isUserBannedFromThisGuild = listofusersbannedinindividualserver.includes(eachBannableUserRow.baneduserid)
                             //  console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
 
                             if (isUserBannedFromThisGuild) {
