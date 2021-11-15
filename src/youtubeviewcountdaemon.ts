@@ -141,6 +141,9 @@ export async function fetchStatsForAll() {
 
        var likedisliketooltipMatches = data.match(/"tooltip":"(\d||,)+ \/ (\d||,)+"/g)
 
+       //delete the webpage since we dont need it anymore
+       data = null;
+
        console.log('likeddisliketooltipmatches', likedisliketooltipMatches)
 
        if (likedisliketooltipMatches && (likedisliketooltipMatches !== null)) {
