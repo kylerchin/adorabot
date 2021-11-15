@@ -919,6 +919,8 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
             globallistOfBannableUsers = listOfBannableUsers;
         })
 
+    console.log('ban database fetched')
+
     //each shard fetch it's servers it's able to ban the user on
     var queryForMatchingServers = ('SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid IN ? AND subscribed = ? ALLOW FILTERING;')
 
@@ -970,7 +972,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                         //check if list of users has the user that we want to ban
                         forEach(globallistOfBannableUsers.rows, async function (eachBannableUserRow) {
                             var isUserBannedFromThisGuild = listofusersbannedinindividualserver.includes(eachBannableUserRow.baneduserid)
-                            //  console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
+                             console.log(`is ${eachBannableUserRow.banneduserid} banned from ${individualservertodoeachban}: ${isUserBannedFromThisGuild}`)
 
                             if (isUserBannedFromThisGuild) {
                                 //this user is already banned
