@@ -1007,8 +1007,8 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                                                 var timeoutAmount = 3000 * (howManyBansHaveBeenSubmittedSoFar + 1)
 
                                                 //  console.log(`the current timeout amount is: ${timeoutAmount}`)
-
-                                                if (timeoutAmount < 1000 * 60 * 1) {
+                                   
+                                                if (timeoutAmount < 1000 * 60 * 5 ) {                    
                                                     setTimeout(async () => {
                                                         //PUT STRIKE HERE
                                                         console.log('ban the user pre')
