@@ -22,6 +22,22 @@ const userIDsRegex = /^(?:<@\D?)?(\d+)(?:>)?\s*,?\s*/;
 
 const userReg = RegExp(/<@!?(\d+)>/);
 
+function prioritizeGuildBanAlgo(memberCount) {
+    if (memberCount < 3) {
+        return false;
+    }
+
+    if (memberCount > 20) {
+        return true;
+    } else {
+        if (Math.random() < 0.1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
 export async function kickAdoraOutOfServerId(serverId, client) {
     client.shard.broadcastEval((clientBroadcasted, contextParam) => {
         clientBroadcasted.guilds.fetch(contextParam.serverId)
@@ -883,7 +899,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
             console.log('guild avaliable')
             if (guild.me.permissions.has("BAN_MEMBERS")) {
                 console.log('has perms to ban')
-             //   currentShardServerIDArray.push(guild.id)
+                  currentShardServerIDArray.push(guild.id)
             }
          
        }
@@ -975,28 +991,31 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                             else {
                                 //always check if the guild is avaliable before doing this
                                 if (individualservertodoeachban.available) {
+                                    if (prioritizeGuildBanAlgo(individualservertodoeachban.approximateMemberCount)) {
+                                        var timeoutAmount =  3000 * ( howManyBansHaveBeenSubmittedSoFar + 1)
 
-                                    var timeoutAmount =  3000 * ( howManyBansHaveBeenSubmittedSoFar + 1)
+                                        //  console.log(`the current timeout amount is: ${timeoutAmount}`)
+      
+                                        if (timeoutAmount < 1000 * 60 * 1) {
+                                          setTimeout(async () => {
+                                             //PUT STRIKE HERE
+                                              strikeBanHammer(
+                                                  {
+                                                      individualservertodoeachban,
+                                                      eachBannableUserRow,
+                                                      unknownuserlocalarray,
+                                                      toBanReason
+                                                  }
+                                              )
+      
+                                          }, timeoutAmount)
+                                        }
+                              
+      
+                                          howManyBansHaveBeenSubmittedSoFar = howManyBansHaveBeenSubmittedSoFar + 1;
+                                    }
 
-                                  //  console.log(`the current timeout amount is: ${timeoutAmount}`)
-
-                                  if (timeoutAmount < 1000 * 60 * 1) {
-                                    setTimeout(async () => {
-                                       //PUT STRIKE HERE
-                                        strikeBanHammer(
-                                            {
-                                                individualservertodoeachban,
-                                                eachBannableUserRow,
-                                                unknownuserlocalarray,
-                                                toBanReason
-                                            }
-                                        )
-
-                                    }, timeoutAmount)
-                                  }
-                        
-
-                                    howManyBansHaveBeenSubmittedSoFar = howManyBansHaveBeenSubmittedSoFar + 1;
+                              
                                 }
                             }
 
