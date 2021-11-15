@@ -116,13 +116,13 @@ export async function fetchStatsForAll() {
     var queryFetchAllTrackedIds = "SELECT * FROM adorastats.trackedytvideosids"
 
     cassandraclient.execute(queryFetchAllTrackedIds)
-        .then((result) => {
+        .then((result) => { 
             console.log('recieved all tracked yt videos')
             result.rows.forEach(async (row) => {
-                console.log(row)
+               // console.log(row)
                 // process row
                 // logger.discordInfoLogger.info(row.videoid + ' in the database')
-                console.log('get video try')
+              //  console.log('get video try')
 
                 if (loadedRemovedData.removedvids.indexOf(row.videoid) == -1) {
 
@@ -176,7 +176,13 @@ export async function fetchStatsForAll() {
                     console.log(erroraxios)
                 }
             } 
+
+            //nullify row
+            row = null;
             })
+
+            //nullify all the extra data
+            result = null;
         }).catch((error) => { console.log(error) })
     // look up list of known songs
 
