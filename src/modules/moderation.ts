@@ -1081,5 +1081,7 @@ export async function runOnStartup(cassandraclient, client) {
 
     await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.completedbans (guildid text, userid text, timeofban bigint, PRIMARY KEY (guildid, userid))")
 
+    await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.nonmemberbanlimit (guildid text PRIMARY KEY, time bigint)")
+
     everyServerRecheckBans(cassandraclient, client, false)
 }

@@ -12,8 +12,21 @@ interface optionsInterface {
 }
 
 export async function strikeBanHammer(options: optionsInterface) {
+
+
+    var {individualservertodoeachban, eachBannableUserRow, unknownuserlocalarray, toBanReason} = options
     if (isServerBanNotRateLimited(options.individualservertodoeachban.id)) {
-        var {individualservertodoeachban, eachBannableUserRow, unknownuserlocalarray, toBanReason} = options
+        var isNotLimitedByNonMemberBanLimit = false;
+        await cassandraclient.execute("SELECT * FROM adoramoderation.nonmemberbanlimit WHERE guildid = ?",[individualservertodoeachban.id])
+        .then((resultsOfNonMemberBanLimit) => {
+            if (resultsOfNonMemberBanLimit.rows.length === 0) {
+                isNotLimitedByNonMemberBanLimit = false
+            } else {
+                var timeOfLimit = parseInt(resultsOfNonMemberBanLimit.rows[0].time.toString(),10)
+
+                isNotLimitedByNonMemberBanLimit = (timeOfLimit + 3600 < Date.now())
+            }
+        })
         await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
         .then(async (user) => {
             console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`)
@@ -30,7 +43,18 @@ export async function strikeBanHammer(options: optionsInterface) {
                 type: "banCheckerFailed",
                 error: error
             })
-    
+     
+            if (error.code === 30035) {
+                //non member bans exceeded, time window like 24 hrs
+
+                // avoid getting shut down, stop banning
+
+                await cassandraclient.execute("INSERT INTO adoramoderation.nonmemberbanlimit (guildid, time) VALUES (?,?)",
+                [individualservertodoeachban.id,Date.now()],
+                {prepare:true})
+                .catch((cassandraerror4) => console.error(cassandraerror4))
+            }
+
             if (error.code === 10013) {
                 //this user is unknown
                 unknownuserlocalarray.push(eachBannableUserRow.banneduserid)
