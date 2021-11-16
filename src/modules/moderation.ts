@@ -907,6 +907,9 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
         //console.log("guild.id " + guild.id)
     })
 
+    //shuffle guild list
+    currentShardServerIDArray = _.shuffle(currentShardServerIDArray);
+
     console.log('server id list length: ' + currentShardServerIDArray.length)
 
 
