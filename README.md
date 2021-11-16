@@ -3,7 +3,6 @@
 Adora bot is a general purpose bot aimed at Kpop Discord Servers.
 You can add it to your server by using this link:  https://discord.com/api/oauth2/authorize?client_id=737046643974733845&permissions=8&scope=bot
 
-
 The current features include:
 Displaying the current YouTube View / Live & Dislike / Comment count in a discord embed
 ![YtStats Command Example with Dyanmite BTS music Video](https://user-images.githubusercontent.com/7539174/101548716-36dd0f00-3961-11eb-86c7-cebae7d43f9a.png)
@@ -47,8 +46,6 @@ Github: https://github.com/kylerchin/adorabot/
 
 ## Development information
 
-       
-
 This bot is designed to be horizontally scalable and fault-tolerent. What does that mean? It means no matter how many servers are added and commands are used, the system is designed to take advantage of using more cores and computers. There are parts of the project that need to be upgraded for that.
 
 Here are the features that help it be fault tolerent:
@@ -81,7 +78,7 @@ When you make changes to the software, you'll first need to recompile to update 
 
 Install Typescript Globally via `npm install -g typescript`
 
-Requirements for compilation:
+Requirements for compilation, canvas is used to draw Adora's Youtube charts':
 
 **Install this software for canvas https://www.npmjs.com/package/canvas**
 
@@ -93,3 +90,11 @@ tsc --help
 ```
 
 You can compile by typing `npm run compile`.
+
+### list of tables that adora makes in cassandra / scylla
+
+Keyspace `adorastats`
+
+1. `ytvideostats`, stores individual points of data, like "BTS Dynamite had 1 Billion Views at Sep 1st 2021". Each video can have thousands of points depending on how often the points are added
+2. `trackedytvideosids stores which youtube videos should be queried for views regularly`
+3. `statpoints`, literally the number of ytvideostats there are , so SELECT COUNT(*) doesn't crash the whole system
