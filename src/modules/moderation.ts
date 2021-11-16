@@ -971,7 +971,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                 await cassandraclient.execute("SELECT * FROM adoramoderation.completedbans WHERE guildid = ?", [individualservertodoeachban.id], { prepare: true })
                     .then(async (listOfUsersRaw) => {
                         const listofusersbannedinindividualserver = listOfUsersRaw.rows.map((eachRow) => eachRow.userid);
-                        console.log('listofusersbannedinindividualserver',listofusersbannedinindividualserver)
+                    //    console.log('listofusersbannedinindividualserver',listofusersbannedinindividualserver)
                         //check if list of users has the user that we want to ban
                         forEach(globallistOfBannableUsers.rows, async function (eachBannableUserRow) {
                             var isUserBannedFromThisGuild = listofusersbannedinindividualserver.includes(eachBannableUserRow.baneduserid)
