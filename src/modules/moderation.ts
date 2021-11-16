@@ -941,6 +941,10 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
 
     //console.log(listOfQueriesToSendToScylla)
 
+    
+    var howManyBansHaveBeenSubmittedSoFar = 0;
+
+
     //Run All the queries, then
     await Promise.all(listOfQueriesToSendToScylla).then(async function (values) {
         //console.log(values)
@@ -954,8 +958,6 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
 
             //for each server that the shard client is able to ban on...
             forEach(matchingServerList.rows, async function (eachServerThatIsSubscribed) {
-
-                var howManyBansHaveBeenSubmittedSoFar = 0;
 
                 //console.log("serverid to work on" + eachServerThatIsSubscribed.serverid)
                 var individualservertodoeachban = await client.guilds.cache.get(eachServerThatIsSubscribed.serverid);
