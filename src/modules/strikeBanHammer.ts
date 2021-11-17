@@ -27,6 +27,9 @@ export async function strikeBanHammer(options: optionsInterface) {
                 isNotLimitedByNonMemberBanLimit = (timeOfLimit + 3600 < Date.now())
             }
         })
+        .catch(errorbanlimit => {
+            console.error(errorbanlimit)
+        })
 
         var banNotCompletedYet = false;
 
