@@ -20,7 +20,7 @@ export async function strikeBanHammer(options: optionsInterface) {
         await cassandraclient.execute("SELECT * FROM adoramoderation.nonmemberbanlimit WHERE guildid = ?",[individualservertodoeachban.id])
         .then((resultsOfNonMemberBanLimit) => {
             if (resultsOfNonMemberBanLimit.rows.length === 0) {
-                isNotLimitedByNonMemberBanLimit = false
+                isNotLimitedByNonMemberBanLimit = true
             } else {
                 var timeOfLimit = parseInt(resultsOfNonMemberBanLimit.rows[0].time.toString(),10)
 
