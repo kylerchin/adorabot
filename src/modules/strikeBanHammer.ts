@@ -30,7 +30,7 @@ export async function strikeBanHammer(options: optionsInterface) {
 
         var banNotCompletedYet = false;
 
-        await cassandraclient.execute("SELECT * FROM adoramoderation.completedbans WHERE guild = ? AND userid = ?",[ individualservertodoeachban.id,eachBannableUserRow.banneduserid])
+        await cassandraclient.execute("SELECT * FROM adoramoderation.completedbans WHERE guildid = ? AND userid = ?",[ individualservertodoeachban.id,eachBannableUserRow.banneduserid])
         .then((resultOfIsBanCompleted) => {
             if (resultOfIsBanCompleted.rows.length === 0) {
                 banNotCompletedYet = true;
