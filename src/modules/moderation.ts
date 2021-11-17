@@ -1007,7 +1007,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                                         //    console.log('step 4: server available')
                                             if (true) {
                                           //      console.log('step 5, pass algo')
-                                                var timeoutAmount = 2000 * (howManyBansHaveBeenSubmittedSoFar + 1)
+                                                var timeoutAmount = 1800 * (howManyBansHaveBeenSubmittedSoFar + 1)
 
                                                 //  console.log(`the current timeout amount is: ${timeoutAmount}`)
                                    
