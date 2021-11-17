@@ -28,7 +28,20 @@ export async function strikeBanHammer(options: optionsInterface) {
             }
         })
 
-        if (isNotLimitedByNonMemberBanLimit) {
+        var banNotCompletedYet = false;
+
+        await cassandraclient.execute("SELECT * FROM adoramoderation.completedbans WHERE guild = ? AND userid = ?",[ individualservertodoeachban.id,eachBannableUserRow.banneduserid])
+        .then((resultOfIsBanCompleted) => {
+            if (resultOfIsBanCompleted.rows.length === 0) {
+                banNotCompletedYet = true;
+            }
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+
+        if (isNotLimitedByNonMemberBanLimit && banNotCompletedYet) {
+
             await individualservertodoeachban.members.ban(eachBannableUserRow.banneduserid, { 'reason': toBanReason })
             .then(async (user) => {
                 console.log(`Banned ${user.username || user.id || user} from ${individualservertodoeachban.name} for ${toBanReason}`)
