@@ -900,7 +900,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
             console.log('guild avaliable')
             if (guild.me.permissions.has("BAN_MEMBERS")) {
                 console.log('has perms to ban')
-                currentShardServerIDArray.push(guild.id)
+             //   currentShardServerIDArray.push(guild.id)
             }
 
         }
