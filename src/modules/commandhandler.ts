@@ -445,6 +445,10 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         turnOnAdorabanInGuild(msg,args[0],client)
       }
 
+      if (command==="mama" || command==="snake" || command===":snake:") {
+        msg.reply("Mama command coming in the next few hours! Join the adora support server via `a!invite` to learn more!");
+      }
+
       if (command === "banfromguild") {
         banFromGuild(msg,args[0],client,args[1])
       }
