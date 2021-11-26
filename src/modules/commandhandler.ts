@@ -7,6 +7,7 @@ import { editProfile, fetchProfile } from "./userProfile";
 import { banGuildMember, isAuthorizedAdmin } from "./moderation";
 import { geniusLyrics } from "./genius"
 import { billboardCharts } from "./billboard"
+import { getMama2021Score } from './get2021mamavoteinfo'
 import { processAllModerationCommands, howManyUsersInBanDatabase } from "./moderation"
 import { updateDiscordBotsGG, updateDatadogCount } from "./uploadStatsToBotsGg"
 import {youtubeChannelStats, youtubeVideoStats} from "./youtube"
@@ -447,6 +448,12 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
       if (command==="mama" || command==="snake" || command===":snake:") {
         msg.reply("Mama command coming in the next few hours! Join the adora support server via `a!invite` to learn more!");
+
+        await getMama2021Score()
+        .then()
+        .catch(error => {
+          console.error(error)
+        })
       }
 
       if (command === "banfromguild") {
