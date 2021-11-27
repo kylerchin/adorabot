@@ -53,7 +53,7 @@ export function getMama2021ScorePre() {
 }
 
 export async function crossUsageMamaPre(messageOrInteraction:any) {
-  messageOrInteraction.reply("Changes will keep being pushed out, join the adora support server via `a!invite` to get updates on MAMA chart command!");
+ // messageOrInteraction.reply("Changes will keep being pushed out, join the adora support server via `a!invite` to get updates on MAMA chart command!");
 
         await getMama2021ScorePre()
         .then(async (mamaResult:any) => {
@@ -71,7 +71,7 @@ export async function crossUsageMamaPre(messageOrInteraction:any) {
                   "name": "[ENDED] Mama 2021 Pre-Voting Award Real Time Ranking"
                 },
                 title: `Total Votes: ${mamaResult.totalVotes.toLocaleString('en-US')}`,
-                description: `${candidatesArrayDesc.join("\n")}`
+                description: `${candidatesArrayDesc.join("\n")}\nChanges will keep being pushed out, join the adora support server via \`a!invite\` to get updates on MAMA chart command!`
               }
             ]
           })
