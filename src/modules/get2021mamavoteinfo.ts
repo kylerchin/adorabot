@@ -51,3 +51,30 @@ export function getMama2021Score() {
       });
       
 }
+
+export async function crossUsageMama(messageOrInteraction:any) {
+  messageOrInteraction.reply("Changes will keep being pushed out, join the adora support server via `a!invite` to get updates on MAMA chart command!");
+
+        await getMama2021Score()
+        .then(async (mamaResult:any) => {
+          var candidatesArrayDesc = mamaResult.candidates.map((eachCandidate) => {
+            return `\`#${eachCandidate.RANK_NUM}\`|\`${eachCandidate.CANDIDATE_VOTE_PERCENT}\`: ${eachCandidate.ARTIST_NAME_ENG}`
+          })
+
+          messageOrInteraction.reply({
+            embeds: [
+              {
+                thumbnail: "https://cdn.discordapp.com/emojis/913310844060856320",
+                author: {
+                  "name": "Mama 2021 Voting Award Real Time Ranking"
+                },
+                title: `Total Votes: ${mamaResult.totalVotes.toLocaleString('en-US')}`,
+                description: `${candidatesArrayDesc.join("\n")}`
+              }
+            ]
+          })
+        })
+        .catch(error => {
+          console.error(error)
+        })
+}

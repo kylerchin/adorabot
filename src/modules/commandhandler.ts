@@ -7,7 +7,7 @@ import { editProfile, fetchProfile } from "./userProfile";
 import { banGuildMember, isAuthorizedAdmin } from "./moderation";
 import { geniusLyrics } from "./genius"
 import { billboardCharts } from "./billboard"
-import { getMama2021Score } from './get2021mamavoteinfo'
+import { getMama2021Score, crossUsageMama } from './get2021mamavoteinfo'
 import { processAllModerationCommands, howManyUsersInBanDatabase } from "./moderation"
 import { updateDiscordBotsGG, updateDatadogCount } from "./uploadStatsToBotsGg"
 import {youtubeChannelStats, youtubeVideoStats} from "./youtube"
@@ -447,30 +447,7 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
       }
 
       if (command==="mama" || command==="snake" || command===":snake:") {
-        msg.reply("Changes will keep being pushed out, join the adora support server via `a!invite` to get updates on MAMA chart command!");
-
-        await getMama2021Score()
-        .then(async (mamaResult:any) => {
-          var candidatesArrayDesc = mamaResult.candidates.map((eachCandidate) => {
-            return `\`#${eachCandidate.RANK_NUM}\`|\`${eachCandidate.CANDIDATE_VOTE_PERCENT}\`: ${eachCandidate.ARTIST_NAME_ENG}`
-          })
-
-          msg.reply({
-            embeds: [
-              {
-                thumbnail: "https://cdn.discordapp.com/emojis/913310844060856320",
-                author: {
-                  "name": "Mama 2021 Voting Award Real Time Ranking"
-                },
-                title: `Total Votes: ${mamaResult.totalVotes.toLocaleString('en-US')}`,
-                description: `${candidatesArrayDesc.join("\n")}`
-              }
-            ]
-          })
-        })
-        .catch(error => {
-          console.error(error)
-        })
+        crossUsageMama(msg)
       }
 
       if (command === "banfromguild") {
