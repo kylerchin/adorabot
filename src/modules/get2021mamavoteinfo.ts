@@ -82,7 +82,7 @@ export async function crossUsageMamaPre(messageOrInteraction:any) {
 }
 
 export async function crossUsageMamaFinals(messageOrInteraction:any) {
-  messageOrInteraction.reply("Changes will keep being pushed out, join the adora support server via `a!invite` to get updates on MAMA chart command!");
+ // messageOrInteraction.reply("Changes will keep being pushed out, join the adora support server via `a!invite` to get updates on MAMA chart command!");
 
   var config:any = {
     method: 'get',
@@ -109,7 +109,7 @@ export async function crossUsageMamaFinals(messageOrInteraction:any) {
             "name": "Mama 2021 Voting Award Real Time Ranking"
           },
           title: `Total Votes: ${mamaresp.data.sectionVoteSum.toLocaleString('en-US')}`,
-          description: `${descriptionToSendArray.join("\n")}`
+          description: `${descriptionToSendArray.join("\n")}\nChanges will keep being pushed out, join the adora support server via \`a!invite\` to get updates on MAMA chart command!`
         }
       ]
     })
