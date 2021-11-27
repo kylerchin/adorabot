@@ -1,5 +1,10 @@
 import axios from 'axios'
 
+export function exportDateCoolKid() {
+  var dateRounded = Math.round(Date.now()/1000)
+  return `<t:${dateRounded}:F> <t:${dateRounded}:R>`
+}
+
 export function getMama2021ScorePre() {
    return new Promise(async (resolve, reject) => {
     var config:any = {
@@ -119,7 +124,7 @@ export async function crossUsageMamaFinals(messageOrInteraction:any) {
             "name": "Mama 2021 Voting Award Real Time Ranking"
           },
           title: `Total Votes: ${mamaresp.data.sectionVoteSum.toLocaleString('en-US')}`,
-          description: `${descriptionToSendArray.join("\n")}\nChanges will keep being pushed out, join the adora support server via \`a!invite\` to get updates on MAMA chart command!`
+          description: `${descriptionToSendArray.join("\n")}\nChanges will keep being pushed out, join the adora support server via \`a!invite\` to get updates on MAMA chart command!\n${DateCoolKid()}`
         }
       ]
     })
