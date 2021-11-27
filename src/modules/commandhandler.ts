@@ -450,7 +450,7 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         crossUsageMamaPre(msg)
       }
 
-      if (command === "mama" || command ==="snake" || command="🐍") {
+      if (command === "mama" || command ==="snake" || command==="🐍") {
         crossUsageMamaFinals(msg)
       }
 
