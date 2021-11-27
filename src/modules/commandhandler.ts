@@ -458,6 +458,10 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
           msg.reply({
             embeds: [
               {
+                thumbnail: "https://cdn.discordapp.com/emojis/913310844060856320",
+                author: {
+                  "name": "Mama 2021 Voting Award Real Time Ranking"
+                },
                 title: `Total Votes: ${mamaResult.totalVotes.toLocaleString('en-US')}`,
                 description: `${candidatesArrayDesc.join("\n")}`
               }
