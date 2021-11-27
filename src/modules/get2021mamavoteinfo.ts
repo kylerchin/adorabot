@@ -22,7 +22,7 @@ export function getMama2021Score() {
     var arrayOfMatchingCan = webpage.match(/var candidates = \[([^\]])*\]/g)
 
     if (arrayOfMatchingCan) {
-      var isolatedString:any = arrayOfMatchingCan[0].replace(/var candidates = /g,"").replace(/\n/g,"").replace(/(?<=[^\\])'/g,'"')
+      var isolatedString:any = arrayOfMatchingCan[0].replace(/var candidates = /g,"").replace(/\n/g,"").replace(/(?<=[^\\])'/g,'"').replace(/\\\'/g,'\\\\\'')
 
       console.log('isolatedString', isolatedString)
 
