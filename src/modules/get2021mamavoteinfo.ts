@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export function DateCoolKid() {
-  var dateRounded = Math.round(Date.now()/1000)
+  var dateRounded = Math.floor(Date.now()/1000)
   return `<t:${dateRounded}:F> <t:${dateRounded}:R>`
 }
 
