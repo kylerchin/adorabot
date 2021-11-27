@@ -129,7 +129,7 @@ async function getBitmaps(buffers) {
 //~ Get buffers from an array of URLs...
 async function getBuffers(urls) {
     return await Promise.all(
-        urls.map(url => request({ encoding: null, uri: url }))
+        urls.map(url => request({ encoding: null, uri: url }).catch())
     );
 }
 
