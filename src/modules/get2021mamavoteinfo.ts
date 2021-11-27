@@ -134,8 +134,5 @@ export async function crossUsageMamaFinals(messageOrInteraction:any) {
 
 export async function mamaAwards2021Interaction(interaction:any) {
   // Defer the reply to this interaction
-interaction.deferReply()
-.then(console.log)
-.catch(console.error)
-  crossUsageMamaFinals(interaction)
+crossUsageMamaFinals(interaction)
 }
