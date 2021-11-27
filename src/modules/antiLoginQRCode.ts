@@ -47,7 +47,8 @@ async function checkMessage({ attachments, author, embeds }) {
 
     const urls = getURLs({ attachments, embeds });
     const buffers = await getBuffers(urls)
-    const bitmaps = await getBitmaps(buffers)
+    const buffersCleaned = buffers.filter(x => x !== null)
+    const bitmaps = await getBitmaps(buffersCleaned)
 
     return checkBitmaps(bitmaps);
 
@@ -129,7 +130,7 @@ async function getBitmaps(buffers) {
 //~ Get buffers from an array of URLs...
 async function getBuffers(urls) {
     return await Promise.all(
-        urls.map(url => request({ encoding: null, uri: url }).catch())
+        urls.map(url => request({ encoding: null, uri: url }).catch(error => null))
     );
 }
 

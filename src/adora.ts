@@ -183,7 +183,7 @@ client.on('guildDelete', async guild => {
 })
 
 client.on('messageUpdate', async (oldMessage, newMessage) => {
-  await onMessageUpdateForQR(oldMessage, newMessage)
+  //await onMessageUpdateForQR(oldMessage, newMessage)
   processmalwarediscordmessage(newMessage)
 })
 
@@ -220,7 +220,7 @@ client.on('messageCreate', async (message:Message) => {
       //const traceId = logTrace.dd.trace_id;
      await Promise.allSettled[
         commandHandler(message,client,config,dogstatsd,startupTime), 
-        onMessageForQR(message), 
+      //  onMessageForQR(message), 
         processmalwarediscordmessage(message),
         updateDatadogCountRateLimited(client,config),
         dogstatsd.increment('adorabot.client.message')]
