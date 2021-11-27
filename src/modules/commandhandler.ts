@@ -450,7 +450,7 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         msg.reply("Mama command coming in the next few hours! Join the adora support server via `a!invite` to learn more!");
 
         await getMama2021Score()
-        .then(mamaResult => {
+        .then(async (mamaResult:any) => {
           msg.reply({
             embeds: [
               {

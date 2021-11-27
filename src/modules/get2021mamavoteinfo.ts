@@ -30,7 +30,7 @@ export function getMama2021Score() {
 
       console.log(candidatesJson)
 
-      var totalVotes = parseInt(webpage.match(/\$\("#totalVote"\).text\("[\d||,]*\"\)/g).replace(/\$\("#totalVote"\).text\("/g,"").replace(/"\)/g,"").replace(/,/g,""),10)
+      var totalVotes = parseInt(webpage.match(/\$\("#totalVote"\).text\("[\d||,]*\"\)/g)[0].replace(/\$\("#totalVote"\).text\("/g,"").replace(/"\)/g,"").replace(/,/g,""),10)
     
       var objectReturn = {
         candidates: candidatesJson,
