@@ -7,7 +7,7 @@ import { editProfile, fetchProfile } from "./userProfile";
 import { banGuildMember, isAuthorizedAdmin } from "./moderation";
 import { geniusLyrics } from "./genius"
 import { billboardCharts } from "./billboard"
-import { getMama2021Score, crossUsageMama } from './get2021mamavoteinfo'
+import { crossUsageMamaPre, crossUsageMamaFinals } from './get2021mamavoteinfo'
 import { processAllModerationCommands, howManyUsersInBanDatabase } from "./moderation"
 import { updateDiscordBotsGG, updateDatadogCount } from "./uploadStatsToBotsGg"
 import {youtubeChannelStats, youtubeVideoStats} from "./youtube"
@@ -446,8 +446,12 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         turnOnAdorabanInGuild(msg,args[0],client)
       }
 
-      if (command==="mama" || command==="snake" || command===":snake:") {
-        crossUsageMama(msg)
+      if (command==="mamapre") {
+        crossUsageMamaPre(msg)
+      }
+
+      if (command === "mama") {
+        crossUsageMamaFinals(msg)
       }
 
       if (command === "banfromguild") {

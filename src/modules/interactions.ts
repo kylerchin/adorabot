@@ -3,7 +3,7 @@ import { ytparty } from './discordTogether';
 import { geniusLyricsFromInteraction } from './genius';
 import { logger,tracer,span } from './logger'
 import { ping, pingInteraction } from './ping'
-import {crossUsageMama} from './get2021mamavoteinfo'
+import {mamaAwards2021Interaction} from './get2021mamavoteinfo'
 
 interface processInteractionType {
   interaction: any;
@@ -25,7 +25,7 @@ switch (expr) {
     //await geniusLyricsFromInteraction(interaction)
     await ytparty({message: interaction, client: args.interaction.client})
   case 'mama': 
-    await crossUsageMama(interaction)
+    await mamaAwards2021Interaction(interaction) 
     break;
   default:
    // console.log(`Sorry, we are out of ${expr}.`);

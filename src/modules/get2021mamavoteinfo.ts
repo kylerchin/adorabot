@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export function getMama2021Score() {
+export function getMama2021ScorePre() {
    return new Promise(async (resolve, reject) => {
     var config:any = {
         method: 'get',
@@ -52,10 +52,10 @@ export function getMama2021Score() {
       
 }
 
-export async function crossUsageMama(messageOrInteraction:any) {
+export async function crossUsageMamaPre(messageOrInteraction:any) {
   messageOrInteraction.reply("Changes will keep being pushed out, join the adora support server via `a!invite` to get updates on MAMA chart command!");
 
-        await getMama2021Score()
+        await getMama2021ScorePre()
         .then(async (mamaResult:any) => {
           var candidatesArrayDesc = mamaResult.candidates.map((eachCandidate) => {
             return `\`#${eachCandidate.RANK_NUM}\`|\`${eachCandidate.CANDIDATE_VOTE_PERCENT}\`: ${eachCandidate.ARTIST_NAME_ENG}`
@@ -66,7 +66,7 @@ export async function crossUsageMama(messageOrInteraction:any) {
               {
                 thumbnail: "https://cdn.discordapp.com/emojis/913310844060856320",
                 author: {
-                  "name": "Mama 2021 Voting Award Real Time Ranking"
+                  "name": "Mama 2021 Pre-Voting Award Real Time Ranking"
                 },
                 title: `Total Votes: ${mamaResult.totalVotes.toLocaleString('en-US')}`,
                 description: `${candidatesArrayDesc.join("\n")}`
@@ -77,4 +77,42 @@ export async function crossUsageMama(messageOrInteraction:any) {
         .catch(error => {
           console.error(error)
         })
+}
+
+export async function crossUsageMamaFinals(messageOrInteraction:any) {
+  messageOrInteraction.reply("Changes will keep being pushed out, join the adora support server via `a!invite` to get updates on MAMA chart command!");
+
+  var config:any = {
+    method: 'get',
+    url: 'https://mama.mwave.me/en/api/rankingDetailData.json?sectionID=3',
+    headers: { 
+      'Cookie': 'org.springframework.mobile.device.site.CookieSitePreferenceRepository.SITE_PREFERENCE=NORMAL; JSESSIONID=5445A4CAD399008D9AE8BEEA8CAA8270; SCOUTER=x3qrab1aj39ikj'
+    }
+  };
+
+  axios(config)
+  .then(async(mamaresp) => {
+    var descriptionToSendArray = mamaresp.data.rankList.map(eachItem => {
+      return `#${eachItem.RANK_NUM}|\`${eachItem.CANDIDATE_VOTE_PERCENT}% ${eachItem.CANDIDATE_VOTE_SUM}\` ${eachItem.CANDIDATE_NAME_ENG}`
+    })
+
+    
+    messageOrInteraction.reply({
+      embeds: [
+        {
+          thumbnail: "https://cdn.discordapp.com/emojis/913310844060856320",
+          author: {
+            "name": "Mama 2021 Voting Award Real Time Ranking"
+          },
+          title: `Total Votes: ${mamaresp.data.sectionVoteSum.toLocaleString('en-US')}`,
+          description: `${descriptionToSendArray.join("\n")}`
+        }
+      ]
+    })
+  })
+  .catch()
+}
+
+export async function mamaAwards2021Interaction(interaction:any) {
+  crossUsageMamaFinals(interaction)
 }
