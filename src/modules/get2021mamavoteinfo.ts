@@ -29,6 +29,15 @@ export function getMama2021Score() {
       var candidatesJson = JSON.parse(isolatedString)
 
       console.log(candidatesJson)
+
+      var totalVotes = parseInt(webpage.match(/\$\("#totalVote"\).text\("[\d||,]*\"\)/g).replace(/\$\("#totalVote"\).text\("/g,"").replace(/"\)/g,"").replace(/,/g,""),10)
+    
+      var objectReturn = {
+        candidates: candidatesJson,
+        totalVotes: totalVotes
+      }
+
+      resolve(objectReturn)
     }
  else {
    reject("nothing found")
