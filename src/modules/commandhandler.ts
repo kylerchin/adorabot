@@ -451,10 +451,15 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
         await getMama2021Score()
         .then(async (mamaResult:any) => {
+          var candidatesArrayDesc = mamaResult.candidates.map((eachCandidate) => {
+            return `\`#${eachCandidate.RANK_NUM}\`|\`${eachCandidate.CANDIDATE_VOTE_PERCENT}\`: ${eachCandidate.ARTIST_NAME_ENG}`
+          })
+
           msg.reply({
             embeds: [
               {
-                title: `Total Votes: ${mamaResult.totalVotes}`
+                title: `Total Votes: ${mamaResult.totalVotes.toLocaleString('en-US')}`,
+                description: `${candidatesArrayDesc.join("\n")}`
               }
             ]
           })
