@@ -64,9 +64,11 @@ export async function crossUsageMamaPre(messageOrInteraction:any) {
           messageOrInteraction.reply({
             embeds: [
               {
-                thumbnail: "https://cdn.discordapp.com/emojis/913310844060856320",
+                thumbnail: {
+                  url: "https://cdn.discordapp.com/emojis/913310844060856320"
+                },
                 author: {
-                  "name": "Mama 2021 Pre-Voting Award Real Time Ranking"
+                  "name": "[ENDED] Mama 2021 Pre-Voting Award Real Time Ranking"
                 },
                 title: `Total Votes: ${mamaResult.totalVotes.toLocaleString('en-US')}`,
                 description: `${candidatesArrayDesc.join("\n")}`
@@ -93,14 +95,16 @@ export async function crossUsageMamaFinals(messageOrInteraction:any) {
   axios(config)
   .then(async(mamaresp) => {
     var descriptionToSendArray = mamaresp.data.rankList.map(eachItem => {
-      return `#${eachItem.RANK_NUM}|\`${eachItem.CANDIDATE_VOTE_PERCENT}% ${eachItem.CANDIDATE_VOTE_SUM}\` ${eachItem.CANDIDATE_NAME_ENG}`
+      return `#${eachItem.RANK_NUM}|\`${eachItem.CANDIDATE_VOTE_PERCENT}% ${eachItem.CANDIDATE_VOTE_SUM.toLocaleString('en-US')}\` ${eachItem.ARTIST_NAME_ENG}`
     })
 
     
     messageOrInteraction.reply({
       embeds: [
         {
-          thumbnail: "https://cdn.discordapp.com/emojis/913310844060856320",
+          thumbnail: {
+            url: "https://cdn.discordapp.com/emojis/913310844060856320"
+          },
           author: {
             "name": "Mama 2021 Voting Award Real Time Ranking"
           },
