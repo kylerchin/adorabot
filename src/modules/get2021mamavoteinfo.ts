@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export function exportDateCoolKid() {
+export function DateCoolKid() {
   var dateRounded = Math.round(Date.now()/1000)
   return `<t:${dateRounded}:F> <t:${dateRounded}:R>`
 }
