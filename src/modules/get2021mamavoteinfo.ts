@@ -95,7 +95,17 @@ export async function crossUsageMamaFinals(messageOrInteraction:any) {
   axios(config)
   .then(async(mamaresp) => {
     var descriptionToSendArray = mamaresp.data.rankList.map(eachItem => {
-      return `#${eachItem.RANK_NUM}|\`${eachItem.CANDIDATE_VOTE_PERCENT}% ${eachItem.CANDIDATE_VOTE_SUM.toLocaleString('en-US')}\` ${eachItem.ARTIST_NAME_ENG}`
+      var medal = ""
+      if (eachItem.RANK_NUM === 1) {
+        medal = ":first_place:"
+      } 
+      if (eachItem.RANK_NUM === 2) {
+        medal = ":second_place:"
+      } 
+      if (eachItem.RANK_NUM === 3) {
+        medal = ":third_place:"
+      } 
+      return `#${eachItem.RANK_NUM}|\`${eachItem.CANDIDATE_VOTE_PERCENT}% ${eachItem.CANDIDATE_VOTE_SUM.toLocaleString('en-US')}\` ${eachItem.ARTIST_NAME_ENG} ${medal}`
     })
 
     
