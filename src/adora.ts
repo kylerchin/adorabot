@@ -99,10 +99,14 @@ async function moderationCassandra() {
 }
 
 client.on("debug",async (info) => {
+try {
   const logDebug = await logger.discordDebugLoggerNoConsole.debug({clientEvent: "debug", debugInfo: info, type: "clientdebug"});
   console.log(info)
   tracer.inject(span,'log',logDebug)
   //console.log(info)
+} catch (hell) {
+  console.error(hell)
+}
 })
 client.on("warn",async (info) => {
   const logWarn = await logger.discordWarnLogger.warn({clientEvent: "warn", warnInfo: info, type: "clientWarn"});
@@ -118,19 +122,25 @@ client.on('guildMemberAdd', async (member) => {
 })
 
 client.on('ready',async () => {
-  console.log(`Logged in as ${client.user.tag}!`)
-  await logger.discordInfoLogger.info(`Logged in as ${client.user.tag}!`, { type: 'clientReady'});
-  const howManyUsersFam = `Bot has started, with ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`
-  await logger.discordInfoLogger.info(howManyUsersFam, {type: 'clientReady'});
-    
-  //set the presence, create moderation databases and then check all servers for ban updates, and then upload guild count
-    await Promise.allSettled([
-      listChartsDownload(),
-      setPresenceForAdora(),
-      createDatabase(),
-      moderationCassandra(),
-      updateDiscordBotsGG(client,config)
-    ])
+  try {
+    console.log(`Logged in as ${client.user.tag}!`)
+    await logger.discordInfoLogger.info(`Logged in as ${client.user.tag}!`, { type: 'clientReady'});
+    const howManyUsersFam = `Bot has started, with ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`
+    await logger.discordInfoLogger.info(howManyUsersFam, {type: 'clientReady'});
+      
+    //set the presence, create moderation databases and then check all servers for ban updates, and then upload guild count
+      await Promise.allSettled([
+        listChartsDownload(),
+        setPresenceForAdora(),
+        createDatabase(),
+        moderationCassandra(),
+        updateDiscordBotsGG(client,config)
+      ])
+  }
+  catch (errorStart) {
+    console.log(errorStart)
+  }
+
 });
 
 client.on('interactionCreate', async interaction => {
@@ -142,6 +152,7 @@ client.on('interactionCreate', async interaction => {
 });
 
 client.on('rateLimit', async rateLimitInfo => {
+try { 
   if (rateLimitInfo.route) {
     if (rateLimitInfo.method === 'put') {
       const foundRateLimitAddBan = rateLimitInfo.route.match(regexBanRoute);
@@ -162,6 +173,9 @@ client.on('rateLimit', async rateLimitInfo => {
   await logger.discordInfoLogger.warn({ clientEvent: 'rateLimit', rateLimitInfo: rateLimitInfo, type: 'rateLimit' })
   console.log(rateLimitInfo)
  // console.log(`Rate Limited! for ${rateLimitInfo.timeout} ms because only ${rateLimitInfo.limit} can be used on this endpoint at ${rateLimitInfo.path}`)
+} catch (ratelimiterr) {
+  console.error(ratelimiterr)
+}
 })
 
 client.on('guildCreate', async guild => {
