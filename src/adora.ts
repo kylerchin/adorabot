@@ -27,8 +27,8 @@ var client = new Discord.Client(
       "DIRECT_MESSAGES",
       "DIRECT_MESSAGE_REACTIONS",
       "DIRECT_MESSAGE_TYPING"
-    ]
-   // waitGuildTimeout: 1000
+    ],
+   waitGuildTimeout: 1000
   });
   client.discordTogether = new DiscordTogether(client);
 const { config } = require('./../config.json');
