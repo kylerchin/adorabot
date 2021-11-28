@@ -2754,19 +2754,6 @@
     "node-fetch" "^2.6.1"
     "ws" "^7.5.1"
 
-"discord.js@github:kylerchin/discord.js":
-  "resolved" "git+ssh://git@github.com/kylerchin/discord.js.git#0373bbaf607ef68317e19118a76e838bbdae0679"
-  "version" "13.2.0-dev"
-  dependencies:
-    "@discordjs/builders" "^0.5.0"
-    "@discordjs/collection" "^0.2.1"
-    "@discordjs/form-data" "^3.0.1"
-    "@sapphire/async-queue" "^1.1.4"
-    "@types/ws" "^7.4.7"
-    "discord-api-types" "^0.22.0"
-    "node-fetch" "^2.6.1"
-    "ws" "^7.5.1"
-
 "doctrine@^2.1.0":
   "integrity" "sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw=="
   "resolved" "https://registry.npmjs.org/doctrine/-/doctrine-2.1.0.tgz"
