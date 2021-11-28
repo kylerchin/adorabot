@@ -894,7 +894,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
     var currentShardServerIDArray = []
 
     await client.guilds.cache.forEach(guild => {
-        console.log(`${guild.name} | ${guild.id}`);
+      //  console.log(`${guild.name} | ${guild.id}`);
         if (guild.available) {
             //ensure adora has these permissions
             console.log('guild avaliable')
