@@ -31,6 +31,7 @@
   "dependencies": {
     "@discordjs/rest": "*",
     "@discordjs/voice": "^0.5.3",
+    "discord.js":  "github:discordjs/discord.js",
     "@google-cloud/translate": "^6.0.5",
     "@shelf/winston-datadog-logs-transport": "^2.0.1",
     "@top-gg/sdk": "^3.1.1",
