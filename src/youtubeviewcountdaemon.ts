@@ -146,6 +146,9 @@ export async function fetchStatsForAll() {
                             if (!err) {
                                 
                             const timeOfRequest = new Date();
+
+                            if (body.items) {
+                                
                             const videostats = body.items[0].statistics;
 
                             await  addStatsToYtVideo({
@@ -155,6 +158,7 @@ export async function fetchStatsForAll() {
                                 dislikes: videostats.likeCount,
                                 comments: videostats.commentCount
                             })
+                            }
                             }
 
                         })
