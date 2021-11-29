@@ -122,7 +122,7 @@ export async function fetchStatsForAll() {
         .then((result) => { 
             console.log('recieved all tracked yt videos')
             result.rows.forEach(async (row) => {
-               // console.log(row)
+                console.log(row)
                 // process row
                 // logger.discordInfoLogger.info(row.videoid + ' in the database')
               //  console.log('get video try')
