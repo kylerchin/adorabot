@@ -3,11 +3,13 @@ import {logger} from './modules/logger'
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const editJsonFile = require("edit-json-file");
 import { Client } from "youtubei";
+const requestjson = require('request-json');
 
 const youtube = new Client();
 
 const axios = require('axios');
 var importconfigfile = editJsonFile(`${__dirname}/../removedytvids.json`);
+var authconfigfile = editJsonFile(`${__dirname}/../config.json`);
 const Long = require('cassandra-driver').types.Long;
 
 export async function createDatabases() {
@@ -112,6 +114,7 @@ export async function addStatsToYtVideo(statParams: statInterface) {
 export async function fetchStatsForAll() {
 
     var loadedRemovedData = importconfigfile.get()
+    var loadedAuthData = authconfigfile.get()
 
     var queryFetchAllTrackedIds = "SELECT * FROM adorastats.trackedytvideosids"
 
@@ -126,6 +129,32 @@ export async function fetchStatsForAll() {
 
                 if (loadedRemovedData.removedvids.indexOf(row.videoid) == -1) {
 
+                    if (loadedAuthData.config.youtubeApiKeysDaemon) {
+
+                        var apikeysdaemonarray = loadedAuthData.config.youtubeApiKeysDaemon
+
+                        var theRandomApiKey =  apikeysdaemonarray[Math.floor(Math.random()*apikeysdaemonarray.length)];
+
+                        const pathForYtRequest = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet,statistics,status,liveStreamingDetails&id=" + row.videoid + "&key=" + theRandomApiKey
+
+                        var youtubeclient = requestjson.createClient('https://youtube.googleapis.com/');
+
+                        youtubeclient.get(pathForYtRequest, async function(err, res, body) {
+
+                            const timeOfRequest = new Date();
+                            const videostats = body.items[0].statistics;
+
+                            await  addStatsToYtVideo({
+                                videoid: row.videoid,
+                                views: videostats.viewCount,
+                                likes: videostats.likeCount,
+                                dislikes: videostats.likeCount,
+                                comments: videostats.commentCount
+                            })
+                        }).catch((error) => {
+                            console.error(error)
+                        });
+                    }
 
                     var fullUrlOfVideo = `https://www.youtube.com/watch?v=${row.videoid}`
 
