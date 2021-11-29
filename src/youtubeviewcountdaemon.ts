@@ -141,6 +141,8 @@ export async function fetchStatsForAll() {
 
                         youtubeclient.get(pathForYtRequest, async function(err, res, body) {
 
+                            console.log(body)
+
                             if (!err) {
                                 
                             const timeOfRequest = new Date();
