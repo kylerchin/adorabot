@@ -148,16 +148,20 @@ export async function fetchStatsForAll() {
                             const timeOfRequest = new Date();
 
                             if (body.items) {
-                                
-                            const videostats = body.items[0].statistics;
 
-                            await  addStatsToYtVideo({
-                                videoid: body.items[0].id,
-                                views: videostats.viewCount,
-                                likes: videostats.likeCount,
-                                dislikes: videostats.likeCount,
-                                comments: videostats.commentCount
-                            })
+                                if (body.items.length > 0) {
+                                    const videostats = body.items[0].statistics;
+
+                                    await  addStatsToYtVideo({
+                                        videoid: body.items[0].id,
+                                        views: videostats.viewCount,
+                                        likes: videostats.likeCount,
+                                        dislikes: videostats.likeCount,
+                                        comments: videostats.commentCount
+                                    })
+                                }
+                                
+                          
                             }
                             }
 
