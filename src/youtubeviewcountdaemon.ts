@@ -163,45 +163,48 @@ export async function fetchStatsForAll() {
 
                     try {
 
-                   
-        let { data } = await axios.get(fullUrlOfVideo);
+                  
+                        if (false) {
+                            let { data } = await axios.get(fullUrlOfVideo);
 
-        //logger.discordInfoLogger.info(data, {type: 'youtubeHtmlRespond'})
-       // var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="[^"]">/g)[0],10)
-       var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="([^">]*)">/g)[0].replace(/<meta itemprop="interactionCount" content="/g,"").replace(/">/,""),10)
-
-       var likedisliketooltipMatches = data.match(/"tooltip":"(\d||,)+ \/ (\d||,)+"/g)
-
-       //delete the webpage since we dont need it anymore
-       data = null;
-
-       console.log('likeddisliketooltipmatches', likedisliketooltipMatches)
-
-       if (likedisliketooltipMatches && (likedisliketooltipMatches !== null)) {
-        var likedisliketooltip = likedisliketooltipMatches[0].replace(/"tooltip": ?"/g,"").replace(/"/g,"")
-
-        var likeanddislikearray = likedisliketooltip.split("/");
- 
-        console.log('splittedArray', likeanddislikearray)
- 
-        console.log("likeCountAttempt",likeanddislikearray[0])
-        var likeCount = parseInt(likeanddislikearray[0].trim().replace(/,/g,""),10)
- 
-        var dislikeCount = parseInt(likeanddislikearray[1].trim().replace(/,/g,""),10)
- 
-         console.log(viewCount)
-         console.log("likeCount",likeCount)
-         console.log("dislikeCount",dislikeCount)
-                     await  addStatsToYtVideo({
-                         videoid: row.videoid,
-                         views: viewCount,
-                         likes: likeCount,
-                         dislikes: dislikeCount,
-                         comments: undefined
-                     })
-       }
-
-     
+                            //logger.discordInfoLogger.info(data, {type: 'youtubeHtmlRespond'})
+                           // var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="[^"]">/g)[0],10)
+                           var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="([^">]*)">/g)[0].replace(/<meta itemprop="interactionCount" content="/g,"").replace(/">/,""),10)
+                    
+                           var likedisliketooltipMatches = data.match(/"tooltip":"(\d||,)+ \/ (\d||,)+"/g)
+                    
+                           //delete the webpage since we dont need it anymore
+                           data = null;
+                    
+                           console.log('likeddisliketooltipmatches', likedisliketooltipMatches)
+                    
+                           if (likedisliketooltipMatches && (likedisliketooltipMatches !== null)) {
+                            var likedisliketooltip = likedisliketooltipMatches[0].replace(/"tooltip": ?"/g,"").replace(/"/g,"")
+                    
+                            var likeanddislikearray = likedisliketooltip.split("/");
+                     
+                            console.log('splittedArray', likeanddislikearray)
+                     
+                            console.log("likeCountAttempt",likeanddislikearray[0])
+                            var likeCount = parseInt(likeanddislikearray[0].trim().replace(/,/g,""),10)
+                     
+                            var dislikeCount = parseInt(likeanddislikearray[1].trim().replace(/,/g,""),10)
+                     
+                             console.log(viewCount)
+                             console.log("likeCount",likeCount)
+                             console.log("dislikeCount",dislikeCount)
+                                         await  addStatsToYtVideo({
+                                             videoid: row.videoid,
+                                             views: viewCount,
+                                             likes: likeCount,
+                                             dislikes: dislikeCount,
+                                             comments: undefined
+                                         })
+                           }
+                    
+                         
+                        }
+       
                    
                 } catch (erroraxios) {
                     console.log(erroraxios)
