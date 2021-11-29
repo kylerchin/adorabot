@@ -147,7 +147,7 @@ export async function fetchStatsForAll() {
                             const videostats = body.items[0].statistics;
 
                             await  addStatsToYtVideo({
-                                videoid: row.videoid,
+                                videoid: body.items[0].id,
                                 views: videostats.viewCount,
                                 likes: videostats.likeCount,
                                 dislikes: videostats.likeCount,
