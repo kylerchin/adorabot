@@ -141,6 +141,8 @@ export async function fetchStatsForAll() {
 
                         youtubeclient.get(pathForYtRequest, async function(err, res, body) {
 
+                            if (!err) {
+                                
                             const timeOfRequest = new Date();
                             const videostats = body.items[0].statistics;
 
@@ -151,9 +153,9 @@ export async function fetchStatsForAll() {
                                 dislikes: videostats.likeCount,
                                 comments: videostats.commentCount
                             })
-                        }).catch((error) => {
-                            console.error(error)
-                        });
+                            }
+
+                        })
                     }
 
                     var fullUrlOfVideo = `https://www.youtube.com/watch?v=${row.videoid}`
