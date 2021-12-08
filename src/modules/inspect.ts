@@ -29,7 +29,7 @@ export function inspect(args:inspectFunction) {
             var embed:any = {}
             var discordUser:any = {};
 
-            embed.description = `Inspection of \`${individualUserId}\` completed.`
+            embed.description = ``
             _.set(embed, 'author.name', individualUserId)
             _.set(embed, 'fields[0].name',"Adora Global Banlist")
 
@@ -113,6 +113,7 @@ export function inspect(args:inspectFunction) {
                 console.log(flagsArray)
 
                 _.set(embed, 'fields[2].name',"Flags")
+                _.set(embed, 'fields[2].inline',true)
                 if(flagsArray.length === 0) {
                     _.set(embed, 'fields[2].value', "No flags set.")
                 } else {
@@ -120,13 +121,7 @@ export function inspect(args:inspectFunction) {
                 }
 
                 _.set(embed, 'fields[3].name', "Bot")
-                if (discordUser.user.bot) {
-                    _.set(embed, 'fields[3].value', "TRUE")
-                } else {
-                    _.set(embed, 'fields[3].value', "FALSE")
-                }
-
-                _.set(embed, 'fields[3].name', "Bot")
+                _.set(embed, 'fields[3].inline',true)
                 if (discordUser.user.bot) {
                     _.set(embed, 'fields[3].value', "TRUE")
                 } else {
@@ -134,6 +129,7 @@ export function inspect(args:inspectFunction) {
                 }
 
                 _.set(embed, 'fields[4].name', "Official Discord System user")
+                _.set(embed, 'fields[4].inline',true)
                 if (discordUser.user.systen) {
                     _.set(embed, 'fields[4].value', "TRUE")
                 } else {
