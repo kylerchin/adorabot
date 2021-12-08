@@ -136,12 +136,13 @@ export function inspect(args:inspectFunction) {
                     _.set(embed, 'fields[4].value', "FALSE")
                 }
                 
-            }
+            } 
 
             if (discordUser.error) {
                 console.log(discordUser.error)
                 if (discordUser.error.code === 10013) {
                     _.set(embed, 'title', "Unknown user")
+                    embed.description = "Unknown user"
                 }
             }
 
