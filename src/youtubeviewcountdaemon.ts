@@ -151,14 +151,16 @@ export async function fetchStatsForAll() {
 
                                 if (body.items.length > 0) {
                                     const videostats = body.items[0].statistics;
-
-                                    await  addStatsToYtVideo({
-                                        videoid: body.items[0].id,
-                                        views: videostats.viewCount,
-                                        likes: videostats.likeCount,
-                                        dislikes: videostats.likeCount,
-                                        comments: videostats.commentCount
-                                    })
+                                    
+                                    if (videostats.viewCount) {
+                                        await  addStatsToYtVideo({
+                                            videoid: body.items[0].id,
+                                            views: videostats.viewCount,
+                                            likes: videostats.likeCount,
+                                            dislikes: videostats.likeCount,
+                                            comments: videostats.commentCount
+                                        })
+                                    }
                                 }
                                 
                           

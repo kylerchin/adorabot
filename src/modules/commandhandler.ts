@@ -152,7 +152,7 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
         var lookuphowmanyphishinglinks = "SELECT COUNT(*) FROM adoramoderation.badlinks;"
         var lookuphowmanyytvidstracked = "SELECT COUNT(*) FROM adorastats.trackedytvideosids;"
-        var lookuphowmanyytvidsstats = "SELECT COUNT(*) FROM adorastats.ytvideostats;"
+        var lookuphowmanyytvidsstats = "SELECT * FROM adorastats.statpoints;"
         //return numberofrowsindatabase;
 
         const promises = [
@@ -167,6 +167,8 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
         return Promise.all(promises)
           .then(results => {
+            console.log(results[6])
+
             const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
             const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
             var returnSubscribedServersCount = results[2];
@@ -175,7 +177,7 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
             var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
             var numberofrowsphishing = results[4].rows[0].count.low
             var numberofrowsytvids = results[5].rows[0].count.low
-            var numberofrowsytstats = results[6].rows[0].count.low
+            var numberofrowsytstats = results[6].rows[0].amount
             var bob = `Bot Statistics`
             return msg.channel.send({embeds: [{description: bob,"fields": [
               {
@@ -226,7 +228,11 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
 
 
-      })}
+      }).catch((error) => {
+        console.error(error)
+      })
+    
+    }
 
       if (command === "bio" || command === "viewbio") {
         fetchProfile(client, msg, args, cassandraclient)
