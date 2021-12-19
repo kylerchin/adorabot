@@ -32,5 +32,10 @@ loadedAuthData.config.youtubeApiKeysDaemon.forEach(async (eachApiKey) => {
 
 
         console.log(`${success} | ${eachApiKey}`)
+
+        if (!success) {
+            console.log(err)
+            console.log(body)
+        }
     })
 })
