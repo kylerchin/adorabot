@@ -18,7 +18,7 @@ const axios = require('axios').default;
   
     // Class method which prints the 
     // user called in another file 
-export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) { 
+export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.CommandInteraction,apikey) { 
   tracer.trace('ytEmbedMaker', () => {
   try {
 
@@ -62,6 +62,11 @@ export async function sendYtCountsEmbed(id,message:Discord.Message,apikey) {
           var channelBody = promiseresults[0].data
           //console.log(channelBody)
           var imageChartBuffer = promiseresults[1]
+
+          logger.discordInfoLogger.info({
+            type: "ytchartreturn",
+            data: imageChartBuffer
+          })
 
 
           //console.dir(body)
