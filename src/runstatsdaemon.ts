@@ -1,5 +1,16 @@
 import {createDatabases, fetchStatsForAll} from './youtubeviewcountdaemon'
+const editJsonFile = require("edit-json-file");
 
+var authconfigfile = editJsonFile(`${__dirname}/../config.json`);
+var loadedAuthData = authconfigfile.get()
+
+var intervalForYt = 60 * 1000 * 10;
+
+if (loadedAuthData.config) {
+  if (loadedAuthData.config.youtubeInterval)  {
+    intervalForYt = loadedAuthData.config.youtubeInterval
+  }
+}
 console.log('init')
 
 createDatabases()
@@ -12,5 +23,5 @@ setInterval(function() {
       } catch (e) {
         
       }
-}, 60 * 1000 * 10);// your code goes here... // 60 * 1000 milsec
+}, intervalForYt);// your code goes here... // 60 * 1000 milsec
 //addVideoToTrackList("_EEo-iE5u_A")
