@@ -86,6 +86,8 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
          var imageChartAttachment = new Discord.MessageAttachment(imageChartBuffer, 'chart.png')
          // const attachmentChart = new MessageAttachment(imageChartBuffer, 'file.png')
 
+          console.log('imagechartattachment', imageChartAttachment)
+
           var urlForEmbed = "https://youtube.com/watch?v=" + body.items[0].id
   
             const embedYtStats:Discord.MessageEmbedOptions = 
