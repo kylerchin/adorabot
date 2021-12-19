@@ -65,7 +65,10 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
 
           logger.discordInfoLogger.info({
             type: "ytchartreturn",
-            data: imageChartBuffer
+            data: imageChartBuffer,
+            videoid: body.items[0].id,
+            title: `${body.items[0].snippet.title}`
+
           })
 
 
