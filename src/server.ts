@@ -84,6 +84,7 @@ app.all('/discordbotlist',async (req, res) => {
   var auth = req.get("authorization");
 
   console.log('auth',auth)
+  console.log('correct pass',  config.discordbotlist.auth)
 
   // On the first request, the "Authorization" header won't exist, so we'll set a Response
   // header that prompts the browser to ask for a username and password.
