@@ -4,7 +4,7 @@ import { sendYtCountsEmbed } from "./sendYtEmbed";
 import { logger } from "./logger";
 const getQueryParam = require('get-query-param')
 import * as youtubei from "youtubei";
-import {CommandInteraction} from "discord,js"
+import {CommandInteraction} from "discord.js"
 const youtube = new youtubei.Client();
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
