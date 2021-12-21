@@ -75,7 +75,7 @@ app.all('/', (req, res) => {
 app.all('/discordbotlist',async (req, res) => {
     res.setHeader('Content-Type', 'text/html');
   
-    console.log(req)
+ //   console.log(req)
 
     console.log(req.body)
 
@@ -83,21 +83,27 @@ app.all('/discordbotlist',async (req, res) => {
   // Grab the "Authorization" header.
   var auth = req.get("authorization");
 
+  console.log('auth',auth)
+
   // On the first request, the "Authorization" header won't exist, so we'll set a Response
   // header that prompts the browser to ask for a username and password.
   if (!auth) {
+    console.log('no auth header found')
     res.set("WWW-Authenticate", "Basic realm=\"Authorization Required\"");
     // If the user cancels the dialog, or enters the password wrong too many times,
     // show the Access Restricted error message.
     return res.status(401).send("Authorization Required");
   } else {
-      console.log(auth)
+   //   console.log(auth)
     if(auth === config.discordbotlist.auth) {
+
         console.log("authenticated")
 
     const reqjson = req.body;
     try {logger.discordInfoLogger.info(reqjson, {type: "discordbotlistvotewebhook"})} 
-    catch {}
+    catch (error) {
+      console.error(error)
+    }
     
 
     await addNewVote(reqjson.id,"discordbotlist")
@@ -106,6 +112,8 @@ app.all('/discordbotlist',async (req, res) => {
     res.write('OK');
   
     res.end();
+    } else {
+      console.log(" not authenticated")
     }
   }
 
