@@ -20,6 +20,8 @@ app.use(express.json());
 const https = require('https');
 const http = require('http');
 const webhook = new Topgg.Webhook(config.topgg.auth)
+console.log('topgg auth', config.topgg.auth)
+console.log(webhook)
 
 async function createDatabases() {
     await cassandraclient.execute("CREATE KEYSPACE IF NOT EXISTS adoravotes WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy',  'datacenter1': 1  };")
