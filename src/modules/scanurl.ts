@@ -1,6 +1,7 @@
 import {uniq} from './util'
 const { canonicalize, getPrefixes, suffixPostfixExpressions  } = require('webrisk-hash');
 import {logger} from './logger'
+import {Util} from 'discord.js'
 var forEach = require("for-each")
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const cassandra = require('cassandra-driver');
@@ -34,7 +35,11 @@ export async function processmalwarediscordmessage(message) {
         message.content.replace(/>/gm,'').replace(/\n/gm,''),
         message.content.replace(/\_\_/gm,''),
         message.content.replace(/\_/gm,''),
-        message.content.replace(/\$/gm,'')
+        message.content.replace(/\$/gm,''),
+       Util.escapeBold(message.content),
+       Util.escapeMarkdown(message.content),
+       Util.escapeInlineCode(message.content),
+       Util.escapeSpoiler(message.content)
         ]
 
         var arrayOfStartingUniq = _.uniq(arrayOfStarting)
