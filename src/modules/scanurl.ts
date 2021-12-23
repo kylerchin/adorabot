@@ -24,6 +24,8 @@ export async function processmalwarediscordmessage(message) {
 
         var arrayOfStarting = [message.content,
         message.content.replace(/\*/gm,''),
+        message.content.replace(/\*\*\*/gm,''),
+        message.content.replace(/\*\*/gm,''),
         message.content.replace(/\n/gm,''),
         message.content.replace(/\~/gm,''),
         message.content.replace(/\`/gm,''),
@@ -40,7 +42,7 @@ export async function processmalwarediscordmessage(message) {
         var arrayOfUrls = []
 
         arrayOfStartingUniq.forEach((eachString) => {
-            var arrayOfItemsToAdd = _.uniq(message.content.match(/(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?/gm));
+            var arrayOfItemsToAdd = _.uniq(eachString.match(/(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?/gm));
 
             arrayOfUrls = [...arrayOfUrls, ...arrayOfItemsToAdd]
         }) 
