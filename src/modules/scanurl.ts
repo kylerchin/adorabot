@@ -21,7 +21,30 @@ import * as _ from 'lodash'
 
 export async function processmalwarediscordmessage(message) {
     if (message.content) {
-        var arrayOfUrls = _.uniq(message.content.match(/(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?/gm))
+
+        var arrayOfStarting = [message.content,
+        message.content.replace(/\*/gm,''),
+        message.content.replace(/\n/gm,''),
+        message.content.replace(/\~/gm,''),
+        message.content.replace(/\`/gm,''),
+        message.content.replace(/\`/gm,'').replace(/\n/gm,''),
+        message.content.replace(/\`/gm,'').replace(/\n/gm,''),
+        message.content.replace(/>/gm,'').replace(/\n/gm,''),
+        message.content.replace(/\_\_/gm,''),
+        message.content.replace(/\_/gm,''),
+        message.content.replace(/\$/gm,'')
+        ]
+
+        var arrayOfStartingUniq = _.uniq(arrayOfStarting)
+
+        var arrayOfUrls = []
+
+        arrayOfStartingUniq.forEach((eachString) => {
+            var arrayOfItemsToAdd = _.uniq(message.content.match(/(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?/gm));
+
+            arrayOfUrls = [...arrayOfUrls, ...arrayOfItemsToAdd]
+        }) 
+
         // arrayOfUrls = uniq(arrayOfUrls)
         // console.log("arrayOfUrls", arrayOfUrls)
          //console.log("typeof arrayOfUrls", typeof arrayOfUrls)
@@ -33,9 +56,11 @@ export async function processmalwarediscordmessage(message) {
                  var isBadMessage:Boolean = false;
                  var hasBeenAlerted = false;
      
-                 var arrayOfSetsOfLinks = arrayOfUrls.map(link => suffixPostfixExpressions(canonicalize(link)))
+                 var arrayOfSetsOfLinksInit = arrayOfUrls.map(link => suffixPostfixExpressions(canonicalize(link)))
      
-                 arrayOfSetsOfLinks.forEach((eachSet) => {
+                
+
+                 arrayOfSetsOfLinksInit.forEach((eachSet) => {
                      eachSet.forEach((possibleLink) =>{
                          var queryLink = "SELECT * FROM adoramoderation.badlinks WHERE link = ?"
      
