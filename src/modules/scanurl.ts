@@ -47,6 +47,8 @@ export async function processmalwarediscordmessage(message) {
             arrayOfUrls = [...arrayOfUrls, ...arrayOfItemsToAdd]
         }) 
 
+        var arrayOfUrls = _.uniq(arrayOfUrls)
+
         // arrayOfUrls = uniq(arrayOfUrls)
         // console.log("arrayOfUrls", arrayOfUrls)
          //console.log("typeof arrayOfUrls", typeof arrayOfUrls)
