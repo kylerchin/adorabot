@@ -11,6 +11,14 @@ import { result } from 'lodash';
 import { ActionRowBuilder } from 'slash-commands';
 import * as _ from 'lodash'
 
+function urlDecodeSafe(path) {
+    try {
+      return decodeURIComponent(path);
+    } catch (e) {
+      return ''
+    }
+  }
+
   export async function createUrlDatabase() {
     //Goes inside adora moderation keyspace, makes the table "guildssubscribedtoautoban"
     await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.badlinks (link text PRIMARY KEY, type text, addedbyid text, addtime timeuuid);")
@@ -46,7 +54,8 @@ export async function processmalwarediscordmessage(message) {
             Util.escapeUnderline(message.content),
           message.cleanContent,
           message.content.replace(/\|/gm,''),
-          message.content.replace(/\|/gm,'').replace(/\n/gm,'')
+          message.content.replace(/\|/gm,'').replace(/\n/gm,''),
+          urlDecodeSafe(message.content)
         ]
 
         var arrayOfStartingUniq = _.uniq(arrayOfStarting)
