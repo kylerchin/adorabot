@@ -432,7 +432,8 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         if (isAuthorizedAdmin(msg.author.id)) {
           try {
             if (args[0].toLowerCase() === "thisguild") {
-              if (msg.guild) {
+              if (msg.inGuild) {
+                console.log(msg.guild.id)
               inspectGuild(msg,msg.guild.id,client)
               } else {
                 msg.reply('not inside a guild! try again!')
