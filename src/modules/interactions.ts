@@ -11,28 +11,29 @@ interface processInteractionType {
 }
 
 export async function processInteraction(args:processInteractionType) {
-  const interaction = args.interaction
- if (interaction.isCommand) {
+  try {
+    const interaction = args.interaction
+    if (interaction.isCommand) {
+   
+     const expr = interaction.commandName;
+   switch (expr) {
+     case 'ping':
+       await pingInteraction(interaction, interaction.client)
+       break;
+     case 'lyrics':
+       await geniusLyricsFromInteraction(interaction)
+     case 'ytparty':
+       //await geniusLyricsFromInteraction(interaction)
+       await ytparty({message: interaction, client: args.interaction.client})
+     case 'mama': 
+       await mamaAwards2021Interaction(interaction) 
+       break;
+     default:
+      // console.log(`Sorry, we are out of ${expr}.`);
+   }
+  }
 
-  const expr = interaction.commandName;
-switch (expr) {
-  case 'ping':
-    await pingInteraction(interaction, interaction.client)
-    break;
-  case 'lyrics':
-    await geniusLyricsFromInteraction(interaction)
-  case 'ytparty':
-    //await geniusLyricsFromInteraction(interaction)
-    await ytparty({message: interaction, client: args.interaction.client})
-  case 'mama': 
-    await mamaAwards2021Interaction(interaction) 
-    break;
-  default:
-   // console.log(`Sorry, we are out of ${expr}.`);
-}
-
- }
-
+  
 var interactionLogger = {
   "interaction": args.interaction,
   "authorName": args.interaction.user.tag,
@@ -52,4 +53,12 @@ if (args.interaction.isCommand()) {
 
 
  await logger.discordElasticLogger.info(`${JSON.stringify(interaction), {'type': 'interactionCreate'}}`)
+ } catch (interactionerror) {
+    logger.discordErrorLogger.error(interactionerror, {type: 'interactionerror'})
+
+
+  }
+
+
+ 
 }
