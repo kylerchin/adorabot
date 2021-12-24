@@ -452,13 +452,20 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         turnOnAdorabanInGuild(msg,args[0],client)
       }
 
-      if (command==="mamapre") {
-        crossUsageMamaPre(msg)
+      try {
+        if (command==="mamapre") {
+          msg.reply("The 2021 Mama Awards Votes have ended. Come back next year!");
+          crossUsageMamaPre(msg)
+        }
+  
+        if (command === "mama" || command ==="snake" || command==="🐍") {
+          msg.reply("The 2021 Mama Awards Votes have ended. Come back next year!");
+          crossUsageMamaFinals(msg)
+        }
+      } catch (mamaerror) {
+        console.error(mamaerror)
       }
-
-      if (command === "mama" || command ==="snake" || command==="🐍") {
-        crossUsageMamaFinals(msg)
-      }
+     
 
       if (command === "banfromguild") {
         banFromGuild(msg,args[0],client,args[1])
