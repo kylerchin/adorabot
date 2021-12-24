@@ -137,68 +137,74 @@ export async function listAllGuildsAndInsertAutoban(message,client) {
 }
 
 export async function inspectGuild(message,guildid,client) {
-    var readExistingSubscriptionStatus: boolean = false;
-    if (isAuthorizedAdmin(message.author.id)) {
-        var guild = await getServer(guildid,client)
-      
-        await cassandraclient.execute(lookupexistingsubscriptionquery, [guildid]).then(fetchExistingSubscriptionResult => {
-            //console.log(fetchExistingSubscriptionResult)
-            if (fetchExistingSubscriptionResult.rows.length === 0) {
-                //entry hasn't happened before
-                readExistingSubscriptionStatus = false;
-            }
-            else {
-                readExistingSubscriptionStatus = fetchExistingSubscriptionResult.rows[0].subscribed;
-            }
-        });
-        
-        var autobanstatustext: string;
-                    if (readExistingSubscriptionStatus) {
-                        autobanstatustext = "On"
-                    } else {
-                        autobanstatustext = "Off"
-                    }
-
-        if (guild === null) {
-            message.reply("This guild can't be found.")
-        } else {
-            var guildEmbed:MessageEmbed = new Discord.MessageEmbed({
-                "title": guild.name,
-                "fields": [
-                    {
-                        "name": "Is Autoban On for this server?",
-                        "value": `${boolToEmoji(readExistingSubscriptionStatus)}`
-                    },
-                    {
-                        "name": "Member Count",
-                        "value": `${guild.memberCount}`
-                    },
-                    {
-                        "name": "Adora Join Time",
-                        "value": `<t:${Math.round(guild.joinedTimestamp/1000)}:F>`
-                    },
-                    {
-                        "name": "Adora Permissions",
-                        "value": `Admin: ${boolToEmoji(guild.isAdmin)}\nBan: ${boolToEmoji(guild.canBan)}`
-                    }
-                ]
+    try {
+        var readExistingSubscriptionStatus: boolean = false;
+        if (isAuthorizedAdmin(message.author.id)) {
+            var guild = await getServer(guildid,client)
+          
+            await cassandraclient.execute(lookupexistingsubscriptionquery, [guildid]).then(fetchExistingSubscriptionResult => {
+                //console.log(fetchExistingSubscriptionResult)
+                if (fetchExistingSubscriptionResult.rows.length === 0) {
+                    //entry hasn't happened before
+                    readExistingSubscriptionStatus = false;
+                }
+                else {
+                    readExistingSubscriptionStatus = fetchExistingSubscriptionResult.rows[0].subscribed;
+                }
             });
+            
+            var autobanstatustext: string;
+                        if (readExistingSubscriptionStatus) {
+                            autobanstatustext = "On"
+                        } else {
+                            autobanstatustext = "Off"
+                        }
     
-            if (guild.iconurl) {
-                guildEmbed.setThumbnail(`${guild.iconurl}`)
-            }
-
-            if (guild.bannerurl) {
-                guildEmbed.setImage(`${guild.bannerurl}`)
-            }
+            if (guild === null) {
+                message.reply("This guild can't be found.")
+            } else {
+                var guildEmbed:MessageEmbed = new Discord.MessageEmbed({
+                    "title": guild.name,
+                    "fields": [
+                        {
+                            "name": "Is Autoban On for this server?",
+                            "value": `${boolToEmoji(readExistingSubscriptionStatus)}`
+                        },
+                        {
+                            "name": "Member Count",
+                            "value": `${guild.memberCount}`
+                        },
+                        {
+                            "name": "Adora Join Time",
+                            "value": `<t:${Math.round(guild.joinedTimestamp/1000)}:F>`
+                        },
+                        {
+                            "name": "Adora Permissions",
+                            "value": `Admin: ${boolToEmoji(guild.isAdmin)}\nBan: ${boolToEmoji(guild.canBan)}`
+                        }
+                    ]
+                });
+        
+                if (guild.iconurl) {
+                    guildEmbed.setThumbnail(`${guild.iconurl}`)
+                }
     
-            message.reply({
-                embeds: [
-                    guildEmbed
-                ]
-            })
+                if (guild.bannerurl) {
+                    guildEmbed.setImage(`${guild.bannerurl}`)
+                }
+        
+                message.reply({
+                    embeds: [
+                        guildEmbed
+                    ]
+                })
+            }
         }
+    } catch (inspectionerror) {
+        logger.discordErrorLogger.error(inspectionerror, {type: 'inspectionerror'})
+        console.log(inspectionerror)
     }
+   
 }
 
 export async function banFromGuild(message,guildid,client,banid) {
