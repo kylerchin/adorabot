@@ -39,7 +39,14 @@ export async function processmalwarediscordmessage(message) {
        Util.escapeBold(message.content),
        Util.escapeMarkdown(message.content),
        Util.escapeInlineCode(message.content),
-       Util.escapeSpoiler(message.content)
+       Util.escapeSpoiler(message.content),
+       Util.escapeStrikethrough(message.content),
+       Util.escapeCodeBlock(message.content),
+       Util.escapeCodeBlock(Util.escapeCodeBlock(message.content)),
+            Util.escapeUnderline(message.content),
+          message.cleanContent,
+          message.content.replace(/\|/gm,''),
+          message.content.replace(/\|/gm,'').replace(/\n/gm,'')
         ]
 
         var arrayOfStartingUniq = _.uniq(arrayOfStarting)
