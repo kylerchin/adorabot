@@ -5,6 +5,7 @@ const TimeUuid = require('cassandra-driver').types.TimeUuid;
 import {logger} from './logger'
 import  {Guild, Message} from 'discord.js'
 import {cassandraclient} from './cassandraclient'
+var _ = require('lodash');
 
 interface inspectFunction {
     message: any;
@@ -188,7 +189,7 @@ export async function inspectservercmd(args: inspectFunction) {
 
     var roleMentionsRemoved = args.message.content.replace(/<@&(\d{18})>/g, '')
 
-    var arrayOfServersToLookup = uniq(roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g));
+    var arrayOfServersToLookup = _.uniq(roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g));
 
     var fetchesToMake = arrayOfServersToLookup.map((serverid) => {
         console.log(serverid)

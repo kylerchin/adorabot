@@ -74,7 +74,7 @@ function arrayOfUserIdsFromMessage(message) {
         removedMessageAttachmentURLsFromContent = removedMessageAttachmentURLsFromContent.replaceAll(attach.url, "")
     })
     //transforms the user id list into a list to be banned
-    var arrayOfUserIdsToBan = uniq(removedMessageAttachmentURLsFromContent.match(/(?<!\d)\d{18}(?!\d)/g));
+    var arrayOfUserIdsToBan = _.uniq(removedMessageAttachmentURLsFromContent.match(/(?<!\d)\d{18}(?!\d)/g));
 
     var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*ban(\ )*)/g, '').trim().replace(emptylinesregex, "")
 
