@@ -430,7 +430,26 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
       if (command === "inspectguild") {
         if (isAuthorizedAdmin(msg.author.id)) {
-          inspectGuild(msg,args[0],client)
+          try {
+            if (args[0].toLowerCase() === "thisguild") {
+              if (msg.guild) {
+              inspectGuild(msg,msg.guild.id,client)
+              } else {
+                msg.reply('not inside a guild! try again!')
+              }
+            } else {
+              if (args[0]) {
+              
+                inspectGuild(msg,args[0],client)
+                  } else {
+                    msg.reply('please enter a valid guild!\n`a!inspectguild GUILDID` or `a!inspectguild thisguild`')
+                  }
+            }
+            
+          } catch (error) {
+            console.error(error)
+            logger.discordErrorLogger.error({type: error, errortext: error})
+          }
         }
        
       }
