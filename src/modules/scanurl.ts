@@ -10,6 +10,7 @@ import {cassandraclient} from'./cassandraclient'
 import { result } from 'lodash';
 import { ActionRowBuilder } from 'slash-commands';
 import * as _ from 'lodash'
+const { weirdToNormalChars } = require('weird-to-normal-chars');
 
 function urlDecodeSafe(path) {
     try {
@@ -28,41 +29,68 @@ function urlDecodeSafe(path) {
         }).catch(error => console.error(error));
 }
 
+export  function allPossibleUrls(stringToProcess) {
+
+   var listOfAdaptedStrings = [stringToProcess,
+        stringToProcess.replace(/\*/gm,''),
+        stringToProcess.replace(/\*\*\*/gm,''),
+        stringToProcess.replace(/\*\*/gm,''),
+        stringToProcess.replace(/\n/gm,''),
+        stringToProcess.replace(/\~/gm,''),
+        stringToProcess.replace(/\`/gm,''),
+        stringToProcess.replace(/\`/gm,'').replace(/\n/gm,''),
+        stringToProcess.replace(/\`/gm,'').replace(/\n/gm,''),
+        stringToProcess.replace(/>/gm,'').replace(/\n/gm,''),
+        stringToProcess.replace(/\_\_/gm,''),
+        stringToProcess.replace(/\_/gm,''),
+        stringToProcess.replace(/\$/gm,''),
+       Util.escapeBold(stringToProcess),
+       Util.escapeMarkdown(stringToProcess),
+       Util.escapeInlineCode(stringToProcess),
+       Util.escapeSpoiler(stringToProcess),
+       Util.escapeStrikethrough(stringToProcess),
+       Util.escapeCodeBlock(stringToProcess),
+       Util.escapeCodeBlock(Util.escapeCodeBlock(stringToProcess)),
+            Util.escapeUnderline(stringToProcess),
+          stringToProcess.replace(/\|/gm,''),
+          stringToProcess.replace(/\|/gm,'').replace(/\n/gm,''),
+          urlDecodeSafe(stringToProcess)
+        ];
+
+        var listOfNormalizedStrings = listOfAdaptedStrings.map((eachString) => {
+            return weirdToNormalChars(eachString);
+        })
+
+        var totalCombinedStrings = _.uniq([...listOfNormalizedStrings, ...listOfAdaptedStrings])
+
+        return totalCombinedStrings;
+}
+
+export function allPossibleUrlsArray(arrayOfStrings) {
+    var arrayOfStrings:any = []
+
+    arrayOfStrings.forEach((eachString) => {
+    var stringReturned = allPossibleUrls(eachString)
+
+    var stringReturnedNormalized =  allPossibleUrls(weirdToNormalChars(eachString));
+
+        arrayOfStrings = [...arrayOfStrings, ...stringReturned, ...stringReturnedNormalized]
+    })
+
+    return _.uniq(arrayOfStrings);
+}
+
+
+
 export async function processmalwarediscordmessage(message) {
     if (message.content) {
-
-        var arrayOfStarting = [message.content,
-        message.content.replace(/\*/gm,''),
-        message.content.replace(/\*\*\*/gm,''),
-        message.content.replace(/\*\*/gm,''),
-        message.content.replace(/\n/gm,''),
-        message.content.replace(/\~/gm,''),
-        message.content.replace(/\`/gm,''),
-        message.content.replace(/\`/gm,'').replace(/\n/gm,''),
-        message.content.replace(/\`/gm,'').replace(/\n/gm,''),
-        message.content.replace(/>/gm,'').replace(/\n/gm,''),
-        message.content.replace(/\_\_/gm,''),
-        message.content.replace(/\_/gm,''),
-        message.content.replace(/\$/gm,''),
-       Util.escapeBold(message.content),
-       Util.escapeMarkdown(message.content),
-       Util.escapeInlineCode(message.content),
-       Util.escapeSpoiler(message.content),
-       Util.escapeStrikethrough(message.content),
-       Util.escapeCodeBlock(message.content),
-       Util.escapeCodeBlock(Util.escapeCodeBlock(message.content)),
-            Util.escapeUnderline(message.content),
-          message.cleanContent,
-          message.content.replace(/\|/gm,''),
-          message.content.replace(/\|/gm,'').replace(/\n/gm,''),
-          urlDecodeSafe(message.content)
-        ]
+        var arrayOfStarting = allPossibleUrlsArray([message.content, message.cleanContent])
 
         var arrayOfStartingUniq = _.uniq(arrayOfStarting)
 
         var arrayOfUrls = []
 
-        arrayOfStartingUniq.forEach((eachString) => {
+        arrayOfStartingUniq.forEach((eachString:any) => {
             var arrayOfItemsToAdd = _.uniq(eachString.match(/(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?/gm));
 
             arrayOfUrls = [...arrayOfUrls, ...arrayOfItemsToAdd]
