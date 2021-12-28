@@ -61,20 +61,20 @@ export  function allPossibleUrls(stringToProcess) {
             return weirdToNormalChars(eachString);
         })
 
-        var totalCombinedStrings = _.uniq([...listOfNormalizedStrings, ...listOfAdaptedStrings])
+        var totalCombinedStrings = _.union([listOfNormalizedStrings, listOfAdaptedStrings])
 
         return totalCombinedStrings;
 }
 
 export function allPossibleUrlsArray(arrayOfStrings) {
-    var arrayOfStrings:any = []
+    var arrayOfStringsToRet:any = []
 
     arrayOfStrings.forEach((eachString) => {
     var stringReturned = allPossibleUrls(eachString)
 
     var stringReturnedNormalized =  allPossibleUrls(weirdToNormalChars(eachString));
 
-        arrayOfStrings = [...arrayOfStrings, ...stringReturned, ...stringReturnedNormalized]
+        arrayOfStringsToRet = _.union([arrayOfStrings, stringReturned, stringReturnedNormalized])
     })
 
     return _.uniq(arrayOfStrings);
@@ -88,7 +88,8 @@ export async function processmalwarediscordmessage(message) {
 
         var arrayOfStartingUniq = _.uniq(arrayOfStarting)
 
-        logger.discordInfoLogger.info({type: 'arrayOfStarting', array: arrayOfStarting})
+        logger.discordDebugLogger.debug({type: 'arrayOfStarting', array: arrayOfStarting})
+        console.log('arrayOfStarting', arrayOfStarting)
 
         var arrayOfUrls = []
 
