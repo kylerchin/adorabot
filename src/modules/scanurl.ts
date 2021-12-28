@@ -83,7 +83,7 @@ export function allPossibleUrlsArray(arrayOfStrings) {
 
 
 export async function processmalwarediscordmessage(message) {
-    console.log('func called')
+  //  console.log('func called')
     if (message.content) {
         console.log('message.content', message.content)
         var arrayOfStarting = allPossibleUrlsArray([message.content, message.cleanContent])
@@ -91,14 +91,14 @@ export async function processmalwarediscordmessage(message) {
         var arrayOfStartingUniq = _.uniq(arrayOfStarting)
 
         logger.discordDebugLogger.debug({type: 'arrayOfStarting', array: arrayOfStarting})
-        console.log('arrayOfStarting', arrayOfStarting)
+      //  console.log('arrayOfStarting', arrayOfStarting)
 
         var arrayOfUrls = []
 
         arrayOfStartingUniq.forEach((eachString:any) => {
             var arrayOfItemsToAdd = _.uniq(eachString.match(/(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?/gm));
 
-            arrayOfUrls = [...arrayOfUrls, ...arrayOfItemsToAdd]
+            arrayOfUrls = _.union([arrayOfUrls, arrayOfItemsToAdd])
         }) 
 
         var arrayOfUrls = _.uniq(arrayOfUrls)
