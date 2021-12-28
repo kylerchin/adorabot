@@ -31,7 +31,6 @@
   "dependencies": {
     "@discordjs/rest": "*",
     "@discordjs/voice": "^0.5.3",
-    "discord.js":  "github:kylerchin/discord.js",
     "@google-cloud/translate": "^6.0.5",
     "@shelf/winston-datadog-logs-transport": "^2.0.1",
     "@top-gg/sdk": "^3.1.1",
@@ -52,6 +51,7 @@
     "discord-botlist-api": "^2.1.1",
     "discord-pages": "^1.0.2",
     "discord-together": "^1.2.0",
+    "discord.js": "github:kylerchin/discord.js",
     "edit-json-file": "^1.5.0",
     "elastic-apm-node": "^3.20.0",
     "encodeurl": "^1.0.2",
@@ -95,6 +95,7 @@
     "user-instagram": "^2.1.9",
     "utf-8-validate": "^5.0.4",
     "webrisk-hash": "^1.2.9",
+    "weird-to-normal-chars": "^1.8.1",
     "wiktionary": "^1.2.3",
     "winston": "^3.3.3",
     "winston-elasticsearch": "^0.15.8",

@@ -88,6 +88,8 @@ export async function processmalwarediscordmessage(message) {
 
         var arrayOfStartingUniq = _.uniq(arrayOfStarting)
 
+        logger.discordInfoLogger.info({type: 'arrayOfStarting', array: arrayOfStarting})
+
         var arrayOfUrls = []
 
         arrayOfStartingUniq.forEach((eachString:any) => {
