@@ -83,7 +83,9 @@ export function allPossibleUrlsArray(arrayOfStrings) {
 
 
 export async function processmalwarediscordmessage(message) {
+    console.log('func called')
     if (message.content) {
+        console.log('message.content', message.content)
         var arrayOfStarting = allPossibleUrlsArray([message.content, message.cleanContent])
 
         var arrayOfStartingUniq = _.uniq(arrayOfStarting)
