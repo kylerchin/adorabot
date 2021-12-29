@@ -108,7 +108,9 @@ export async function listAllGuilds(message,client) {
     
         await sendPages(message.channel,arrayOfPages,message,"Adora Guilds")
 
-    }).catch((error) => {logger.discordErrorLogger.error(error)})
+    }).catch((error) => {
+        console.error(error)
+        logger.discordErrorLogger.error(error)})
     
   
 }
