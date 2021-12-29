@@ -45,9 +45,9 @@ const lookupexistingsubscriptionquery = 'SELECT * FROM adoramoderation.guildssub
 
 export async function listAllGuilds(message,client) {
 
-    await cassandraclient.execute('SELECT * FROM adoramoderation.guildssubscribedtoautoban ')
+    await cassandraclient.execute('SELECT * FROM adoramoderation.guildssubscribedtoautoban')
     .then(async(resultsOfGuildsSub) => {
-
+        console.log('resultsOfGuildsSub', resultsOfGuildsSub.rows)
 
         const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => {
             var arrayOfGuilds = clientBroadcasted.guilds.cache.map((eachGuild) => {
@@ -81,7 +81,7 @@ export async function listAllGuilds(message,client) {
             
             var stringForAdorabanState = ':notepad_spiral:';
 
-            var resultOfFilteredRows = resultsOfGuildsSub.rows.filter((eachItem) => eachItem.serverid === eachGuild.id)
+            var resultOfFilteredRows = resultsOfGuildsSub.rows.filter(eachItem => eachItem.serverid === eachGuild.id)
 
             if (resultOfFilteredRows.length > 0) {
                 isGuildListed = true;
