@@ -84,6 +84,7 @@ export function allPossibleUrlsArray(arrayOfStrings) {
 
 export async function processmalwarediscordmessage(message) {
   //  console.log('func called')
+  try {
     if (message.content) {
         console.log('message.content', message.content)
         var arrayOfStarting = allPossibleUrlsArray([message.content, message.cleanContent])
@@ -228,5 +229,9 @@ export async function processmalwarediscordmessage(message) {
          
     }
 
+}
+catch (processmalware) {
+    console.error(processmalware)
+}
   
 }
