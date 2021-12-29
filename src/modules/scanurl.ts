@@ -111,6 +111,7 @@ export async function processmalwarediscordmessage(message) {
      
          } else {
              if (arrayOfUrls.length > 0) {
+                 console.log(arrayOfUrls)
                  var isBadMessage:Boolean = false;
                  var hasBeenAlerted = false;
      
