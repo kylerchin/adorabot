@@ -86,7 +86,7 @@ export async function processmalwarediscordmessage(message) {
   //  console.log('func called')
   try {
     if (message.content) {
-        console.log('message.content', message.content)
+     //   console.log('message.content', message.content)
         var arrayOfStarting = allPossibleUrlsArray([message.content, message.cleanContent])
 
         var arrayOfStartingUniq = _.uniq(arrayOfStarting)
@@ -120,114 +120,118 @@ export async function processmalwarediscordmessage(message) {
 
               //  console.log(joinFacts)
      
-                 var arrayOfSetsOfLinksInit = joinFacts
-                 .filter((eachLink) => eachLink != null)
-                 .filter((eachLink) => eachLink != undefined)
-                 .filter((eachLink) => typeof eachLink === 'string')
-                 .map(link => suffixPostfixExpressions(canonicalize(link))).filter((eachLink) => eachLink != null)
-
-                 arrayOfSetsOfLinksInit.forEach((eachSet) => {
-                     eachSet.forEach((possibleLink) =>{
-                         var queryLink = "SELECT * FROM adoramoderation.badlinks WHERE link = ?"
-     
-                         var possibleLinkNoProtocol = possibleLink.replace(/https:\/\//,"").replace(/http:\/\//,"")
-     
-                        // message.reply(possibleLinkNoProtocol)
-     
-                         var paramsLink = [possibleLinkNoProtocol]
-     
-                         cassandraclient.execute(queryLink, paramsLink).then(async (resultOfLinkCheck) => 
-                         {
-                             if (resultOfLinkCheck.rows.length === 0) {
-                                 //safe
-                                 //console.log("url safe")
-                             } else {
-                                 //ALERT
-                                 isBadMessage = true;
-     
-                                 if (hasBeenAlerted === false) {
-                                     hasBeenAlerted = true;
-                                     await Promise.all([
-                                         message.react('⚠️'),
-                                         message.reply({
-                                             "embeds": [{
-                                                 "title": ":warning: Warning! This is a dangerous link that can hack your discord account! :warning: ",
-                                                 "description": "The link above is a Discord Login link, which if clicked, can allow an attacker to login and take over your account. Often scammers will pretend the links / qr codes are free nitro or other gifts. DO NOT CLICK IT!"
-                                             }]
-                                         }).catch((error) => undefined)
-                                     ]).catch(error => undefined)
-                                 }
-                           
-                                 logger.discordInfoLogger.info({type: "alertbadurladora",
-                                 message: resultOfLinkCheck.rows[0].link,
-                                 threat: resultOfLinkCheck.rows[0].type,
-                                 messageSenderTag: message.author.tag    
-                             })
-     
-                             }
-                         }).catch((hashcheckerror) => {
-                             logger.discordErrorLogger.error({type: "checkbadurlfail", message: hashcheckerror})
-                         })
-                     })
-                     })
-     
+                if (joinFacts.length > 0) {
+                    var arrayOfSetsOfLinksInit = joinFacts
+                    .filter((eachLink) => eachLink != null)
+                    .filter((eachLink) => eachLink != undefined)
+                    .filter((eachLink) => typeof eachLink === 'string')
+                    .map(link => suffixPostfixExpressions(canonicalize(link))).filter((eachLink) => eachLink != null)
+   
+                    arrayOfSetsOfLinksInit.forEach((eachSet) => {
+                        eachSet.forEach((possibleLink) =>{
+                            var queryLink = "SELECT * FROM adoramoderation.badlinks WHERE link = ?"
+        
+                            var possibleLinkNoProtocol = possibleLink.replace(/https:\/\//,"").replace(/http:\/\//,"")
+        
+                           // message.reply(possibleLinkNoProtocol)
+        
+                            var paramsLink = [possibleLinkNoProtocol]
+        
+                            cassandraclient.execute(queryLink, paramsLink).then(async (resultOfLinkCheck) => 
+                            {
+                                if (resultOfLinkCheck.rows.length === 0) {
+                                    //safe
+                                    //console.log("url safe")
+                                } else {
+                                    //ALERT
+                                    isBadMessage = true;
+        
+                                    if (hasBeenAlerted === false) {
+                                        hasBeenAlerted = true;
+                                        await Promise.all([
+                                            message.react('⚠️'),
+                                            message.reply({
+                                                "embeds": [{
+                                                    "title": ":warning: Warning! This is a dangerous link that can hack your discord account! :warning: ",
+                                                    "description": "The link above is a Discord Login link, which if clicked, can allow an attacker to login and take over your account. Often scammers will pretend the links / qr codes are free nitro or other gifts. DO NOT CLICK IT!"
+                                                }]
+                                            }).catch((error) => undefined)
+                                        ]).catch(error => undefined)
+                                    }
+                              
+                                    logger.discordInfoLogger.info({type: "alertbadurladora",
+                                    message: resultOfLinkCheck.rows[0].link,
+                                    threat: resultOfLinkCheck.rows[0].type,
+                                    messageSenderTag: message.author.tag    
+                                })
+        
+                                }
+                            }).catch((hashcheckerror) => {
+                                logger.discordErrorLogger.error({type: "checkbadurlfail", message: hashcheckerror})
+                            })
+                        })
+                        })
+        
+                       
+                        
                     
-                     
-                 
-     
-                 var cleanedArrayOfHashes = arrayOfUrls.map(eachUrl => {
-                    var prefix = getPrefixes(eachUrl)
-     
-                   // console.log("prefix", prefix)
-     
-                    var prefixArray:Array<any> = Array.from(prefix);
-     
-                 //   console.log("prefixArray", prefixArray)
-     
-                    var base64String = prefixArray.map(eachprefix => Buffer.from(eachprefix).toString('base64'))
-     
-                    return base64String
-                 })
-             
-       //          console.log('cleanedArrayOfHashes', cleanedArrayOfHashes)
-     
-     //            console.log("before each url for each")
-     
-                 //each url has several hashes
-                 forEach(cleanedArrayOfHashes, function (hashesForOneUrl, index) {
-                     var currentUrl = arrayOfUrls[index]
-     
-                  //   console.log("before each hash for each")
-                     
-                     //for each hash in 1 url at a time
-     
-                     forEach(hashesForOneUrl, function (eachHash, indexOfHash) {
-                         var queryHash = "SELECT * FROM adorasafebrowsing.threatprefixes WHERE prefix = ?"
-     
-                         var paramsHash = [eachHash.substring(0, 4)]
-     
-                        // console.log("paramsHash", paramsHash)
-                         cassandraclient.execute(queryHash, paramsHash).then((resultOfHashCheck) => 
-                         {
-                             if (resultOfHashCheck.rows.length === 0) {
-                                 //safe
-                                 //console.log("url safe")
-                             } else {
-                                 //ALERT
-                           
-                                 logger.discordInfoLogger.info({type: "alertbadurl",
-                                 message: currentUrl,
-                                 threat: resultOfHashCheck.rows[0].threat})
-     
-                             }
-                         }).catch((hashcheckerror) => {
-                             logger.discordErrorLogger.error({type: "checkbadurlfail", message: hashcheckerror})
-                         })
-                     })
-     
-                 })
-         
-         //        logger.discordInfoLogger.info({type: "links", message: cleanedArrayOfHashes, links: arrayOfUrls})
+        
+                    var cleanedArrayOfHashes = arrayOfUrls.map(eachUrl => {
+                       var prefix = getPrefixes(eachUrl)
+        
+                      // console.log("prefix", prefix)
+        
+                       var prefixArray:Array<any> = Array.from(prefix);
+        
+                    //   console.log("prefixArray", prefixArray)
+        
+                       var base64String = prefixArray.map(eachprefix => Buffer.from(eachprefix).toString('base64'))
+        
+                       return base64String
+                    })
+                
+          //          console.log('cleanedArrayOfHashes', cleanedArrayOfHashes)
+        
+        //            console.log("before each url for each")
+        
+                    //each url has several hashes
+                    forEach(cleanedArrayOfHashes, function (hashesForOneUrl, index) {
+                        var currentUrl = arrayOfUrls[index]
+        
+                     //   console.log("before each hash for each")
+                        
+                        //for each hash in 1 url at a time
+        
+                        forEach(hashesForOneUrl, function (eachHash, indexOfHash) {
+                            var queryHash = "SELECT * FROM adorasafebrowsing.threatprefixes WHERE prefix = ?"
+        
+                            var paramsHash = [eachHash.substring(0, 4)]
+        
+                           // console.log("paramsHash", paramsHash)
+                            cassandraclient.execute(queryHash, paramsHash).then((resultOfHashCheck) => 
+                            {
+                                if (resultOfHashCheck.rows.length === 0) {
+                                    //safe
+                                    //console.log("url safe")
+                                } else {
+                                    //ALERT
+                              
+                                    logger.discordInfoLogger.info({type: "alertbadurl",
+                                    message: currentUrl,
+                                    threat: resultOfHashCheck.rows[0].threat})
+        
+                                }
+                            }).catch((hashcheckerror) => {
+                                logger.discordErrorLogger.error({type: "checkbadurlfail", message: hashcheckerror})
+                            })
+                        })
+        
+                    })
+            
+            //        logger.discordInfoLogger.info({type: "links", message: cleanedArrayOfHashes, links: arrayOfUrls})
+                }
+
+              
              }
          }
          

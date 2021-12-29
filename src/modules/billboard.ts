@@ -12,6 +12,7 @@ const { config } = require('./../../config.json');
 var chartShortObject = {}
 
 export async function listChartsDownload() {
+  try {
   await listCharts((err, charts)=> {
     forEach(charts, function (eachChart) {
   
@@ -27,6 +28,10 @@ export async function listChartsDownload() {
     })
     //logger.discordInfoLogger.info({message: chartShortObject, type: "chartShortArrayFinished"})
   })
+}
+catch (billboarderr) {
+  console.error(billboarderr)
+}
 }
 
 async function sendChartScrollable(chart,message: Message,err,chartCode) {
