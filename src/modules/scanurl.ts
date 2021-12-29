@@ -31,39 +31,45 @@ function urlDecodeSafe(path) {
 
 export  function allPossibleUrls(stringToProcess) {
 
-   var listOfAdaptedStrings = [stringToProcess,
-        stringToProcess.replace(/\*/gm,''),
-        stringToProcess.replace(/\*\*\*/gm,''),
-        stringToProcess.replace(/\*\*/gm,''),
-        stringToProcess.replace(/\n/gm,''),
-        stringToProcess.replace(/\~/gm,''),
-        stringToProcess.replace(/\`/gm,''),
-        stringToProcess.replace(/\`/gm,'').replace(/\n/gm,''),
-        stringToProcess.replace(/\`/gm,'').replace(/\n/gm,''),
-        stringToProcess.replace(/>/gm,'').replace(/\n/gm,''),
-        stringToProcess.replace(/\_\_/gm,''),
-        stringToProcess.replace(/\_/gm,''),
-        stringToProcess.replace(/\$/gm,''),
-       Util.escapeBold(stringToProcess),
-       Util.escapeMarkdown(stringToProcess),
-       Util.escapeInlineCode(stringToProcess),
-       Util.escapeSpoiler(stringToProcess),
-       Util.escapeStrikethrough(stringToProcess),
-       Util.escapeCodeBlock(stringToProcess),
-       Util.escapeCodeBlock(Util.escapeCodeBlock(stringToProcess)),
-            Util.escapeUnderline(stringToProcess),
-          stringToProcess.replace(/\|/gm,''),
-          stringToProcess.replace(/\|/gm,'').replace(/\n/gm,''),
-          urlDecodeSafe(stringToProcess)
-        ];
+    if (stringToProcess) {
 
-        var listOfNormalizedStrings = listOfAdaptedStrings.map((eachString) => {
-            return weirdToNormalChars(eachString);
-        })
+        var listOfAdaptedStrings = [stringToProcess,
+            stringToProcess.replace(/\*/gm,''),
+            stringToProcess.replace(/\*\*\*/gm,''),
+            stringToProcess.replace(/\*\*/gm,''),
+            stringToProcess.replace(/\n/gm,''),
+            stringToProcess.replace(/\~/gm,''),
+            stringToProcess.replace(/\`/gm,''),
+            stringToProcess.replace(/\`/gm,'').replace(/\n/gm,''),
+            stringToProcess.replace(/\`/gm,'').replace(/\n/gm,''),
+            stringToProcess.replace(/>/gm,'').replace(/\n/gm,''),
+            stringToProcess.replace(/\_\_/gm,''),
+            stringToProcess.replace(/\_/gm,''),
+            stringToProcess.replace(/\$/gm,''),
+           Util.escapeBold(stringToProcess),
+           Util.escapeMarkdown(stringToProcess),
+           Util.escapeInlineCode(stringToProcess),
+           Util.escapeSpoiler(stringToProcess),
+           Util.escapeStrikethrough(stringToProcess),
+           Util.escapeCodeBlock(stringToProcess),
+           Util.escapeCodeBlock(Util.escapeCodeBlock(stringToProcess)),
+                Util.escapeUnderline(stringToProcess),
+              stringToProcess.replace(/\|/gm,''),
+              stringToProcess.replace(/\|/gm,'').replace(/\n/gm,''),
+              urlDecodeSafe(stringToProcess)
+            ];
+    
+            var listOfNormalizedStrings = listOfAdaptedStrings.map((eachString) => {
+                return weirdToNormalChars(eachString);
+            })
+    
+            var totalCombinedStrings = _.union([listOfNormalizedStrings, listOfAdaptedStrings])
+    
+            return totalCombinedStrings;
+    } else {
+        return ''
+    }
 
-        var totalCombinedStrings = _.union([listOfNormalizedStrings, listOfAdaptedStrings])
-
-        return totalCombinedStrings;
 }
 
 export function allPossibleUrlsArray(arrayOfStrings) {
