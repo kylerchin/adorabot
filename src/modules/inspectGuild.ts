@@ -94,8 +94,19 @@ export async function listAllGuilds(message,client) {
                 stringForAdorabanState = ":x:";
             }
 
+            var guildNameToUse = 'Unknown Guild Name'
 
-            return `${stringForAdorabanState} | \`${eachGuild.id}\` | \`${eachGuild.memberCount}\` ${Util.escapeMarkdown(eachGuild.name)}`
+                try {
+            if (eachGuild.name) {
+                guildNameToUse = eachGuild.name;
+            }
+        }
+        catch (setServerNameError) {
+            console.error(setServerNameError)
+        }
+
+
+            return `${stringForAdorabanState} | \`${eachGuild.id}\` | \`${eachGuild.memberCount}\` ${guildNameToUse}`
         })
     
         var arrayOfSplitStrings = Util.splitMessage(arrayOfTextGuildsInString.join("\n"))
