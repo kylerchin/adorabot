@@ -275,3 +275,49 @@ export async function turnOnAdorabanInGuild(message,guildid,client) {
                logger.discordInfoLogger.info(`${guildid} has been subscribed to autoban!`,{type: "subscribeToAutobanForced", cassandralog: result, })
             });
 }}
+
+export async function turnOffAdorabanInGuild(message,guildid,client) {
+    if (isAuthorizedAdmin(message.author.id)) {
+
+        var subscribeStateToWrite: boolean;
+        var isNewEntry: boolean;
+        var firstchangedbyidfirststate;
+        var firstchangedtimefirststate;
+        //check if server is registered
+        const lookupexistingsubscriptionquery = 'SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid = ?';
+
+        var readExistingSubscriptionStatus: boolean = false;
+
+        await cassandraclient.execute(lookupexistingsubscriptionquery, [guildid])
+            .then(fetchExistingSubscriptionResult => {
+                //console.log(fetchExistingSubscriptionResult)
+                if (fetchExistingSubscriptionResult.rows.length === 0) {
+                    //entry hasn't happened before
+
+                    isNewEntry = true;
+                    firstchangedbyidfirststate = message.author.id;
+                    firstchangedtimefirststate = TimeUuid.now();
+                    readExistingSubscriptionStatus = false;
+                }
+                else {
+                    isNewEntry = false;
+                    firstchangedbyidfirststate = fetchExistingSubscriptionResult.rows[0].firstchangedbyid;
+                    firstchangedtimefirststate = fetchExistingSubscriptionResult.rows[0].firstchangedtime;
+                    readExistingSubscriptionStatus = fetchExistingSubscriptionResult.rows[0].subscribed;
+                }
+            });
+
+            const query = 'INSERT INTO adoramoderation.guildssubscribedtoautoban (serverid, subscribed, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime) VALUES (?, ?, ?, ?, ?, ?)';
+            var params;
+            if (isNewEntry) {
+                params = [guildid, false, message.author.id, firstchangedtimefirststate, firstchangedbyidfirststate, firstchangedtimefirststate];
+            } else {
+                params = [guildid, false, message.author.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
+            }
+            //console.log(params)
+            await cassandraclient.execute(query, params).then((result) => {
+                message.reply(`${guildid} has been unsubscribed to autoban!`)
+               logger.discordInfoLogger.info(`${guildid} has been unsubscribed to autoban!`,{type: "unsubscribeToAutobanForced", cassandralog: result, })
+            });
+}
+}
