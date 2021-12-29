@@ -114,9 +114,11 @@ export async function processmalwarediscordmessage(message) {
                  var isBadMessage:Boolean = false;
                  var hasBeenAlerted = false;
      
-                 var arrayOfSetsOfLinksInit = arrayOfUrls.map(link => suffixPostfixExpressions(canonicalize(link)))
-     
-                
+                 var arrayOfSetsOfLinksInit = arrayOfUrls
+                 .filter((eachLink) => eachLink != null)
+                 .filter((eachLink) => eachLink != undefined)
+                 .filter((eachLink) => typeof eachLink === 'string')
+                 .map(link => suffixPostfixExpressions(canonicalize(link))).filter((eachLink) => eachLink != null)
 
                  arrayOfSetsOfLinksInit.forEach((eachSet) => {
                      eachSet.forEach((possibleLink) =>{
