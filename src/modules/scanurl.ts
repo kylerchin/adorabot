@@ -117,8 +117,10 @@ export async function processmalwarediscordmessage(message) {
                  var hasBeenAlerted = false;
 
                  var joinFacts = _.flatten(arrayOfUrls.filter((eachItem) => eachItem != []))
+
+                 console.log(joinFacts)
      
-                 var arrayOfSetsOfLinksInit = arrayOfUrls
+                 var arrayOfSetsOfLinksInit = joinFacts
                  .filter((eachLink) => eachLink != null)
                  .filter((eachLink) => eachLink != undefined)
                  .filter((eachLink) => typeof eachLink === 'string')
