@@ -44,43 +44,73 @@ const getServer = async (guildID,client) => {
 const lookupexistingsubscriptionquery = 'SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid = ?';
 
 export async function listAllGuilds(message,client) {
-    const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => {
-        var arrayOfGuilds = clientBroadcasted.guilds.cache.map((eachGuild) => {
-            return {
-                id: eachGuild.id,
-                memberCount: eachGuild.memberCount,
-                name: eachGuild.name
+
+    await cassandraclient.execute('SELECT * FROM adoramoderation.guildssubscribedtoautoban ')
+    .then(async(resultsOfGuildsSub) => {
+
+
+        const req = await client.shard.broadcastEval((clientBroadcasted, contextParam) => {
+            var arrayOfGuilds = clientBroadcasted.guilds.cache.map((eachGuild) => {
+                return {
+                    id: eachGuild.id,
+                    memberCount: eachGuild.memberCount,
+                    name: eachGuild.name
+                }
+            })
+            return arrayOfGuilds;
+        },
+        {
+            "context": {
+               
             }
+            
+        });
+    
+        var merged = [].concat.apply([], req);
+    
+        //console.log(merged);
+    
+        //sort greatest to least member count
+        var sortedGuildList = merged.sort((a,b) => (a.memberCount > b.memberCount) ? -1: 1)
+    
+        var arrayOfTextGuildsInString = sortedGuildList.map((eachGuild) => {
+
+            var isGuildSubscribed = false;
+            var isGuildListed = false;
+
+            
+            var stringForAdorabanState = ':notepad_spiral:';
+
+            var resultOfFilteredRows = resultsOfGuildsSub.rows.filter((eachItem) => eachItem.serverid === eachGuild.id)
+
+            if (resultOfFilteredRows.length > 0) {
+                isGuildListed = true;
+                isGuildSubscribed = resultOfFilteredRows[0].subscribed;
+            }
+
+            if (isGuildSubscribed) {
+                stringForAdorabanState = ":white_check_mark:";
+            } else {
+                stringForAdorabanState = ":x:";
+            }
+
+
+            return `${stringForAdorabanState} | \`${eachGuild.id}\` | \`${eachGuild.memberCount}\` ${Util.escapeMarkdown(eachGuild.name)}`
         })
-        return arrayOfGuilds;
-    },
-    {
-        "context": {
-           
-        }
-        
-    });
+    
+        var arrayOfSplitStrings = Util.splitMessage(arrayOfTextGuildsInString.join("\n"))
+    
+        var arrayOfPages = arrayOfSplitStrings.map((string,n) => {return new Discord.MessageEmbed({"description": string,
+            "footer": {
+                "text": `Page ${n+1}/${arrayOfSplitStrings.length}`
+            }
+        })});
+    
+        await sendPages(message.channel,arrayOfPages,message,"Adora Guilds")
 
-    var merged = [].concat.apply([], req);
-
-    //console.log(merged);
-
-    //sort greatest to least member count
-    var sortedGuildList = merged.sort((a,b) => (a.memberCount > b.memberCount) ? -1: 1)
-
-    var arrayOfTextGuildsInString = sortedGuildList.map((eachGuild) => {
-        return `\`${eachGuild.id}\` | \`${eachGuild.memberCount}\` ${Util.escapeMarkdown(eachGuild.name)}`
-    })
-
-    var arrayOfSplitStrings = Util.splitMessage(arrayOfTextGuildsInString.join("\n"))
-
-    var arrayOfPages = arrayOfSplitStrings.map((string,n) => {return new Discord.MessageEmbed({"description": string,
-        "footer": {
-            "text": `Page ${n+1}/${arrayOfSplitStrings.length}`
-        }
-    })});
-
-    await sendPages(message.channel,arrayOfPages,message,"Adora Guilds")
+    }).catch((error) => {logger.discordErrorLogger.error(error)})
+    
+  
 }
 
 export async function listAllGuildsAndInsertAutoban(message,client) {

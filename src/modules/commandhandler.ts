@@ -39,7 +39,7 @@ import { adminhelp } from "./adminhelp";
 import { makeGif } from "./gif";
 const { query } = require("mathram");
 import { removeAllPoints, removeVideoId, spitoutlist } from "./trackedListManager";
-import { banFromGuild, inspectGuild, listAllGuilds, listAllGuildsAndInsertAutoban, turnOnAdorabanInGuild } from "./inspectGuild";
+import { banFromGuild, inspectGuild, listAllGuilds, listAllGuildsAndInsertAutoban, turnOnAdorabanInGuild, turnOffAdorabanInGuild } from "./inspectGuild";
 import { spotifySearchForStatsFromMessage } from "./spotify";
 
 export async function commandHandler(msg, client, config, dogstatsd, startupTime) {
@@ -473,6 +473,10 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
 
       if(command === "addguildautoban") {
         turnOnAdorabanInGuild(msg,args[0],client)
+      }
+
+      if(command === "removeguildautoban") {
+        turnOffAdorabanInGuild(msg,args[0],client)
       }
 
       try {
