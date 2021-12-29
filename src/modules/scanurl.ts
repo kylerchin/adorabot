@@ -112,13 +112,13 @@ export async function processmalwarediscordmessage(message) {
      
          } else {
              if (arrayOfUrls.length > 0) {
-                 console.log(arrayOfUrls)
+               //  console.log(arrayOfUrls)
                  var isBadMessage:Boolean = false;
                  var hasBeenAlerted = false;
 
                  var joinFacts = _.flatten(arrayOfUrls.filter((eachItem) => eachItem != []))
 
-                 console.log(joinFacts)
+              //  console.log(joinFacts)
      
                  var arrayOfSetsOfLinksInit = joinFacts
                  .filter((eachLink) => eachLink != null)
