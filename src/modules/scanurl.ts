@@ -102,7 +102,7 @@ export async function processmalwarediscordmessage(message) {
             arrayOfUrls = _.union([arrayOfUrls, arrayOfItemsToAdd])
         }) 
 
-        var arrayOfUrls = _.uniq(arrayOfUrls)
+        var arrayOfUrls = _.union(_.uniq(arrayOfUrls))
 
         // arrayOfUrls = uniq(arrayOfUrls)
         // console.log("arrayOfUrls", arrayOfUrls)
