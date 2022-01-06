@@ -2792,8 +2792,8 @@
     "node-fetch" "^2.6.1"
     "ws" "^7.5.1"
 
-"discord.js@github:discordjs/discord.js":
-  "resolved" "git+ssh://git@github.com/discordjs/discord.js.git#780b7ed39f173a77fd9eae396133980826926906"
+"discord.js@github:adorabot-dependencies/discord.js":
+  "resolved" "git+ssh://git@github.com/adorabot-dependencies/discord.js.git#c6498ab2a969a3eabf55784e81dded5ee2e76d6f"
   "version" "14.0.0-dev"
   dependencies:
     "@discordjs/builders" "^0.11.0"
