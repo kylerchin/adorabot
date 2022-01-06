@@ -52,6 +52,17 @@
     "enabled" "2.0.x"
     "kuler" "^2.0.0"
 
+"@discordjs/builders@^0.11.0":
+  "integrity" "sha512-ZTB8yJdJKrKlq44dpWkNUrAtEJEq0gqpb7ASdv4vmq6/mZal5kOv312hQ56I/vxwMre+VIkoHquNUAfnTbiYtg=="
+  "resolved" "https://registry.npmjs.org/@discordjs/builders/-/builders-0.11.0.tgz"
+  "version" "0.11.0"
+  dependencies:
+    "@sindresorhus/is" "^4.2.0"
+    "discord-api-types" "^0.26.0"
+    "ts-mixer" "^6.0.0"
+    "tslib" "^2.3.1"
+    "zod" "^3.11.6"
+
 "@discordjs/builders@^0.5.0":
   "integrity" "sha512-HP5y4Rqw68o61Qv4qM5tVmDbWi4mdTFftqIOGRo33SNPpLJ1Ga3KEIR2ibKofkmsoQhEpLmopD1AZDs3cKpHuw=="
   "resolved" "https://registry.npmjs.org/@discordjs/builders/-/builders-0.5.0.tgz"
@@ -63,17 +74,6 @@
     "ts-mixer" "^6.0.0"
     "tslib" "^2.3.0"
 
-"@discordjs/builders@^0.8.1":
-  "integrity" "sha512-/YRd11SrcluqXkKppq/FAVzLIPRVlIVmc6X8ZklspzMIHDtJ+A4W37D43SHvLdH//+NnK+SHW/WeOF4Ts54PeQ=="
-  "resolved" "https://registry.npmjs.org/@discordjs/builders/-/builders-0.8.2.tgz"
-  "version" "0.8.2"
-  dependencies:
-    "@sindresorhus/is" "^4.2.0"
-    "discord-api-types" "^0.24.0"
-    "ow" "^0.27.0"
-    "ts-mixer" "^6.0.0"
-    "tslib" "^2.3.1"
-
 "@discordjs/collection@^0.1.6":
   "integrity" "sha512-utRNxnd9kSS2qhyivo9lMlt5qgAUasH2gb7BEOn6p0efFh24gjGomHzWKMAPn2hEReOPQZCJaRKoURwRotKucQ=="
   "resolved" "https://registry.npmjs.org/@discordjs/collection/-/collection-0.1.6.tgz"
@@ -84,10 +84,10 @@
   "resolved" "https://registry.npmjs.org/@discordjs/collection/-/collection-0.2.1.tgz"
   "version" "0.2.1"
 
-"@discordjs/collection@^0.3.2":
-  "integrity" "sha512-dMjLl60b2DMqObbH1MQZKePgWhsNe49XkKBZ0W5Acl5uVV43SN414i2QfZwRI7dXAqIn8pEWD2+XXQFn9KWxqg=="
-  "resolved" "https://registry.npmjs.org/@discordjs/collection/-/collection-0.3.2.tgz"
-  "version" "0.3.2"
+"@discordjs/collection@^0.4.0":
+  "integrity" "sha512-zmjq+l/rV35kE6zRrwe8BHqV78JvIh2ybJeZavBi5NySjWXqN3hmmAKg7kYMMXSeiWtSsMoZ/+MQi0DiQWy2lw=="
+  "resolved" "https://registry.npmjs.org/@discordjs/collection/-/collection-0.4.0.tgz"
+  "version" "0.4.0"
 
 "@discordjs/form-data@^3.0.1":
   "integrity" "sha512-ZfFsbgEXW71Rw/6EtBdrP5VxBJy4dthyC0tpQKGKmYFImlmmrykO14Za+BiIVduwjte0jXEBlhSKf0MWbFp9Eg=="
@@ -649,7 +649,7 @@
   "resolved" "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   "version" "1.1.0"
 
-"@sapphire/async-queue@^1.1.4", "@sapphire/async-queue@^1.1.8":
+"@sapphire/async-queue@^1.1.4", "@sapphire/async-queue@^1.1.9":
   "integrity" "sha512-CbXaGwwlEMq+l1TRu01FJCvySJ1CEFKFclHT48nIfNeZXaAAmmwwy7scUKmYHPUa3GhoMp6Qr1B3eAJux6XgOQ=="
   "resolved" "https://registry.npmjs.org/@sapphire/async-queue/-/async-queue-1.1.9.tgz"
   "version" "1.1.9"
@@ -843,7 +843,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/ws@^8.2.0":
+"@types/ws@^8.2.2":
   "integrity" "sha512-NOn5eIcgWLOo6qW8AcuLZ7G8PycXu0xTxxkS6Q18VWFxgPUSOwV0pBj2a/4viNZVu25i7RIB7GttdkAIUUXOOg=="
   "resolved" "https://registry.npmjs.org/@types/ws/-/ws-8.2.2.tgz"
   "version" "8.2.2"
@@ -2738,10 +2738,10 @@
   "resolved" "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.22.0.tgz"
   "version" "0.22.0"
 
-"discord-api-types@^0.24.0":
-  "integrity" "sha512-X0uA2a92cRjowUEXpLZIHWl4jiX1NsUpDhcEOpa1/hpO1vkaokgZ8kkPtPih9hHth5UVQ3mHBu/PpB4qjyfJ4A=="
-  "resolved" "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.24.0.tgz"
-  "version" "0.24.0"
+"discord-api-types@^0.26.0":
+  "integrity" "sha512-T5PdMQ+Y1MEECYMV5wmyi9VEYPagEDEi4S0amgsszpWY0VB9JJ/hEvM6BgLhbdnKky4gfmZEXtEEtojN8ZKJQQ=="
+  "resolved" "https://registry.npmjs.org/discord-api-types/-/discord-api-types-0.26.1.tgz"
+  "version" "0.26.1"
 
 "discord-botlist-api@^2.1.1":
   "integrity" "sha512-+wpqiiSu2qpKGJ+L0o1MgJl4l/X41kfXuOfFc7FMBFhUM1E/I8cdZ7pJicX1jO5f/wOug3HVUIWqrhHYbwCY8A=="
@@ -2792,19 +2792,19 @@
     "node-fetch" "^2.6.1"
     "ws" "^7.5.1"
 
-"discord.js@github:kylerchin/discord.js":
-  "resolved" "git+ssh://git@github.com/kylerchin/discord.js.git#0e35afaa06678e3e0820a4df992e5a7834b51186"
-  "version" "13.4.0-dev"
+"discord.js@github:discordjs/discord.js":
+  "resolved" "git+ssh://git@github.com/discordjs/discord.js.git#780b7ed39f173a77fd9eae396133980826926906"
+  "version" "14.0.0-dev"
   dependencies:
-    "@discordjs/builders" "^0.8.1"
-    "@discordjs/collection" "^0.3.2"
-    "@discordjs/form-data" "^3.0.1"
-    "@sapphire/async-queue" "^1.1.8"
+    "@discordjs/builders" "^0.11.0"
+    "@discordjs/collection" "^0.4.0"
+    "@sapphire/async-queue" "^1.1.9"
     "@types/node-fetch" "^2.5.12"
-    "@types/ws" "^8.2.0"
-    "discord-api-types" "^0.24.0"
+    "@types/ws" "^8.2.2"
+    "discord-api-types" "^0.26.0"
+    "form-data" "^4.0.0"
     "node-fetch" "^2.6.1"
-    "ws" "^8.2.3"
+    "ws" "^8.4.0"
 
 "doctrine@^2.1.0":
   "integrity" "sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw=="
@@ -10237,7 +10237,7 @@
   "resolved" "https://registry.npmjs.org/ws/-/ws-7.5.5.tgz"
   "version" "7.5.5"
 
-"ws@^8.2.3":
+"ws@^8.4.0":
   "integrity" "sha512-IHVsKe2pjajSUIl4KYMQOdlyliovpEPquKkqbwswulszzI7r0SfQrxnXdWAEqOlDCLrVSJzo+O1hAwdog2sKSQ=="
   "resolved" "https://registry.npmjs.org/ws/-/ws-8.4.0.tgz"
   "version" "8.4.0"
@@ -10452,3 +10452,8 @@
   "version" "0.1.7"
   dependencies:
     "nan" "^2.14.0"
+
+"zod@^3.11.6":
+  "integrity" "sha512-daZ80A81I3/9lIydI44motWe6n59kRBfNzTuS2bfzVh1nAXi667TOTWWtatxyG+fwgNUiagSj/CWZwRRbevJIg=="
+  "resolved" "https://registry.npmjs.org/zod/-/zod-3.11.6.tgz"
+  "version" "3.11.6"
