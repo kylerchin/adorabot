@@ -103,6 +103,128 @@ export async function youtubeChannelStats(message:Message, command, client, conf
     
 }
 
+export async function youtubeVideoStatsInteraction(interaction: CommandInteraction, command, client, config, args) {
+
+        // Defer to send an ephemeral reply later
+        interaction.deferReply()
+        .then(console.log)
+        .catch(console.error);
+
+    const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
+
+    var videoID = "dQw4w9WgXcQ"
+
+    var ytquery = interaction.options.getString('name/url');
+
+    if (isUrl(ytquery)) {
+        // Valid url
+        if (ytquery.includes("youtu.be/")) {
+            var precurser = ytquery.replace("youtu.be/", "www.youtube.com/watch?v=")
+        } else {
+            var precurser = ytquery
+        }
+        videoID = getQueryParam('v', precurser)
+        sendYtCountsEmbed(videoID, interaction, youtubeApiKeyRandomlyChosen)
+    } else {
+        // Invalid url
+
+        console.log("invalid url")
+        const commandRegex = new RegExp(`${command}`,"i")
+
+        const searchYtString = ytquery.trim()
+
+        if (searchYtString.length === 0) {
+            await youtubeHelpMessageReply(interaction)
+        }
+        else {
+            /*
+       //check if video ID is valid without accessing the youtube API
+       var requestToYouTubeOembed = 'https://www.youtube.com/watch?v=' + searchYtString
+       await request(requestToYouTubeOembed, async function (error, response, body) {
+       if (!error && response.statusCode == 200) {
+         console.log("URL is OK") // Print the google web page.
+         videoID = getQueryParam('v', 'https://www.youtube.com/watch?v=' + searchYtString)
+         console.log(videoID + " is the videoID")
+         sendYtCountsEmbed(videoID,message,youtubeApiKeyRandomlyChosen)
+       }  else {*/
+            //video ID is not valid
+
+            // search youtube for term instead
+            //console.log("searching for:" + searchYtString)
+            logger.discordDebugLogger.debug({ type: "searchStringForYouTube", searchYtString: searchYtString })
+            //const r = await yts( searchYtString )
+
+            //console.log(r)
+
+            switch (searchYtString)
+                {
+                    case "the view":          
+                         sendYtCountsEmbed("v202rmUuBis", interaction, youtubeApiKeyRandomlyChosen)
+                        break;
+                    case "life goes on": case "life goes on mv": 
+                        sendYtCountsEmbed("-5q5mZbe3V8", interaction, youtubeApiKeyRandomlyChosen)
+                    break;
+                case "help":
+                        youtubeHelpMessageReply(interaction)
+                    break;
+                    
+                    default:
+                     
+                                                // console.time("youtubei")
+                            const videos = await youtube.search(searchYtString, {
+                                type: "video", // video | playlist | channel | all
+                            });
+
+                        // console.timeEnd("youtubei")
+
+                            if (videos.length <= 0) {
+                                interaction.reply("I couldn't find any videos matching that term!")
+                                logger.discordInfoLogger.info({type: "searchYoutubeVideoTermNothingFound",query: searchYtString})
+                            } else {
+
+                                var videofound = false;
+                            videos.forEach((video,videoIndex) => {
+                                if (videofound === false) {
+                                    if (skipChannel(video.channel.id) || skipVideo(video.id)) {
+                                        //skip channel
+                                    } else {
+                                        videoID = videos[videoIndex].id
+                                    // logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: videos[0] })
+                                        //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
+            
+                                    sendYtCountsEmbed(videoID, interaction, youtubeApiKeyRandomlyChosen)
+                                    logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}`})
+                                    videofound = true;
+                                    }
+                                }
+                            });
+                                                 }
+                            
+                            
+                        break;
+                }
+
+           
+            /*await scrapeyoutube.search(searchYtString).then(results => {
+               
+                // Unless you specify a type, it will only return 'video' results
+
+                if (results.videos.length <= 0) {
+                    message.reply("I couldn't find any videos matching that term!")
+                }
+
+                videoID = results.videos[0].id
+                logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: results.videos[0] })
+                logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
+
+                //sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
+               
+            });*/
+            //}
+        }
+    }
+}
+
 export async function youtubeVideoStats(message:Message, command, client, config, args) {
     const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
 

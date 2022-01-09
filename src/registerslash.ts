@@ -24,6 +24,17 @@ const commands = [{
     }
 ]},
 {
+  "name": "yt",
+  "description": "YouTube View Count Tracker with Graphs",
+  "options": [
+    {
+      "type": 3,
+      "name": "search/url",
+      "description": "The search query or URL of a YouTube video",
+      "required": true
+    }
+]},
+{
   "name": "ytparty",
   "description": "Start a YouTube watch party in a voice channel"
 },
