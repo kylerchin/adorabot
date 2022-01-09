@@ -114,7 +114,7 @@ export async function youtubeVideoStatsInteraction(interaction: CommandInteracti
 
     var videoID = "dQw4w9WgXcQ"
 
-    var ytquery = interaction.options.getString('search/url');
+    var ytquery = interaction.options.getString('search or url');
 
     if (isUrl(ytquery)) {
         // Valid url

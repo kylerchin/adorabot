@@ -29,7 +29,7 @@ const commands = [{
   "options": [
     {
       "type": 3,
-      "name": "search/url",
+      "name": "search or url",
       "description": "The search query or URL of a YouTube video",
       "required": true
     }
