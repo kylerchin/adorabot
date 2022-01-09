@@ -323,9 +323,9 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                
 
                //more than 60 days
-               if (timeRange > 60 * 60 * 24 * 1000 * 60) {
+               if (timeRange > 60 * 60 * 24 * 1000 * 40) {
                 modulusForDays = 4;
-               }           
+               }
 
               if (numberOfDaysDone % modulusForDays !== 0) {
               ctxLegendXLabel.fillText(
