@@ -4,6 +4,7 @@ import { geniusLyricsFromInteraction } from './genius';
 import { logger,tracer,span } from './logger'
 import { ping, pingInteraction } from './ping'
 import {mamaAwards2021Interaction} from './get2021mamavoteinfo'
+const { config } = require('./../../config.json');
 
 import {youtubeVideoStatsInteraction} from './youtube'
 
