@@ -149,7 +149,14 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
               await logger.discordInfoLogger.info(loggerBody)
             }).catch(
               async (sendMessageerror) => {
-                await logger.discordWarnLogger({type: "sendYoutubeEmbedFailed"}, sendMessageerror)
+                
+                try {
+                  console.error(sendMessageerror)
+                  await logger.discordWarnLogger({type: "sendYoutubeEmbedFailed"}, sendMessageerror)
+                } catch (errorBIG) {
+                  console.error(errorBIG)
+                }
+                
               }
             )
             
