@@ -312,20 +312,27 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               ctxSubLegend.stroke();
               ctxSubLegend.closePath();
 
+              var daysLabelsOffsetFromBottom = 40;
+              var modulusForDays = 1;
+
+              //more than 20 days
               if (timeRange > 60 * 60 * 24 * 1000 * 20) {
-               if (numberOfDaysDone % 2 !== 0) {
-                ctxLegendXLabel.fillText(
-                  `${new Date(timeLegend).getUTCMonth()}/${new Date(timeLegend).getUTCDate()}`,
-                  pointx,
-                  canvas.height - 80
-                );
-               }
-              } else {
-                ctxLegendXLabel.fillText(
-                  `${new Date(timeLegend).getUTCMonth()}/${new Date(timeLegend).getUTCDate()}`,
-                  pointx,
-                  canvas.height - 40
-                );
+                daysLabelsOffsetFromBottom  = 80;
+                modulusForDays = 2;
+               }    
+               
+
+               //more than 60 days
+               if (timeRange > 60 * 60 * 24 * 1000 * 60) {
+                modulusForDays = 4;
+               }           
+
+              if (numberOfDaysDone % modulusForDays !== 0) {
+              ctxLegendXLabel.fillText(
+                `${new Date(timeLegend).getUTCMonth() + 1}/${new Date(timeLegend).getUTCDate()}`,
+                pointx,
+                canvas.height - daysLabelsOffsetFromBottom
+              );
               }
 
               timeLegend += 60 * 60 * 24 * 1000;
