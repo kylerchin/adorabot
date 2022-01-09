@@ -103,7 +103,7 @@ export async function youtubeChannelStats(message:Message, command, client, conf
     
 }
 
-export async function youtubeVideoStatsInteraction(interaction: CommandInteraction, command, client, config, args) {
+export async function youtubeVideoStatsInteraction(interaction: CommandInteraction, config) {
 
         // Defer to send an ephemeral reply later
         interaction.deferReply()
@@ -129,7 +129,6 @@ export async function youtubeVideoStatsInteraction(interaction: CommandInteracti
         // Invalid url
 
         console.log("invalid url")
-        const commandRegex = new RegExp(`${command}`,"i")
 
         const searchYtString = ytquery.trim()
 

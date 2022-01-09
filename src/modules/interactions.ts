@@ -5,6 +5,8 @@ import { logger,tracer,span } from './logger'
 import { ping, pingInteraction } from './ping'
 import {mamaAwards2021Interaction} from './get2021mamavoteinfo'
 
+import {youtubeVideoStatsInteraction} from './youtube'
+
 interface processInteractionType {
   interaction: any;
   [key: string]: any;
@@ -22,6 +24,8 @@ export async function processInteraction(args:processInteractionType) {
        break;
      case 'lyrics':
        await geniusLyricsFromInteraction(interaction)
+      case 'yt':
+        await youtubeVideoStatsInteraction(interaction, config)
      case 'ytparty':
        //await geniusLyricsFromInteraction(interaction)
        await ytparty({message: interaction, client: args.interaction.client})
