@@ -11,6 +11,8 @@ const editJsonFile = require("edit-json-file");
 const { MessageAttachment } = require('discord.js')
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 const axios = require('axios').default;
+
+import {replyorfollowup} from './replyorfollowup'
 // Exporting the class which will be 
 // used in another file 
 // Export keyword or form should be 
@@ -133,7 +135,12 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
               }
             
   
-            await message.reply({embeds: [embedYtStats], files: [imageChartAttachment]}).then(async (repliedMessage) => {
+            await replyorfollowup(
+              {
+                messageorinteraction: message,
+              content: {embeds: [embedYtStats], files: [imageChartAttachment]}
+              }
+              ).then(async (repliedMessage) => {
               await addVideoToTrackList(body.items[0].id,body.items[0].snippet.title)
 
               var loggerBody = {type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, 
@@ -186,7 +193,12 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
         });
       } 
       catch {
-        message.reply("Ooops, Youtube crashed... try again?")
+        replyorfollowup(
+          {
+            messageorinteraction: message,
+            content: "Ooops, Youtube crashed... try again?"
+        }
+          )
       }
     });
     } 
