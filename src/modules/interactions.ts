@@ -40,25 +40,25 @@ export async function processInteraction(args:processInteractionType) {
   }
 
   
-var interactionLogger = {
-  "interaction": args.interaction,
-  "authorName": args.interaction.user.tag,
-  "type": 'interactionCreate'
+var interactionLogger:any = {
+  "interaction": interaction,
+  "authorname": interaction.user.tag,
+  "type": 'interactioncreate'
 }
 
 if (args.interaction.inGuild()) {
-  interactionLogger["guildName"] = args.interaction.guild.name;
-  interactionLogger["guildId"] = args.interaction.guildId;
+  interactionLogger["guildName"] = interaction.guild.name;
+  interactionLogger["guildId"] = interaction.guildId;
 }
 
-if (args.interaction.isCommand()) {
+if (interaction.isCommand()) {
   interactionLogger['commandOptions'] = interaction.options.data
 }
 
  await logger.discordInfoLogger.info(interactionLogger)
 
 
- await logger.discordElasticLogger.info(`${JSON.stringify(interaction), {'type': 'interactionCreate'}}`)
+ //await logger.discordElasticLogger.info(`${JSON.stringify(interaction), {'type': 'interactionCreate'}}`)
  } catch (interactionerror) {
     logger.discordErrorLogger.error(interactionerror, {type: 'interactionerror'})
 
