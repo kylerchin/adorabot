@@ -97,7 +97,7 @@ export async function processmalwarediscordmessage(message) {
 
         var arrayOfStartingUniq = _.uniq(arrayOfStarting)
 
-        logger.discordDebugLogger.debug({type: 'arrayOfStarting', array: arrayOfStarting})
+     //   logger.discordDebugLogger.debug({type: 'arrayOfStarting', array: arrayOfStarting})
       //  console.log('arrayOfStarting', arrayOfStarting)
 
         var arrayOfUrls = []
