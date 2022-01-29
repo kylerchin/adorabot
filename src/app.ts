@@ -61,7 +61,7 @@ Sentry.init({
 const manager = new ShardingManager('./dist/adora.js', {
     // for ShardingManager options see:
     // https://discord.js.org/#/docs/main/v12/class/ShardingManager
-    totalShards: 'auto',
+    totalShards: config.totalShards,
     token: config.token
 });
 

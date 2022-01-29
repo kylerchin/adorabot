@@ -1,6 +1,7 @@
 {
 	"config": {
 		"banreq": 2500,
+		"totalShards": 5,
 		"youtubeInterval": 480000,
 		"prefix": "a! ",
 		"cassandra": {
