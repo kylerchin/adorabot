@@ -27,6 +27,9 @@ Lyrics from Genius.com. Runs with `a!lyrics (searchterm)`
 
 Anti QR Phishing Feature: Automatically scans images for QR codes containing `discord.com/ra` and sends a warning message to the channel saying it is a phishing link and not to click on it.
 
+![Detect Phishing Links in text](https://user-images.githubusercontent.com/7539174/151689252-0fbb4580-dc10-4297-b64a-d0fa4f8957f6.png)
+Detect Phishing Links in text messages
+
 Features in development:
 
 - Graphing out Youtube and Spotify view counts into embeds with changable time
