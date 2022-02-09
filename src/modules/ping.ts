@@ -15,7 +15,7 @@ export async function ping(message:Message,client) {
               "fields": [
                 {
                   "name": "Shard #",
-                  "value": `${isDM ? `${message.guild.shardId.toString()}` : 'DMs'}`,
+                  "value": `${!(isDM) ? `${message.guild.shardId.toString()}` : 'DMs'}`,
                   "inline": true
                 },
                 {
@@ -55,7 +55,7 @@ export async function pingInteraction(interaction:CommandInteraction,client) {
               "fields": [
                 {
                   "name": "Shard #",
-                  "value": `${isDM ? `${interaction.guild.shardId.toString()}` : 'DMs'}`,
+                  "value": `${!(isDM) ? `${interaction.guild.shardId.toString()}` : 'DMs'}`,
                   "inline": true
                 },
                 {
