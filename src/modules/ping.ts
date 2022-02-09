@@ -9,14 +9,13 @@ export async function ping(message:Message,client) {
 
         var pingEmbedResponse:MessageOptions;
 
-        if (isDM) {
           pingEmbedResponse = {
             "embeds": [{
               "description": `**펑!** If the Latency is significantly higher than the API Latency, the bot is likely ratelimited in this channel or guild.`,
               "fields": [
                 {
                   "name": "Shard #",
-                  "value": "DMs",
+                  "value": `${isDM ? `${message.guild.shardId.toString()}` : 'DMs'}`,
                   "inline": true
                 },
                 {
@@ -32,30 +31,7 @@ export async function ping(message:Message,client) {
               ]
             }]
           }
-        } else {
-          pingEmbedResponse = {
-            "embeds": [{
-              "description": `**펑!** If the Latency is significantly higher than the API Latency, the bot is likely ratelimited in this channel or guild.`,
-              "fields": [
-                {
-                  "name": "Shard #",
-                  "value": message.guild.shardId.toString(),
-                  "inline": true
-                },
-                {
-                  "name": "Latency",
-                  "value": `\`${pingReturn.createdTimestamp - message.createdTimestamp}ms\``,
-                  "inline": true
-                },
-                {
-                  "name": "API WebSocket Latency",
-                  "value": `\`${Math.round(client.ws.ping)}ms\``,
-                  "inline": true
-                }
-              ]
-            }]
-          }
-        }
+        
         
         pingReturn.edit(pingEmbedResponse).catch();
 }
@@ -73,14 +49,13 @@ export async function pingInteraction(interaction:CommandInteraction,client) {
 
           var pingEmbedResponse:MessageOptions;
 
-        if (isDM) {
           pingEmbedResponse = {
             "embeds": [{
               "description": `**펑!** If the Latency is significantly higher than the API Latency, the bot is likely ratelimited in this channel or guild.`,
               "fields": [
                 {
                   "name": "Shard #",
-                  "value": "DMs",
+                  "value": `${isDM ? `${interaction.guild.shardId.toString()}` : 'DMs'}`,
                   "inline": true
                 },
                 {
@@ -96,30 +71,6 @@ export async function pingInteraction(interaction:CommandInteraction,client) {
               ]
             }]
           }
-        } else {
-          pingEmbedResponse = {
-            "embeds": [{
-              "description": `**펑!** If the Latency is significantly higher than the API Latency, the bot is likely ratelimited in this channel or guild.`,
-              "fields": [
-                {
-                  "name": "Shard #",
-                  "value": interaction.guild.shardId.toString(),
-                  "inline": true
-                },
-                {
-                  "name": "Latency",
-                  "value": `\`${pingReturn.createdTimestamp - timestampOfInteraction}ms\``,
-                  "inline": true
-                },
-                {
-                  "name": "API WebSocket Latency",
-                  "value": `\`${Math.round(client.ws.ping)}ms\``,
-                  "inline": true
-                }
-              ]
-            }]
-          }
-        }
         
         interaction.followUp(pingEmbedResponse).catch();  
 
