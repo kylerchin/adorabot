@@ -135,7 +135,9 @@ export async function fetchStatsForAll() {
 
                         var theRandomApiKey =  apikeysdaemonarray[Math.floor(Math.random()*apikeysdaemonarray.length)];
 
-                        const pathForYtRequest = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet,statistics,status,liveStreamingDetails&id=" + row.videoid + "&key=" + theRandomApiKey
+                        const firstPartOfPath = "https://youtube.googleapis.com/youtube/v3/videos?part=statistics&id=" 
+
+                        const pathForYtRequest = firstPartOfPath + row.videoid + "&key=" + theRandomApiKey
 
                         var youtubeclient = requestjson.createClient('https://youtube.googleapis.com/');
 
