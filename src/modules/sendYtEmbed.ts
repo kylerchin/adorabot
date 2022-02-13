@@ -48,6 +48,8 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
 
           const pathForChannelOfVideoRequest = "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2Cstatistics%2Cstatus%2CtopicDetails&id=" + channelIdOfVideo + "&key=" + apikey
 
+          console.log('promise start')
+
           var promiseresults:any = await Promise.allSettled([
             axios.get(pathForChannelOfVideoRequest),
             ytChart(body.items[0].id,{
@@ -59,7 +61,10 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
                 views: videostats.viewCount
               }
             ]})
-          ])
+          ]);
+
+          console.log('promise over')
+          console.log(promiseresults)
         
           var channelBody = promiseresults[0].value.data
           //console.log(channelBody)
@@ -83,12 +88,16 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
             message: "Retrevied Youtube Channel Information"
           })
 
-          var discordDate = `<t:${Math.round(new Date(body.items[0].snippet.publishedAt).getTime()/1000)}:F>`
+          var discordDate = `<t:${Math.floor(new Date(body.items[0].snippet.publishedAt).getTime()/1000)}:F>`
 
-         var imageChartAttachment = new Discord.MessageAttachment(imageChartBuffer, 'chart.png')
-         // const attachmentChart = new MessageAttachment(imageChartBuffer, 'file.png')
-
-          console.log('imagechartattachment', imageChartAttachment)
+          var imageChartAttachment;
+          if (successimage) {
+            imageChartAttachment = new Discord.MessageAttachment(imageChartBuffer, 'chart.png')
+            // const attachmentChart = new MessageAttachment(imageChartBuffer, 'file.png')
+   
+            console.log('imagechartattachment', imageChartAttachment)
+          }
+       
 
           var urlForEmbed = "https://youtube.com/watch?v=" + body.items[0].id
   
