@@ -366,11 +366,14 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                 );
                  }
              
-              }
+                 
               }
 
               timeLegend += 60 * 60 * 24 * 1000;
               numberOfDaysDone += 1;
+            }
+
+             
             }
 
             //under 5 days
@@ -478,7 +481,9 @@ export async function ytChart(id, optionsObject: optionsInterface) {
 
               while (
                 yAxisDrawMillions < leastAndGreatestObject["greatestViews"]
-              ) {
+              ) 
+              
+              {
                 // console.log('yaxisdraw', yAxisDrawMillions)
                 var percylegend =
                   (yAxisDrawMillions - leastAndGreatestObject["leastViews"]) /
@@ -517,8 +522,8 @@ export async function ytChart(id, optionsObject: optionsInterface) {
 
                
                 yAxisDrawMillions += 1.0e6;
-              }
-            }
+              
+            }}
 
             var hundredthousandint =
               (Math.floor(leastAndGreatestObject["leastViews"] / 1.0e5) + 1) *
@@ -660,6 +665,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
          console.log('chart finished drawing, time to resolve')
           resolve(bufferinfo);
           console.log('resolved chart')
+        
         })
         .on("error", function (err) {
           // Something went wrong: err is a response error from Cassandra
