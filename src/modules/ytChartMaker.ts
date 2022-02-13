@@ -489,11 +489,33 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                 ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy);
                 ctxSubYLineLegend.stroke();
 
-                ctxLegendYLabel.fillText(
-                  `${yAxisDrawMillions / 1.0e6}M`,
-                  30,
-                  pointy
-                );
+                if (viewRange > 9.0e7) {
+                  if ((yAxisDrawMillions / 1.0e6) % 10) {
+                    ctxLegendYLabel.fillText(
+                      `${yAxisDrawMillions / 1.0e6}M`,
+                      30,
+                      pointy
+                    );
+                  }
+                } else {
+                  if (viewRange > 2.0e7) {
+                    if ((yAxisDrawMillions / 1.0e6) % 2) {
+                      ctxLegendYLabel.fillText(
+                        `${yAxisDrawMillions / 1.0e6}M`,
+                        30,
+                        pointy
+                      );
+                    }
+                  } else {
+                    ctxLegendYLabel.fillText(
+                      `${yAxisDrawMillions / 1.0e6}M`,
+                      30,
+                      pointy
+                    );
+                  }
+                }
+
+               
                 yAxisDrawMillions += 1.0e6;
               }
             }
