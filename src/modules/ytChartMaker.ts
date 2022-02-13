@@ -1,5 +1,5 @@
 import { cassandraclient } from "./cassandraclient";
-import { tracer } from "./logger";
+import {logger, tracer} from "./logger"
 const TimeUuid = require("cassandra-driver").types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require("canvas");
 registerFont(`${__dirname}/../../LexendDecaMedium.ttf`, {
@@ -300,6 +300,8 @@ export async function ytChart(id, optionsObject: optionsInterface) {
 
             var numberOfDaysDone = 0;
 
+            var monthsAdded=[]
+
             while (timeLegend < leastAndGreatestObject["greatestTime"]) {
 
               //console.log("draw legend")
@@ -313,6 +315,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               ctxSubLegend.closePath();
 
               var daysLabelsOffsetFromBottom = 40;
+              var monthsLabelsOffsetFromBottom = 25;
               var modulusForDays = 1;
 
               //more than 20 days
@@ -322,17 +325,48 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                }    
                
 
-               //more than 60 days
+               //more than 40 days
                if (timeRange > 60 * 60 * 24 * 1000 * 40) {
                 modulusForDays = 4;
                }
 
+               if (timeRange >= 40 * 60 * 24 * 1000 * 20) {
+                  //bigger than 40 days
+                    //draw Months
+
+                var monthCodeToWrite = new Date(timeLegend).getUTCMonth() + 1
+
+                    if (!(monthsAdded.includes(monthCodeToWrite))) {
+                    ctxLegendXLabel.fillText(
+                      `${monthCodeToWrite}월`,
+                      pointx,
+                      canvas.height - monthsLabelsOffsetFromBottom
+                    );
+                    monthsAdded.push(monthCodeToWrite)
+                    }
+
+               }
+
               if (numberOfDaysDone % modulusForDays !== 0) {
-              ctxLegendXLabel.fillText(
-                `${new Date(timeLegend).getUTCMonth() + 1}/${new Date(timeLegend).getUTCDate()}`,
-                pointx,
-                canvas.height - daysLabelsOffsetFromBottom
-              );
+                 //less than 40 days
+                if (timeRange < 40 * 60 * 24 * 1000 * 20) {
+                  // month and date
+                  ctxLegendXLabel.fillText(
+                    `${new Date(timeLegend).getUTCMonth() + 1}/${new Date(timeLegend).getUTCDate()}`,
+                    pointx,
+                    canvas.height - daysLabelsOffsetFromBottom
+                  );
+                 } else {
+                  //bigger than 40 days
+                    //draw only the date
+                ctxLegendXLabel.fillText(
+                  `${new Date(timeLegend).getUTCDate()}`,
+                  pointx,
+                  canvas.height - daysLabelsOffsetFromBottom
+                );
+                 }
+             
+              }
               }
 
               timeLegend += 60 * 60 * 24 * 1000;
@@ -595,7 +629,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
             ctxlegend.stroke();
 
             ctxlegend.closePath()
-          }
+          ;
 
           const bufferinfo = canvas.toBuffer("image/png", {
             compressionLevel: 7,
@@ -607,6 +641,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
           // Something went wrong: err is a response error from Cassandra
           console.log(err);
           reject(err);
+          logger.discordErrorLogger.error(err, {type: 'chartmakerfail'})
         });
     });
   });

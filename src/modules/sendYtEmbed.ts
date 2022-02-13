@@ -48,7 +48,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
 
           const pathForChannelOfVideoRequest = "https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2Cstatistics%2Cstatus%2CtopicDetails&id=" + channelIdOfVideo + "&key=" + apikey
 
-          var promiseresults = await Promise.all([
+          var promiseresults:any = await Promise.allSettled([
             axios.get(pathForChannelOfVideoRequest),
             ytChart(body.items[0].id,{
               channelId: body.items[0].snippet.channelId, 
@@ -61,18 +61,20 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
             ]})
           ])
         
-          var channelBody = promiseresults[0].data
+          var channelBody = promiseresults[0].value.data
           //console.log(channelBody)
-          var imageChartBuffer = promiseresults[1]
+          var imageChartBuffer;
+          var successimage = false;
+          if (promiseresults[0].status === "fulfilled") {
+           imageChartBuffer = promiseresults[1].value;
+           successimage = true;
+          }
 
           logger.discordInfoLogger.info({
             type: "ytchartreturn",
-            data: imageChartBuffer,
             videoid: body.items[0].id,
             title: `${body.items[0].snippet.title}`
-
           })
-
 
           //console.dir(body)
           logger.discordDebugLogger.debug({
@@ -80,8 +82,6 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
             body: channelBody,
             message: "Retrevied Youtube Channel Information"
           })
-
-        
 
           var discordDate = `<t:${Math.round(new Date(body.items[0].snippet.publishedAt).getTime()/1000)}:F>`
 
@@ -92,16 +92,14 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
 
           var urlForEmbed = "https://youtube.com/watch?v=" + body.items[0].id
   
-            const embedYtStats:Discord.MessageEmbedOptions = 
+            var embedYtStats:Discord.MessageEmbedOptions = 
               {
                 "url": urlForEmbed,
-                "description": "*" + Util.escapeMarkdown(channelBody.items[0].snippet.title) + "*\n" + "https://youtu.be/" + body.items[0].id,
+                "description": "*" + Util.escapeMarkdown(channelBody.items[0].snippet.title) + "*\n" + "https://youtu.be/" + body.items[0].id +
+                 `${successimage ? '' : '\nChart Image software crashed, couldn\'t generate. Try again?'}`,
                 "color": 16711680,
                 "thumbnail": {
                   "url": body.items[0].snippet.thumbnails.default.url
-                },
-                "image": {
-                  "url": `attachment://${imageChartAttachment.name}`,
                 },
                 "author": {
                   "name": Util.escapeMarkdown(body.items[0].snippet.title),
@@ -132,14 +130,28 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
                     "value":`${discordDate}`
                   }
                 ]
-              }
+              };
+
+              var contentOfMessageReply:any;
+             
+
+              if (successimage) {
+                embedYtStats['image'] = {
+                  "url": `attachment://${imageChartAttachment.name}`,
+                }
+                contentOfMessageReply = {
+                  messageorinteraction: message,
+                  content: {embeds: [embedYtStats], files: [imageChartAttachment]}
+                  }
+                } else {
+                  contentOfMessageReply = {
+                    messageorinteraction: message,
+                    content: {embeds: [embedYtStats]}
+                    }
+                }
             
-  
             await replyorfollowup(
-              {
-                messageorinteraction: message,
-              content: {embeds: [embedYtStats], files: [imageChartAttachment]}
-              }
+              contentOfMessageReply
               ).then(async (repliedMessage) => {
               await addVideoToTrackList(body.items[0].id,body.items[0].snippet.title)
 
@@ -147,7 +159,6 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
               titleOfVideo: body.items[0].snippet.title
             }
               
-
               if(repliedMessage.guild) {
                 loggerBody["guildName"] = repliedMessage.guild.name,
                 loggerBody["guildId"] = repliedMessage.guild.id
