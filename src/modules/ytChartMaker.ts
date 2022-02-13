@@ -657,7 +657,9 @@ export async function ytChart(id, optionsObject: optionsInterface) {
             compressionLevel: 7,
           });
          // console.log(bufferinfo);
+         console.log('chart finished drawing, time to resolve')
           resolve(bufferinfo);
+          console.log('resolved chart')
         })
         .on("error", function (err) {
           // Something went wrong: err is a response error from Cassandra
