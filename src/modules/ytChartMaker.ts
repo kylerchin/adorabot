@@ -338,7 +338,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
 
                     if (!(monthsAdded.includes(monthCodeToWrite))) {
                     ctxLegendXLabel.fillText(
-                      `${monthCodeToWrite}월`,
+                      `${monthCodeToWrite}`,
                       pointx,
                       canvas.height - monthsLabelsOffsetFromBottom
                     );
