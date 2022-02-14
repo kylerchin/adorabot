@@ -324,16 +324,51 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                 //bigger than 40 days
                   //draw Months
 
-              var monthCodeToWrite = new Date(timeLegend).getUTCMonth() + 1
+              var monthCodeToWrite = `${new Date(timeLegend).getUTCMonth() + 1}월`
 
-                  if (!(monthsAdded.includes(monthCodeToWrite))) {
-                  ctxLegendXLabel.fillText(
-                    `${monthCodeToWrite}`,
-                    pointx,
-                    canvas.height - monthsLabelsOffsetFromBottom
-                  );
-                  monthsAdded.push(monthCodeToWrite)
-                  }
+              var averagePointForThisMonth = new Date(
+                Date.UTC(
+                  leastTimeDateObject.getUTCFullYear(),
+                  leastTimeDateObject.getUTCMonth(),
+                  15,
+                  leastTimeDateObject.getUTCHours()
+                )
+              ).getTime();
+
+
+                  var monthref = new Date(timeLegend).getUTCFullYear() + '-' + new Date(timeLegend).getUTCMonth()
+                  if (averagePointForThisMonth > leastAndGreatestObject.leastTime &&  
+                    averagePointForThisMonth < leastAndGreatestObject.greatestTime) {
+                      if (new Date(timeLegend).getUTCDate() === 15) {
+                        ctxLegendXLabel.fillText(
+                          `${monthCodeToWrite}`,
+                          pointx,
+                          canvas.height - monthsLabelsOffsetFromBottom
+                        );
+                        
+                      }
+                    } else {
+                      var farpoint = 0;
+
+                      if (averagePointForThisMonth < leastAndGreatestObject.leastTime) {
+                        farpoint = paddingLeft;
+                      } else {
+                        farpoint = canvas.width - paddingRight;
+                      }
+
+                      if (!(monthsAdded.includes(monthref))) {
+                        ctxLegendXLabel.fillText(
+                          `${monthCodeToWrite}`,
+                          farpoint,
+                          canvas.height - monthsLabelsOffsetFromBottom
+                        );
+                        monthsAdded.push(monthref)
+                      }
+
+                      
+                    }
+              
+                
 
              }
 
@@ -352,12 +387,14 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               if (numberOfDaysDone % modulusForDays == 0) {
                  //less than 40 days
                 if (timeRange < 40 * 60 * 24 * 1000 * 20) {
-                  // month and date
-                  ctxLegendXLabel.fillText(
+                  
+                   // month and date
+                   ctxLegendXLabel.fillText(
                     `${new Date(timeLegend).getUTCMonth() + 1}/${new Date(timeLegend).getUTCDate()}`,
                     pointx,
                     canvas.height - daysLabelsOffsetFromBottom
                   );
+
                  } else {
                   //bigger than 40 days
                     //draw only the date
@@ -368,7 +405,6 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                 );
                  }
              
-                 
               }
 
               timeLegend += 60 * 60 * 24 * 1000;
