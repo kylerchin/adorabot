@@ -8,9 +8,11 @@ registerFont(`${__dirname}/../../LexendDecaMedium.ttf`, {
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 
-var arrayOfMonthsEnglishShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Decs"]
+var arrayOfMonthsEnglishShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 
 const phi = 1.618033988749895;
+
+
 
 interface optionsInterface {
   channelId?: string;
@@ -222,7 +224,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
           } catch (error) {
             console.log(error);
           }
-          if (numberOfRows === 0 || viewRange < 3 || isBlocked) {
+          if (numberOfRows === 0 || viewRange < 3 || isBlocked || (leastAndGreatestObject["leastTime"] == null)) {
             // Write "Not Enough Data"
             ctx.fillStyle = "#ffffff";
             ctx.font = "200px Lexend Deca";
@@ -302,6 +304,8 @@ export async function ytChart(id, optionsObject: optionsInterface) {
 
             var monthsAdded=[]
 
+            
+
             while (timeLegend < leastAndGreatestObject["greatestTime"]) {
 
               //console.log("draw legend")
@@ -318,6 +322,23 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               var monthsLabelsOffsetFromBottom = 25;
               var modulusForDays = 1;
 
+              if (timeRange >= 40 * 60 * 24 * 1000 * 20) {
+                //bigger than 40 days
+                  //draw Months
+
+              var monthCodeToWrite = new Date(timeLegend).getUTCMonth() + 1
+
+                  if (!(monthsAdded.includes(monthCodeToWrite))) {
+                  ctxLegendXLabel.fillText(
+                    `${monthCodeToWrite}`,
+                    pointx,
+                    canvas.height - monthsLabelsOffsetFromBottom
+                  );
+                  monthsAdded.push(monthCodeToWrite)
+                  }
+
+             }
+
               //more than 20 days
               if (timeRange > 60 * 60 * 24 * 1000 * 20) {
                 daysLabelsOffsetFromBottom  = 80;
@@ -327,27 +348,10 @@ export async function ytChart(id, optionsObject: optionsInterface) {
 
                //more than 40 days
                if (timeRange > 60 * 60 * 24 * 1000 * 40) {
-                modulusForDays = 4;
+                modulusForDays = 3;
                }
 
-               if (timeRange >= 40 * 60 * 24 * 1000 * 20) {
-                  //bigger than 40 days
-                    //draw Months
-
-                var monthCodeToWrite = new Date(timeLegend).getUTCMonth() + 1
-
-                    if (!(monthsAdded.includes(monthCodeToWrite))) {
-                    ctxLegendXLabel.fillText(
-                      `${monthCodeToWrite}`,
-                      pointx,
-                      canvas.height - monthsLabelsOffsetFromBottom
-                    );
-                    monthsAdded.push(monthCodeToWrite)
-                    }
-
-               }
-
-              if (numberOfDaysDone % modulusForDays !== 0) {
+              if (numberOfDaysDone % modulusForDays == 0) {
                  //less than 40 days
                 if (timeRange < 40 * 60 * 24 * 1000 * 20) {
                   // month and date
