@@ -1,3 +1,4 @@
+
 # Adora Bot
 
 Adora bot is a general purpose bot aimed at Kpop Discord Servers.
@@ -101,3 +102,15 @@ Keyspace `adorastats`
 1. `ytvideostats`, stores individual points of data, like "BTS Dynamite had 1 Billion Views at Sep 1st 2021". Each video can have thousands of points depending on how often the points are added
 2. `trackedytvideosids stores which youtube videos should be queried for views regularly`
 3. `statpoints`, literally the number of ytvideostats there are , so SELECT COUNT(*) doesn't crash the whole system
+
+### Font Dependencies
+
+You need to install font dependencies for a lot of the canvas stuff to work, otherwise, EMPTY UNICODE BOXES!!!!
+
+`sudo apt-get install fonts-arphic-uming fonts-ipafont-mincho ttf-wqy-zenhei ttf-unfonts-core fonts-takao fonts-dejavu ttf-mscorefonts-installer`
+
+### Canvas Dependencies
+
+[https://github.com/Automattic/node-canvas]()
+
+Install the dependencies!!!! On ubuntu, run `sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev`
