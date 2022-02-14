@@ -12,8 +12,6 @@ var arrayOfMonthsEnglishShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug"
 
 const phi = 1.618033988749895;
 
-
-
 interface optionsInterface {
   channelId?: string;
   [key: string]: any;
@@ -377,9 +375,6 @@ export async function ytChart(id, optionsObject: optionsInterface) {
               numberOfDaysDone += 1;
             }
 
-             
-            }
-
             //under 5 days
             var hourDerivative = 60 * 60 * 1000;
 
@@ -661,6 +656,8 @@ export async function ytChart(id, optionsObject: optionsInterface) {
 
             ctxlegend.closePath()
           ;
+
+            }
 
           const bufferinfo = canvas.toBuffer("image/png", {
             compressionLevel: 7,
