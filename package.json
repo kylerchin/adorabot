@@ -80,7 +80,7 @@
     "lodash": "^4.17.21",
     "mathram": "^1.0.5",
     "node-dogstatsd": "0.0.7",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "npm": "^8.3.1",
     "number-to-base64": "^1.0.5",
     "opusscript": "^0.0.8",
