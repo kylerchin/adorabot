@@ -635,7 +635,7 @@ export async function processAllModerationCommands(message, command, args, confi
 
                 var numberOfSuccessfulBansOnThisOperation = 0
 
-                var queryForBanList = "SELECT * FROM adoramoderation.banneduserlist WHERE banned = ? ALLOW FILTERING;"
+                var queryForBanList = "SELECT * FROM adoramoderation.banneduserlist WHERE banned = ?;"
                 var parametersForBanList = [true];
 
                 await cassandraclient.execute(queryForBanList, parametersForBanList)
@@ -913,7 +913,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
     console.log('server id list length: ' + currentShardServerIDArray.length)
 
 
-    var queryForBanList = "SELECT * FROM adoramoderation.banneduserlist;"
+    var queryForBanList = "SELECT * FROM adoramoderation.banneduserlist WHERE banned = ?;"
     var parametersForBanList = [true];
     var globallistOfBannableUsers
     //fetch the ban database
