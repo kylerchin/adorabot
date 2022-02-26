@@ -913,7 +913,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
     console.log('server id list length: ' + currentShardServerIDArray.length)
 
 
-    var queryForBanList = "SELECT * FROM adoramoderation.banneduserlist WHERE banned = ?;"
+    var queryForBanList = "SELECT * FROM adoramoderation.banneduserlist;"
     var parametersForBanList = [true];
     var globallistOfBannableUsers
     //fetch the ban database
@@ -1102,6 +1102,12 @@ export async function runOnStartup(cassandraclient, client) {
     .catch((error) => {
         console.error(error)
     });
+
+    await cassandraclient.execute("CREATE INDEX ON adoramoderation.banneduserlist (banned);")
+    .catch((error) => {
+        console.error(error)
+    });
+    
 
     everyServerRecheckBans(cassandraclient, client, false)
 }
