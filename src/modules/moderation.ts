@@ -913,7 +913,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
     console.log('server id list length: ' + currentShardServerIDArray.length)
 
 
-    var queryForBanList = "SELECT * FROM adoramoderation.banneduserlist WHERE banned = ? ALLOW FILTERING;"
+    var queryForBanList = "SELECT * FROM adoramoderation.banneduserlist WHERE banned = ?;"
     var parametersForBanList = [true];
     var globallistOfBannableUsers
     //fetch the ban database
@@ -1046,6 +1046,9 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                             }
                         })
                     })
+                    .catch((error) => {
+                        logger.discordErrorLogger.error(error, {type: 'completedbansgetfailed'})
+                    })
 
 
 
@@ -1087,9 +1090,18 @@ export async function runOnStartup(cassandraclient, client) {
             await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
         }).catch(error => console.error(error));
 
-    await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.completedbans (guildid text, userid text, timeofban bigint, PRIMARY KEY (guildid, userid))")
+    await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.completedbans (guildid text, userid text, timeofban bigint, PRIMARY KEY (guildid, userid))").catch((error) => {
+        console.error(error);
+    });
 
-    await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.nonmemberbanlimit (guildid text PRIMARY KEY, time bigint)")
+    await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoramoderation.nonmemberbanlimit (guildid text PRIMARY KEY, time bigint)").catch((error) => {
+        console.error(error);
+    });
+    
+    await cassandraclient.execute("CREATE INDEX ON adoramoderation.banneduserlist (banneduserid);")
+    .catch((error) => {
+        console.error(error)
+    });
 
     everyServerRecheckBans(cassandraclient, client, false)
 }

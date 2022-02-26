@@ -93,6 +93,9 @@ export async function strikeBanHammer(options: optionsInterface) {
                         .catch();
                 }
             });
+        } else {
+            console.log('ban not completed yet ',  banNotCompletedYet)
+            console.log('isNotLimitedByNonMemberBanLimit', isNotLimitedByNonMemberBanLimit)
         }
        
     }
