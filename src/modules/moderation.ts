@@ -968,7 +968,7 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
                 //console.log(individualservertodoeachban)
 
                 // var listofusersbannedinindividualserver = await individualservertodoeachban.bans.fetch();
-                await cassandraclient.execute("SELECT * FROM adoramoderation.completedbans WHERE guildid = ?", [individualservertodoeachban.id], { prepare: true })
+                await cassandraclient.execute("SELECT * FROM adoramoderation.completedbans WHERE guildid = ?", [eachServerThatIsSubscribed.serverid], { prepare: true })
                     .then(async (listOfUsersRaw) => {
                         const listofusersbannedinindividualserver = listOfUsersRaw.rows.map((eachRow) => eachRow.userid);
                     //    console.log('listofusersbannedinindividualserver',listofusersbannedinindividualserver)
