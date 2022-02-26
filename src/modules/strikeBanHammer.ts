@@ -37,6 +37,9 @@ export async function strikeBanHammer(options: optionsInterface) {
         .then((resultOfIsBanCompleted) => {
             if (resultOfIsBanCompleted.rows.length === 0) {
                 banNotCompletedYet = true;
+            } else {
+                console.log('ban already exists')
+                console.log(resultOfIsBanCompleted.rows[0])
             }
         })
         .catch((error) => {
