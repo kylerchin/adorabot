@@ -40,6 +40,9 @@ import { alertBotAdder } from './modules/alertBotAdder';
 import { listChartsDownload } from './modules/billboard';
 import { createDatabase } from './modules/antiPhishingLinks';
 
+
+runOnStartup(cassandraclient, client)
+
 client.everyServerRecheckBansOnThisShard = async () => {
   everyServerRecheckBans(cassandraclient, client, false);
   //3rd argument is if the function should recheck Unkown Bans
@@ -111,7 +114,6 @@ client.on('guildMemberAdd', async (member) => {
 
 client.on('ready',async () => {
   try {
-    runOnStartup(cassandraclient, client)
     client.everyServerRecheckBansOnThisShard();
     console.log(`Logged in as ${client.user.tag}!`)
     await logger.discordInfoLogger.info(`Ban Daemon Logged in as ${client.user.tag}!`, { type: 'clientReady'});

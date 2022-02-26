@@ -1070,6 +1070,8 @@ export async function everyServerRecheckBans(cassandraclient, client, recheckUnk
 
 
 export async function runOnStartup(cassandraclient, client) {
+    console.log('running database maker')
+
     //This Function will automatically create the adoramoderation keyspace if it doesn't exist, otherwise, carry on
     await cassandraclient.execute("CREATE KEYSPACE IF NOT EXISTS adoramoderation WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy',  'datacenter1': 1  };")
         .then(async result => {
@@ -1098,12 +1100,15 @@ export async function runOnStartup(cassandraclient, client) {
         console.error(error);
     });
     
-    await cassandraclient.execute("CREATE INDEX ON adoramoderation.banneduserlist (banneduserid);")
+    await cassandraclient.execute("CREATE INDEX IF NOT EXISTS ON adoramoderation.banneduserlist (banneduserid);")
     .catch((error) => {
         console.error(error)
     });
 
-    await cassandraclient.execute("CREATE INDEX ON adoramoderation.banneduserlist (banned);")
+    await cassandraclient.execute("CREATE INDEX IF NOT EXISTS ON adoramoderation.banneduserlist (banned);")
+    .then((result) => {
+        console.log('index made on banned user list')
+    })
     .catch((error) => {
         console.error(error)
     });
