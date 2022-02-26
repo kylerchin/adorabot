@@ -1109,5 +1109,5 @@ export async function runOnStartup(cassandraclient, client) {
     });
     
 
-    everyServerRecheckBans(cassandraclient, client, false)
+   // everyServerRecheckBans(cassandraclient, client, false)
 }
