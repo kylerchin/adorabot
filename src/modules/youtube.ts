@@ -50,7 +50,7 @@ export async function youtubeHelpMessageReply(message) {
         "Acceptable URLS include\n" +
         "Youtube `a!yt https://youtube.com/watch?v=FFmdTU4Cpr8`\n" +
         "YouTu.be `a!youtube https://youtu.be/FFmdTU4Cpr8`\n" +
-        "Youtube Music `a!youtube https://music.youtube.com/watch?v=FFmdTU4Cpr8`" +
+        "Youtube Music `a!youtube https://music.youtube.com/watch?v=FFmdTU4Cpr8`\n" +
         "YouTube shorts `a!yt  https://www.youtube.com/shorts/gzhHC1nOrm8`" + 
         "\n\nLooking to watch videos together? use `a!ytparty`")
 }
@@ -119,7 +119,7 @@ export async function youtubeVideoStatsInteraction(interaction: CommandInteracti
 
     if (isUrl(ytquery)) {
         if (ytquery.includes("youtube.com/shorts/")) {
-            var precurser = ytquery.replace("www.youtube.com/shorts/", "www.youtube.com/watch?v=")
+            var precurser = ytquery.replace("youtube.com/shorts/", "youtube.com/watch?v=")
         }
              // Valid url
         if (ytquery.includes("youtu.be/")) {
