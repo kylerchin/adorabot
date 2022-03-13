@@ -51,6 +51,7 @@ export async function youtubeHelpMessageReply(message) {
         "Youtube `a!yt https://youtube.com/watch?v=FFmdTU4Cpr8`\n" +
         "YouTu.be `a!youtube https://youtu.be/FFmdTU4Cpr8`\n" +
         "Youtube Music `a!youtube https://music.youtube.com/watch?v=FFmdTU4Cpr8`" +
+        "YouTube shorts `a!yt  https://www.youtube.com/shorts/gzhHC1nOrm8`" + 
         "\n\nLooking to watch videos together? use `a!ytparty`")
 }
 
@@ -117,13 +118,19 @@ export async function youtubeVideoStatsInteraction(interaction: CommandInteracti
     var ytquery = interaction.options.getString('search-or-url');
 
     if (isUrl(ytquery)) {
-        // Valid url
+        if (ytquery.includes("youtube.com/shorts/")) {
+            var precurser = ytquery.replace("www.youtube.com/shorts/", "www.youtube.com/watch?v=")
+        }
+             // Valid url
         if (ytquery.includes("youtu.be/")) {
             var precurser = ytquery.replace("youtu.be/", "www.youtube.com/watch?v=")
         } else {
             var precurser = ytquery
         }
         videoID = getQueryParam('v', precurser)
+        
+
+       
         sendYtCountsEmbed(videoID, interaction, youtubeApiKeyRandomlyChosen)
     } else {
         // Invalid url
@@ -229,6 +236,9 @@ export async function youtubeVideoStats(message:Message, command, client, config
 
     var videoID = "dQw4w9WgXcQ"
     if (isUrl(args[0])) {
+        if (args[0].includes("youtube.com/shorts/")) {
+            var precurser = args[0].replace("www.youtube.com/shorts/", "www.youtube.com/watch?v=")
+        }
         // Valid url
         if (args[0].includes("youtu.be/")) {
             var precurser = args[0].replace("youtu.be/", "www.youtube.com/watch?v=")
