@@ -17,6 +17,10 @@ export async function adminhelp(adminhelpargs) {
                             "name": `a!currentinfo`,
                             "value": "Shows the current message id, channel id, and guild id"
                         },
+                        {
+                            "name": `a!manualvoteadd`,
+                            "value": `\`a!manualvoteadd <userid> <service>\`\nAdds vote manually to system`
+                        }
                     ]
                 },
                 {
