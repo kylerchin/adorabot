@@ -140,6 +140,7 @@ const httpServer = http.createServer(app);
 const httpsServer = https.createServer({
   key: fs.readFileSync(`${__dirname}/../certs/live/api.adora.yk3music.com/privkey.pem`),
   cert: fs.readFileSync(`${__dirname}/../certs/live/api.adora.yk3music.com/fullchain.pem`),
+  ca:  fs.readFileSync(`${__dirname}/../certs/live/api.adora.yk3music.com/chain.pem`)
 }, app);
 
 /*httpServer.listen(2999, () => {
