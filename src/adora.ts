@@ -50,6 +50,9 @@ import {dogstatsd} from './modules/dogstats'
 import { alertBotAdder } from './modules/alertBotAdder';
 import { listChartsDownload } from './modules/billboard';
 import { createDatabase } from './modules/antiPhishingLinks';
+const NodeCache = require( "node-cache" );
+const adoravotesremindedalready = new NodeCache({ stdTTL: 1000, checkperiod: 1 });
+
 
 client.everyServerRecheckBansOnThisShard = async () => {
   //everyServerRecheckBans(cassandraclient, client, false);
@@ -97,11 +100,71 @@ async function moderationCassandra() {
  // await runOnStartup(cassandraclient, client)
 }
 
+  var hasconnected = false;
+
+var twelvehours = 12 * 60 * 60 * 1000
+
 client.on("debug",async (info) => {
 try {
   const logDebug = await logger.discordDebugLoggerNoConsole.debug({clientEvent: "debug", debugInfo: info, type: "clientdebug"});
   console.log(info)
   tracer.inject(span,'log',logDebug)
+
+  // in the future... restrict to 1 shard
+  try {
+    if ( recievedFirstMessageState) {
+      cassandraclient.execute("SELECT * FROM adoravotes.pendingvotereminders", {prepare: true})
+      .then((adoravotescassandra) => {
+        adoravotescassandra.forEach((eachRow) => {
+          
+          // check if more than 12 hours ago
+  
+          if (eachRow.time.getDate().getTime() < Date.now() - twelvehours) {
+           var valueofremindedalready = adoravotesremindedalready.get(`${eachRow.time}-${eachRow.service}`);
+  
+           if (valueofremindedalready === undefined) {
+  
+            //save in cache
+            adoravotesremindedalready.set(`${eachRow.time}-${eachRow.service}`,true);
+  
+            cassandraclient.execute("DELETE FROM adoravotes.pendingvotereminders WHERE time = ?", [
+              eachRow.time
+            ], {prepare: true})
+            .then((deleterowsuccess) => {
+              client.users.fetch(eachRow.userid).then((user) => {
+                try {
+                  var stringToSend;
+
+                  if (eachRow.service === 'topgg') {
+                    stringToSend = "Thank you so much for voting earlier for Adora! You're eligable to vote again on Top.gg! \nEvery vote is 1 ticket in the monthly nitro giveaway! \n  Here's the link if you need it :purple_heart:  https://top.gg/bot/737046643974733845/vote"
+                  }
+                  if (eachRow.service === "discordbotlist") {
+                    stringToSend = "Thank you so much for voting earlier for Adora! You're eligable to vote again on Discord Bot List! \nEvery vote is 1 ticket in the monthly nitro giveaway! \n Here's the link if you need it :purple_heart: https://discordbotlist.com/bots/adora-ahelp/upvote"
+                  }
+                  user.send();	
+                } catch (err){
+                  console.error(err);
+                }
+            })
+            .catch(error => {
+              console.error(error)
+            })
+  
+           }
+          }
+  
+        })
+      })
+      .catch(error => {
+        console.error(error)
+      })
+    }
+   
+  }
+   catch(error) {
+     console.error(error)
+   }
+
   //console.log(info)
 } catch (hell) {
   console.error(hell)
