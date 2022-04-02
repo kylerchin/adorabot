@@ -238,7 +238,7 @@ lastVoteTimeForReqUserDbl, {type: "debugvote"});
 
         //format next time to vote
         if (lastVoteTimeForReqUserTopgg < Date.now() - twelvehours) {
-            voteAskString += "\nTop.gg: Now! :white_check_mark:"
+            voteAskString += "\nTop.gg: Now! :white_check_mark:\nhttps://top.gg/bot/737046643974733845/vote"
         } else {
             var nextVoteUnixTopgg = Math.round((lastVoteTimeForReqUserTopgg + twelvehours) / 1000)
             voteAskString += `\nTop.gg: <t:${nextVoteUnixTopgg}:R>\n <t:${nextVoteUnixTopgg}:d> <t:${nextVoteUnixTopgg}:T>`
@@ -246,7 +246,7 @@ lastVoteTimeForReqUserDbl, {type: "debugvote"});
 
          //format next time to vote
          if (lastVoteTimeForReqUserDbl < Date.now() - twelvehours) {
-            voteAskString += "\nDBL: Now! :white_check_mark:"
+            voteAskString += "\nDBL: Now! :white_check_mark:\nhttps://discordbotlist.com/bots/adora-ahelp/upvote"
         } else {
             var nextVoteUnixDbl = Math.round((lastVoteTimeForReqUserDbl + twelvehours) / 1000)
             voteAskString += `\nDBL: <t:${nextVoteUnixDbl}:R>\n <t:${nextVoteUnixDbl}:d> <t:${nextVoteUnixDbl}:T>`
@@ -293,7 +293,7 @@ lastVoteTimeForReqUserDbl, {type: "debugvote"});
 
         var pageCounter = 0;
  
-        voteArgs.message.channel.send(pageEmbedArray[pageCounter]).then(async (messageVotes: Message) => {
+        voteArgs.message.reply(pageEmbedArray[pageCounter]).then(async (messageVotes: Message) => {
             if (pages.length != 1) {
                 messageVotes.react('⬅').then( r => {
                     messageVotes.react('➡').then( r => {
