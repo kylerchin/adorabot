@@ -838,14 +838,6 @@
     "slash" "3.0.0"
     "source-map" "^0.7.3"
 
-"@swc/core-linux-x64-gnu@^1.2.88":
-  "integrity" "sha512-dKCfYQjI+9L62DCXycJS/hBRd6Ta5KOauK7rNk1Md09QoK1ozAtK0t5WSS6qJV6Qz+McGx0DT363VRRsUxItNw=="
-  "version" "1.2.88"
-
-"@swc/core-linux-x64-musl@^1.2.88":
-  "integrity" "sha512-IgIdLA5xBaAx6VnaxEHtHzumeuVtPTOIneDX7vqLMVf87VF5QzqXNj/PXbRtnutE2Yw0lDoslkz/ABmKWtyiEA=="
-  "version" "1.2.88"
-
 "@swc/core@^1.2.61", "@swc/core@^1.2.66", "@swc/core@>=1.2.50":
   "integrity" "sha512-CTnMGafEKEG8404Av9bKpffUVdKedYrmRPsQShJNg6wY7dPltbqsNcZUuC+8b1lQzY8axG4ypemxNAnOYtbwfg=="
   "version" "1.2.88"

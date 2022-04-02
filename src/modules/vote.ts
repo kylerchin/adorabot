@@ -4,6 +4,7 @@ import { Message, MessageOptions, Util } from 'discord.js'
 var Discord = require('discord.js')
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 import {cassandraclient} from './cassandraclient'
+import {logger,tracer,span} from './logger'
 
 //stolen from https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
 function sortObject(obj) {
@@ -84,12 +85,14 @@ export async function showTopVoters(voteArgs:showTopVotersArgs) {
         console.log(row.userid);
 
         if (row.userid === authorid) {
-            if (row.service === "topgg") {
+            console.log('found author id in req');
+ await logger.discordInfoLogger.info("found author in req", {type: "debugvote"});
+            if (row.voteservice == "topgg") {
                 if (lastVoteTimeForReqUserTopgg < row.time.getDate().getTime()) {
                     lastVoteTimeForReqUserTopgg = row.time.getDate().getTime();
                 }
             }
-            if (row.service === "discordbotlist") {
+            if (row.voteservice == "discordbotlist") {
                 if (lastVoteTimeForReqUserDbl < row.time.getDate().getTime()) {
                     lastVoteTimeForReqUserDbl = row.time.getDate().getTime();
                 }
@@ -229,6 +232,9 @@ if(_.size(leaderboard) === 0) {
         var twelvehours = 12 * 60 * 60 * 1000
 
         var voteAskString = "Your Next Vote Times:"
+
+ await logger.discordInfoLogger.info("top gg time is " + lastVoteTimeForReqUserTopgg + "dbl is" +
+lastVoteTimeForReqUserDbl, {type: "debugvote"});
 
         //format next time to vote
         if (lastVoteTimeForReqUserTopgg < Date.now() - twelvehours) {
