@@ -37,19 +37,37 @@ async function createDatabases() {
          /*console.log(result)*/
      }).catch(error => console.error(error));
 
+         //Goes inside adoravotes keyspace, makes the table "pendingreminders"
+         await cassandraclient.execute("CREATE TABLE IF NOT EXISTS adoravotes.pendingvotereminders (time timeuuid PRIMARY KEY, userid text, service text, sent boolean);")
+         .then(async result => {
+             await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
+             /*console.log(result)*/
+         }).catch(error => console.error(error));
+
 }
 
 export async function addNewVote(userid,service) {
+  var timeuuid = TimeUuid.now()
+
   const query = 'INSERT INTO adoravotes.votes (time, voteservice, userid) VALUES (?, ?, ?)';
   var params;
-      params = [TimeUuid.now(), service, userid];
+      params = [timeuuid, service, userid];
 
   await cassandraclient.execute(query, params, { prepare: true }, await function (err) {
       console.log(err);
       //Inserted in the cluster
       //logger.discordInfoLogger.info("Inserted Vote from Top.gg into database", {"type": "VoteWebhookDatabase"})
   });
-}
+
+  await cassandraclient.execute("INSERT INTO adoravotes.pendingvotereminders (time, userid, service, sent) VALUES (?,?,?,?)",
+  [timeuuid, userid, service, false])
+  .then((results) => {
+    
+  })
+  .catch((error) => {
+    console.error(error)
+  })
+} 
 
 const cassandraclient = new cassandra.Client({
   contactPoints: config.cassandra.contactPoints,
