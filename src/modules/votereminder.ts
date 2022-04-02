@@ -10,7 +10,7 @@ const adoravotesremindedalready = new NodeCache({ stdTTL: 1000, checkperiod: 1 }
 export function voteReminderRuntime(cassandraclient,client) {
     logger.discordInfoLogger.info("recievedfirstmsg", {type: 'votereminddebug'});
 
-    cassandraclient.execute("SELECT * FROM adoravotes.pendingvotereminders", {prepare: true})
+    cassandraclient.execute("SELECT * FROM adoravotes.pendingvotereminders", [], {prepare: true})
     .then((adoravotescassandra) => {
     
       var latestTopggVoteTimes = {
