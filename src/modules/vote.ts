@@ -74,12 +74,29 @@ export async function showTopVoters(voteArgs:showTopVotersArgs) {
     var query = "SELECT * from adoravotes.votes WHERE time >= ? ALLOW FILTERING";
     var params = [id2]
 
+    var lastVoteTimeForReqUserTopgg = 0
+    var lastVoteTimeForReqUserDbl = 0
+    var authorid = voteArgs.message.author.id;
+
     const result = await cassandraclient.execute(query, params, { prepare: true });
 
         for await (const row of result) {
         console.log(row.userid);
 
-        console.log(row.voteservice)
+        if (row.userid === authorid) {
+            if (row.service === "topgg") {
+                if (lastVoteTimeForReqUserTopgg < row.time.getDate().getTime()) {
+                    lastVoteTimeForReqUserTopgg = row.time.getDate().getTime();
+                }
+            }
+            if (row.service === "discordbotlist") {
+                if (lastVoteTimeForReqUserDbl < row.time.getDate().getTime()) {
+                    lastVoteTimeForReqUserDbl = row.time.getDate().getTime();
+                }
+            }
+        }
+
+        console.log(row.voteservice);
         totalStats[`${row.voteservice}`] += 1;
 
         var firstDateOfMonthUTC = new Date(Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth()));
@@ -92,6 +109,7 @@ export async function showTopVoters(voteArgs:showTopVotersArgs) {
             // Invoked per each row in all the pages
             var userid = row.userid
             console.log(userid)
+
             if (!(leaderboard[userid] === undefined)) {
                 //add to the number
                 console.log("it's already in here")
@@ -208,11 +226,31 @@ if(_.size(leaderboard) === 0) {
 
         console.log(pages)
 
+        var twelvehours = 12 * 60 * 60 * 1000
+
+        var voteAskString = "Your Next Vote Times:"
+
+        //format next time to vote
+        if (lastVoteTimeForReqUserTopgg < Date.now() - twelvehours) {
+            voteAskString += "\nTop.gg: Now! :white_check_mark:"
+        } else {
+            var nextVoteUnixTopgg = Math.round((lastVoteTimeForReqUserTopgg + twelvehours) / 1000)
+            voteAskString += `\nTop.gg: <t:${nextVoteUnixTopgg}:R>\n <t:${nextVoteUnixTopgg}:d> <t:${nextVoteUnixTopgg}:T>`
+        }
+
+         //format next time to vote
+         if (lastVoteTimeForReqUserDbl < Date.now() - twelvehours) {
+            voteAskString += "\nDBL: Now! :white_check_mark:"
+        } else {
+            var nextVoteUnixDbl = Math.round((lastVoteTimeForReqUserDbl + twelvehours) / 1000)
+            voteAskString += `\nDBL: <t:${nextVoteUnixDbl}:R>\n <t:${nextVoteUnixDbl}:d> <t:${nextVoteUnixDbl}:T>`
+        }
+
         const pageEmbedArray = await pages.map((page,pageindex) => {
 
             //var descForPage = page
              var messageMap = {
-                "content": "Vote for Adora with `a!vote` to show up on the leaderboard!",
+                "content": `Vote for Adora with \`a!vote\` to show up on the leaderboard!\n${voteAskString}`,
                 "embeds": [{
                 "description": page,
                 "title": `Top Voters (past 30 days)`,

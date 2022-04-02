@@ -62,7 +62,7 @@ export async function addNewVote(userid,service) {
   await cassandraclient.execute("INSERT INTO adoravotes.pendingvotereminders (time, userid, service, sent) VALUES (?,?,?,?)",
   [timeuuid, userid, service, false])
   .then((results) => {
-    
+
   })
   .catch((error) => {
     console.error(error)
