@@ -18,14 +18,14 @@ var numberOfTimesRun = 0;
 createDatabases()
 fetchStatsForAll({
   runAll: false,
-  currentSegment: numberOfTimesRun
+  currentSegment: numberOfTimesRun % 2
 })
 
 setInterval(function() {
   numberOfTimesRun = numberOfTimesRun + 1;
     fetchStatsForAll({
       runAll: false,
-      currentSegment: numberOfTimesRun 
+      currentSegment: numberOfTimesRun % 2
     })
     try {
         if (global.gc) {global.gc();}
