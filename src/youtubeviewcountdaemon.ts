@@ -18,6 +18,8 @@ var youtubeclient = requestjson.createClient('https://youtube.googleapis.com/');
 export async function fetchVideo(pathForYtRequest) {
   var startingTime = Date.now()
 
+  dogstatsd.increment('adorastats.attemptfetch');
+
     youtubeclient.get(pathForYtRequest, async function(err, res, body) {
       //  await dogstatsd.increment('adorabot.triggerprefix');
 
