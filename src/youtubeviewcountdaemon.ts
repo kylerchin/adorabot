@@ -190,9 +190,14 @@ export async function fetchStatsForAll(inputObj:fetchAllInterface) {
 
                     var firstCharacterHash = simpleHash(row.videoid).substring(0, 1)
 
+                    console.log('firstCharacterHash', firstCharacterHash)
+
                     if (firstCharacterHash.match(/[0-7]]/g)) {
+
+                        console.log('matches first hash 0')
                         thisVideoSectionNumber = 0;
                     } else {
+                        console.log('matches first hash 1')
                         thisVideoSectionNumber = 1;
                     }
 
