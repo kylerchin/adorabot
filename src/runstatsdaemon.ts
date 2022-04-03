@@ -13,11 +13,20 @@ if (loadedAuthData.config) {
 }
 console.log('init')
 
+var numberOfTimesRun = 0;
+
 createDatabases()
-fetchStatsForAll()
+fetchStatsForAll({
+  runAll: false,
+  currentSegment: numberOfTimesRun
+})
 
 setInterval(function() {
-    fetchStatsForAll()
+  numberOfTimesRun = numberOfTimesRun + 1;
+    fetchStatsForAll({
+      runAll: false,
+      currentSegment: numberOfTimesRun 
+    })
     try {
         if (global.gc) {global.gc();}
       } catch (e) {

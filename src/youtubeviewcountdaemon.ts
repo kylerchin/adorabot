@@ -4,6 +4,8 @@ const TimeUuid = require('cassandra-driver').types.TimeUuid;
 const editJsonFile = require("edit-json-file");
 import { Client } from "youtubei";
 const requestjson = require('request-json');
+import {simpleHash} from './modules/simplehash'
+import {dogstatsd} from './modules/dogstats';
 
 const youtube = new Client();
 
@@ -13,18 +15,21 @@ var authconfigfile = editJsonFile(`${__dirname}/../config.json`);
 const Long = require('cassandra-driver').types.Long;
 var youtubeclient = requestjson.createClient('https://youtube.googleapis.com/');
 
-export const simpleHash = (str:string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash &= hash; // Convert to 32bit integer
-    }
-    return new Uint32Array([hash])[0].toString(36);
-  };
-
 export async function fetchVideo(pathForYtRequest) {
+  var startingTime = Date.now()
+
     youtubeclient.get(pathForYtRequest, async function(err, res, body) {
+      //  await dogstatsd.increment('adorabot.triggerprefix');
+
+      dogstatsd.increment('adorastats.fetchedvideo');
+      var timeItTook = Date.now() - startingTime;
+
+           // Histogram: send data for histogram stat (DataDog and Telegraf only)
+  dogstatsd.histogram('adorastats.fetchvideohisto', timeItTook);
+
+  // Distribution: Tracks the statistical distribution of a set of values across your infrastructure.
+  // (DataDog v6)
+  dogstatsd.distribution('adorastats.fetchvideodist', timeItTook);
 
         console.log(body)
 
@@ -38,6 +43,7 @@ export async function fetchVideo(pathForYtRequest) {
                 const videostats = body.items[0].statistics;
                 
                 if (videostats.viewCount) {
+                    dogstatsd.increment('adorastats.fetchedvideosuccess');
                     await  addStatsToYtVideo({
                         videoid: body.items[0].id,
                         views: videostats.viewCount,
@@ -178,78 +184,93 @@ export async function fetchStatsForAll(inputObj:fetchAllInterface) {
                 var shouldRun = inputObj.runAll;
 
                 if (shouldRun === false) {
-                    
-                }
+                    var thisVideoSectionNumber;
 
-                if (loadedRemovedData.removedvids.indexOf(row.videoid) == -1) {
+                    var firstCharacterHash = simpleHash(row.videoid).substring(0, 1)
 
-                    if (loadedAuthData.config.youtubeApiKeysDaemon) {
-
-                        var apikeysdaemonarray = loadedAuthData.config.youtubeApiKeysDaemon
-
-                        var theRandomApiKey =  apikeysdaemonarray[Math.floor(Math.random()*apikeysdaemonarray.length)];
-
-                        const firstPartOfPath = "https://youtube.googleapis.com/youtube/v3/videos?part=statistics&id=" 
-
-                        const pathForYtRequest = firstPartOfPath + row.videoid + "&key=" + theRandomApiKey
-
-                        
-                        fetchVideo(pathForYtRequest);
-                       
+                    if (firstCharacterHash.match(/[0-7]]/g)) {
+                        thisVideoSectionNumber = 0;
+                    } else {
+                        thisVideoSectionNumber = 1;
                     }
 
-                    var fullUrlOfVideo = `https://www.youtube.com/watch?v=${row.videoid}`
-
-
-                    try {
-
-                  
-                        if (false) {
-                            let { data } = await axios.get(fullUrlOfVideo);
-
-                            //logger.discordInfoLogger.info(data, {type: 'youtubeHtmlRespond'})
-                           // var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="[^"]">/g)[0],10)
-                           var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="([^">]*)">/g)[0].replace(/<meta itemprop="interactionCount" content="/g,"").replace(/">/,""),10)
-                    
-                           var likedisliketooltipMatches = data.match(/"tooltip":"(\d||,)+ \/ (\d||,)+"/g)
-                    
-                           //delete the webpage since we dont need it anymore
-                           data = null;
-                    
-                           console.log('likeddisliketooltipmatches', likedisliketooltipMatches)
-                    
-                           if (likedisliketooltipMatches && (likedisliketooltipMatches !== null)) {
-                            var likedisliketooltip = likedisliketooltipMatches[0].replace(/"tooltip": ?"/g,"").replace(/"/g,"")
-                    
-                            var likeanddislikearray = likedisliketooltip.split("/");
-                     
-                            console.log('splittedArray', likeanddislikearray)
-                     
-                            console.log("likeCountAttempt",likeanddislikearray[0])
-                            var likeCount = parseInt(likeanddislikearray[0].trim().replace(/,/g,""),10)
-                     
-                            var dislikeCount = parseInt(likeanddislikearray[1].trim().replace(/,/g,""),10)
-                     
-                             console.log(viewCount)
-                             console.log("likeCount",likeCount)
-                             console.log("dislikeCount",dislikeCount)
-                                         await  addStatsToYtVideo({
-                                             videoid: row.videoid,
-                                             views: viewCount,
-                                             likes: likeCount,
-                                             dislikes: dislikeCount,
-                                             comments: undefined
-                                         })
-                           }
-                    
-                         
-                        }
-       
-                   
-                } catch (erroraxios) {
-                    console.log(erroraxios)
+                    if (thisVideoSectionNumber == inputObj.currentSegment) {
+                        shouldRun = true;
+                    }
                 }
-            } 
+
+                if (shouldRun === true) {
+                    if (loadedRemovedData.removedvids.indexOf(row.videoid) == -1) {
+
+                        if (loadedAuthData.config.youtubeApiKeysDaemon) {
+    
+                            var apikeysdaemonarray = loadedAuthData.config.youtubeApiKeysDaemon
+    
+                            var theRandomApiKey =  apikeysdaemonarray[Math.floor(Math.random()*apikeysdaemonarray.length)];
+    
+                            const firstPartOfPath = "https://youtube.googleapis.com/youtube/v3/videos?part=statistics&id=" 
+    
+                            const pathForYtRequest = firstPartOfPath + row.videoid + "&key=" + theRandomApiKey
+    
+                            
+                            fetchVideo(pathForYtRequest);
+                           
+                        }
+    
+                        var fullUrlOfVideo = `https://www.youtube.com/watch?v=${row.videoid}`
+    
+    
+                        try {
+    
+                      
+                            if (false) {
+                                let { data } = await axios.get(fullUrlOfVideo);
+    
+                                //logger.discordInfoLogger.info(data, {type: 'youtubeHtmlRespond'})
+                               // var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="[^"]">/g)[0],10)
+                               var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="([^">]*)">/g)[0].replace(/<meta itemprop="interactionCount" content="/g,"").replace(/">/,""),10)
+                        
+                               var likedisliketooltipMatches = data.match(/"tooltip":"(\d||,)+ \/ (\d||,)+"/g)
+                        
+                               //delete the webpage since we dont need it anymore
+                               data = null;
+                        
+                               console.log('likeddisliketooltipmatches', likedisliketooltipMatches)
+                        
+                               if (likedisliketooltipMatches && (likedisliketooltipMatches !== null)) {
+                                var likedisliketooltip = likedisliketooltipMatches[0].replace(/"tooltip": ?"/g,"").replace(/"/g,"")
+                        
+                                var likeanddislikearray = likedisliketooltip.split("/");
+                         
+                                console.log('splittedArray', likeanddislikearray)
+                         
+                                console.log("likeCountAttempt",likeanddislikearray[0])
+                                var likeCount = parseInt(likeanddislikearray[0].trim().replace(/,/g,""),10)
+                         
+                                var dislikeCount = parseInt(likeanddislikearray[1].trim().replace(/,/g,""),10)
+                         
+                                 console.log(viewCount)
+                                 console.log("likeCount",likeCount)
+                                 console.log("dislikeCount",dislikeCount)
+                                             await  addStatsToYtVideo({
+                                                 videoid: row.videoid,
+                                                 views: viewCount,
+                                                 likes: likeCount,
+                                                 dislikes: dislikeCount,
+                                                 comments: undefined
+                                             })
+                               }
+                        
+                             
+                            }
+           
+                       
+                    } catch (erroraxios) {
+                        console.log(erroraxios)
+                    }
+                } 
+                }
+               
 
             //nullify row
             row = null;
