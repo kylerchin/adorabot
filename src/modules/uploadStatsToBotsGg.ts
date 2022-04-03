@@ -6,11 +6,11 @@ const rateLimitsInShard = new Set();
 
 import {cassandraclient} from './cassandraclient'
 
-var StatsD = require('hot-shots'),
-dogstatsd = new StatsD({
-    port: 8125,
-    globalTags: { env: process.env.NODE_ENV }
-});
+var 
+
+import {dogstatsd} from './dogstats'
+
+
 
 const { config } = require('./../../config.json');
   
