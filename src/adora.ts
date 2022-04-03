@@ -257,7 +257,7 @@ client.on('messageCreate', async (message:Message) => {
         processmalwarediscordmessage(message),
         updateDatadogCountRateLimited(client,config),
         dogstatsd.increment('adorabot.client.message')]
-
+dogstatsd.gague('adorabot.testgague',69);
         if (message.content === `a!startuptime`) {
           message.reply(`First message in ${elapsedTimeFirstMsg}ms`)
         }
