@@ -48,6 +48,7 @@ export function voteReminderRuntime(cassandraclient,client) {
           ], {prepare: true})
           .then((deleterowsuccess) => {
             if (latestTopggVoteTimes[eachRow.userid] == unixtimeofvote || latestDblVoteTimes[eachRow.userid] == unixtimeofvote) {
+                logger.discordInfoLogger.info("islatestvoteremind", {type: 'votereminddebug2'});
               client.users.fetch(eachRow.userid).then((user) => {
                 try {
                   var stringToSend;
@@ -58,14 +59,17 @@ export function voteReminderRuntime(cassandraclient,client) {
                   if (eachRow.service === "discordbotlist") {
                     stringToSend = "Thank you so much for voting earlier for Adora! You're eligable to vote again on Discord Bot List! \nEvery vote is 1 ticket in the monthly nitro giveaway! \n Here's the link if you need it :purple_heart: https://discordbotlist.com/bots/adora-ahelp/upvote"
                   }
-                  user.send();	
+                  user.send(stringToSend);	
                 } catch (err){
                   console.error(err);
+                  logger.discordInfoLogger.info(err, {type: 'votereminddebug2'});
                 }
             })
             .catch(error => {
               console.error(error)
             })
+            } else {
+                logger.discordInfoLogger.info("isnotlatestvoteremind", {type: 'votereminddebug2'});
             }
         
 
