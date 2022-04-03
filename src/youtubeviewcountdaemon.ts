@@ -192,7 +192,7 @@ export async function fetchStatsForAll(inputObj:fetchAllInterface) {
 
                     console.log('firstCharacterHash', firstCharacterHash)
 
-                    if (firstCharacterHash.match(/[0-7]]/g)) {
+                    if (firstCharacterHash.match(/[0-7]/g)) {
 
                         console.log('matches first hash 0')
                         thisVideoSectionNumber = 0;
@@ -202,7 +202,10 @@ export async function fetchStatsForAll(inputObj:fetchAllInterface) {
                     }
 
                     if (thisVideoSectionNumber == inputObj.currentSegment) {
+                        console.log('matching input hash of ', inputObj.currentSegment)
                         shouldRun = true;
+                    } else {
+                        console.log(thisVideoSectionNumber + 'not matching input hash of ', inputObj.currentSegment)
                     }
                 }
 
