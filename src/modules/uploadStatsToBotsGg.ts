@@ -6,8 +6,6 @@ const rateLimitsInShard = new Set();
 
 import {cassandraclient} from './cassandraclient'
 
-var 
-
 import {dogstatsd} from './dogstats'
 
 
