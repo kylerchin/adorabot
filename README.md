@@ -6,7 +6,7 @@ You can add it to your server by using this link:  https://discord.com/api/oauth
 
 The current features include:
 Displaying the current YouTube View / Live & Dislike / Comment count in a discord embed
-![YtStats Command Example with Dyanmite BTS music Video](https://user-images.githubusercontent.com/7539174/101548716-36dd0f00-3961-11eb-86c7-cebae7d43f9a.png)
+![Yt Command Example with Stray Kids Thunderous music Video](https://user-images.githubusercontent.com/7539174/161414120-bb161174-9074-4bce-9fc3-0b2cdfacb878.png)
 
 Displaying live Billboard Poll scores and vote links
 
