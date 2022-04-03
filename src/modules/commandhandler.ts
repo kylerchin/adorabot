@@ -524,7 +524,7 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
         commandName: command
       }
 
-      if (msg.guild.available && isDM === false) {
+      if (msg.guild && isDM === false) {
         commandToAdoraInfo["guildID"] = msg.guild.id;
         commandToAdoraInfo["guildName"] = msg.guild.name;
         }

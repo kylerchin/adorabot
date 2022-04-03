@@ -11,6 +11,49 @@ const axios = require('axios');
 var importconfigfile = editJsonFile(`${__dirname}/../removedytvids.json`);
 var authconfigfile = editJsonFile(`${__dirname}/../config.json`);
 const Long = require('cassandra-driver').types.Long;
+var youtubeclient = requestjson.createClient('https://youtube.googleapis.com/');
+
+export const simpleHash = (str:string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash &= hash; // Convert to 32bit integer
+    }
+    return new Uint32Array([hash])[0].toString(36);
+  };
+
+export async function fetchVideo(pathForYtRequest) {
+    youtubeclient.get(pathForYtRequest, async function(err, res, body) {
+
+        console.log(body)
+
+        if (!err) {
+            
+        const timeOfRequest = new Date();
+
+        if (body.items) {
+
+            if (body.items.length > 0) {
+                const videostats = body.items[0].statistics;
+                
+                if (videostats.viewCount) {
+                    await  addStatsToYtVideo({
+                        videoid: body.items[0].id,
+                        views: videostats.viewCount,
+                        likes: videostats.likeCount,
+                        dislikes: videostats.likeCount,
+                        comments: videostats.commentCount
+                    })
+                }
+            }
+            
+      
+        }
+        }
+
+    });
+}
 
 export async function createDatabases() {
 
@@ -111,7 +154,12 @@ export async function addStatsToYtVideo(statParams: statInterface) {
    
 }
 
-export async function fetchStatsForAll() {
+interface fetchAllInterface {
+    runAll: boolean;
+    currentSegment?: Number;
+}
+
+export async function fetchStatsForAll(inputObj:fetchAllInterface) {
 
     var loadedRemovedData = importconfigfile.get()
     var loadedAuthData = authconfigfile.get()
@@ -122,10 +170,16 @@ export async function fetchStatsForAll() {
         .then((result) => { 
             console.log('recieved all tracked yt videos')
             result.rows.forEach(async (row) => {
-                console.log(row)
+              //  console.log(row)
                 // process row
                 // logger.discordInfoLogger.info(row.videoid + ' in the database')
               //  console.log('get video try')
+
+                var shouldRun = inputObj.runAll;
+
+                if (shouldRun === false) {
+                    
+                }
 
                 if (loadedRemovedData.removedvids.indexOf(row.videoid) == -1) {
 
@@ -139,37 +193,9 @@ export async function fetchStatsForAll() {
 
                         const pathForYtRequest = firstPartOfPath + row.videoid + "&key=" + theRandomApiKey
 
-                        var youtubeclient = requestjson.createClient('https://youtube.googleapis.com/');
-
-                        youtubeclient.get(pathForYtRequest, async function(err, res, body) {
-
-                            console.log(body)
-
-                            if (!err) {
-                                
-                            const timeOfRequest = new Date();
-
-                            if (body.items) {
-
-                                if (body.items.length > 0) {
-                                    const videostats = body.items[0].statistics;
-                                    
-                                    if (videostats.viewCount) {
-                                        await  addStatsToYtVideo({
-                                            videoid: body.items[0].id,
-                                            views: videostats.viewCount,
-                                            likes: videostats.likeCount,
-                                            dislikes: videostats.likeCount,
-                                            comments: videostats.commentCount
-                                        })
-                                    }
-                                }
-                                
-                          
-                            }
-                            }
-
-                        })
+                        
+                        fetchVideo(pathForYtRequest);
+                       
                     }
 
                     var fullUrlOfVideo = `https://www.youtube.com/watch?v=${row.videoid}`
