@@ -2,6 +2,7 @@
     "compilerOptions": {
         "outDir": "dist/",
         "extendedDiagnostics": true,
+        "moduleResolution": "node",
     "skipLibCheck": true,
     "lib": ["es2020"]
     },
