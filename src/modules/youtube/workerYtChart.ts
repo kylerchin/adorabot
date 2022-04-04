@@ -21,7 +21,7 @@ import { logger, tracer } from "../logger";
 import * as path from 'path';
 import { dogstatsd } from '../dogstats'
 const TimeUuid = require("cassandra-driver").types.TimeUuid;
-const { createCanvas, registerFont, loadImage } = require("canvas");
+import {createCanvas, registerFont, loadImage} from 'canvas'
 registerFont(
     path.resolve(__dirname, "../../../LexendDecaMedium.ttf")
     , {
@@ -707,7 +707,7 @@ cassandraclient
         }
 
         const bufferinfo = canvas.toBuffer("image/png", {
-            compressionLevel: 7,
+            compressionLevel: 1,
         });
         // console.log(bufferinfo);
         console.log('chart finished drawing, time to resolve')
