@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "run": "node ./dist/app.js",
-    "build": "tsc && npm run movefont",
+    "build": " tsc && cp ./LexendDecaMedium.ttf ./dist/",
     "movefont": "cp ./LexendDecaMedium.ttf ./dist/",
     "server": "node ./dist/runserver.js",
     "testslash": "node ./dist/testregister.js",
