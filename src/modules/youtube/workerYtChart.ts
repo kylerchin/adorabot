@@ -20,8 +20,9 @@ import { logger, tracer } from "../logger";
 
 import * as path from 'path';
 import { dogstatsd } from '../dogstats'
-const TimeUuid = require("cassandra-driver").types.TimeUuid;
 import {createCanvas, registerFont, loadImage} from 'canvas'
+const TimeUuid = require("cassandra-driver").types.TimeUuid;
+console.log('canvas imported')
 registerFont(
     path.resolve(__dirname, "../../../LexendDecaMedium.ttf")
     , {
@@ -720,7 +721,8 @@ cassandraclient
     .on("error", function (err) {
         // Something went wrong: err is a response error from Cassandra
         console.log(err);
+        logger.discordErrorLogger.error(err, { type: 'chartmakerfail' })
         process.exit()
         //reject(err);
-        logger.discordErrorLogger.error(err, { type: 'chartmakerfail' })
+        
     });

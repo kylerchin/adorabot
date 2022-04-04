@@ -33,7 +33,10 @@ export async function ytChart(id, optionsObject: optionsInterface) {
       resolve(message);
       dogstatsd.histogram('adorabot.ytchart.chartdrawtimehist', Date.now() - beginningTime);
     });
-    worker.on('error', reject);
+    worker.on('error', (error) => {
+      console.error(error)
+      reject(error)
+    });
     worker.on('exit', (code) => {
       if (code !== 0)
         reject(new Error(`Worker stopped with exit code ${code}`));
