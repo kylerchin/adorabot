@@ -5,9 +5,6 @@ import {logger, tracer} from "../logger"
 import {dogstatsd} from '../dogstats'
 const TimeUuid = require("cassandra-driver").types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require("canvas");
-registerFont(`${__dirname}/../../LexendDecaMedium.ttf`, {
-  family: "Lexend Deca",
-});
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 
@@ -32,7 +29,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
   return new Promise(async (resolve, reject) => {
     const worker = new Worker(path.resolve(__dirname, "workerYtChart.js"), { id, optionsObject });
     worker.on('message', (message) => {
- 
+      console.log('outmsg',message)
       resolve(message);
       dogstatsd.histogram('adorabot.ytchart.chartdrawtimehist', Date.now() - beginningTime);
     });
