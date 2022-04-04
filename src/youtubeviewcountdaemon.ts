@@ -21,10 +21,13 @@ export async function fetchVideo(pathForYtRequest) {
   dogstatsd.increment('adorastats.attemptfetch');
 
     youtubeclient.get(pathForYtRequest, async function(err, res, body) {
+
+        var timeItTook = Date.now() - startingTime;
+
       //  await dogstatsd.increment('adorabot.triggerprefix');
 
       dogstatsd.increment('adorastats.fetchedvideo');
-      var timeItTook = Date.now() - startingTime;
+     
 
            // Histogram: send data for histogram stat (DataDog and Telegraf only)
   dogstatsd.histogram('adorastats.fetchvideohisto', timeItTook);
@@ -33,7 +36,7 @@ export async function fetchVideo(pathForYtRequest) {
   // (DataDog v6)
   dogstatsd.distribution('adorastats.fetchvideodist', timeItTook);
 
-        console.log(body)
+//        console.log(body)
 
         if (!err) {
             

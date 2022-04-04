@@ -118,8 +118,8 @@ export async function youtubeVideoStatsInteraction(interaction: CommandInteracti
     var ytquery = interaction.options.getString('search-or-url');
 
     if (isUrl(ytquery)) {
-        if (ytquery.includes("youtube.com/shorts/")) {
-            var precurser = ytquery.replace("youtube.com/shorts/", "youtube.com/watch?v=")
+        if (ytquery.match(/youtube.com\/shorts\//g)) {
+            var precurser = ytquery.replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
         }
              // Valid url
         if (ytquery.includes("youtu.be/")) {
@@ -236,8 +236,8 @@ export async function youtubeVideoStats(message:Message, command, client, config
 
     var videoID = "dQw4w9WgXcQ"
     if (isUrl(args[0])) {
-        if (args[0].includes("youtube.com/shorts/")) {
-            var precurser = args[0].replace("www.youtube.com/shorts/", "www.youtube.com/watch?v=")
+        if (args[0].match(/youtube.com\/shorts\//g)) {
+            var precurser = args[0].replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
         }
         // Valid url
         if (args[0].includes("youtu.be/")) {
