@@ -10,7 +10,7 @@ import { Util } from "discord.js";
 const editJsonFile = require("edit-json-file");
 const { MessageAttachment } = require('discord.js');
 //import {Embed} from "discord.js"
-var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
+var importconfigfile = editJsonFile(`${__dirname}/../../../removedytvids.json`);
 const axios = require('axios').default;
 
 import {replyorfollowup} from './../replyorfollowup'
