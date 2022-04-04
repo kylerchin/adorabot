@@ -1,5 +1,6 @@
 import { cassandraclient } from "./cassandraclient";
 import {logger, tracer} from "./logger"
+import {dogstatsd} from './dogstats'
 const TimeUuid = require("cassandra-driver").types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require("canvas");
 registerFont(`${__dirname}/../../LexendDecaMedium.ttf`, {
@@ -702,7 +703,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
          // console.log(bufferinfo);
          console.log('chart finished drawing, time to resolve')
           resolve(bufferinfo);
-          client.histogram('adorabot.ytchart.chartdrawtimehist', Date.now() - beginningTime);
+          dogstatsd.histogram('adorabot.ytchart.chartdrawtimehist', Date.now() - beginningTime);
           console.log('resolved chart')
         
         })
