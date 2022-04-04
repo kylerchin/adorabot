@@ -9,7 +9,7 @@ const { createCanvas, registerFont, loadImage } = require("canvas");
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 registerFont(
-  path.resolve(__dirname, "/../../../LexendDecaMedium.ttf")
+  path.resolve(__dirname, "../../LexendDecaMedium.ttf")
   , {
       family: "Lexend Deca",
   });
