@@ -10,7 +10,7 @@ import { billboardCharts } from "./billboard"
 import { crossUsageMamaPre, crossUsageMamaFinals } from './get2021mamavoteinfo'
 import { processAllModerationCommands, howManyUsersInBanDatabase } from "./moderation"
 import { updateDiscordBotsGG, updateDatadogCount } from "./uploadStatsToBotsGg"
-import {youtubeChannelStats, youtubeVideoStats} from "./youtube"
+import {youtubeChannelStats, youtubeVideoStats} from "./youtube/youtube"
 import {sendVoteLinks,showListOfVotersTimes,showTopVoters} from "./vote"
 import {helpDirectory, helpDirectoryTest} from "./help"
 import {manuallyAddVote} from './adminvotes'
