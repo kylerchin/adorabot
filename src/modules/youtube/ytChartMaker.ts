@@ -8,6 +8,11 @@ const TimeUuid = require("cassandra-driver").types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require("canvas");
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
+registerFont(
+  path.resolve(__dirname, "/../../../LexendDecaMedium.ttf")
+  , {
+      family: "Lexend Deca",
+  });
 
 var arrayOfMonthsEnglishShort = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 
