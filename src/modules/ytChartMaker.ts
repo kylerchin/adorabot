@@ -27,6 +27,7 @@ interface AddOnPointsEntity {
   dislikes?: number;
 }
 export async function ytChart(id, optionsObject: optionsInterface) {
+  var beginningTime = Date.now()
   return new Promise(async (resolve, reject) => {
     tracer.trace("youtubeMakeChart", () => {
       const canvas = createCanvas(3840, 2160);
@@ -701,6 +702,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
          // console.log(bufferinfo);
          console.log('chart finished drawing, time to resolve')
           resolve(bufferinfo);
+          client.histogram('adorabot.ytchart.chartdrawtimehist', Date.now() - beginningTime);
           console.log('resolved chart')
         
         })
