@@ -1,5 +1,5 @@
 const { Worker } = require('worker_threads')
-
+import * as path from 'path';
 import { cassandraclient } from "../cassandraclient";
 import {logger, tracer} from "../logger"
 import {dogstatsd} from '../dogstats'
@@ -30,7 +30,7 @@ interface AddOnPointsEntity {
 export async function ytChart(id, optionsObject: optionsInterface) {
   var beginningTime = Date.now()
   return new Promise(async (resolve, reject) => {
-    const worker = new Worker(`${__dirname}/workerYtChart.js`, { id, optionsObject });
+    const worker = new Worker(path.resolve(__dirname, "workerYtChart.js"), { id, optionsObject });
     worker.on('message', (message) => {
  
       resolve(message);
