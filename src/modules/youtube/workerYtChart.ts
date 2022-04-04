@@ -23,12 +23,12 @@ import { dogstatsd } from '../dogstats'
 const TimeUuid = require("cassandra-driver").types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require("canvas");
 registerFont(
-    path.resolve(__dirname, "../../LexendDecaMedium.ttf")
+    path.resolve(__dirname, "../../../LexendDecaMedium.ttf")
     , {
         family: "Lexend Deca",
     });
 const editJsonFile = require("edit-json-file");
-var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
+var importconfigfile = editJsonFile(`${__dirname}/../../../removedytvids.json`);
 const phi = 1.618033988749895;
 
 
