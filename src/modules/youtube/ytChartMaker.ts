@@ -676,8 +676,16 @@ cassandraclient
 
               var modulusStat = 2;
 
+              if (arrayStatsLength > 5000) {
+                modulusStat = 3;
+              }
+
               if (arrayStatsLength > 10000) {
                 modulusStat = 4;
+              }
+
+              if (arrayStatsLength > 15000) {
+                modulusStat = 12;
               }
 
               var amountToHide = 1/3000
