@@ -650,16 +650,53 @@ cassandraclient
             });
             drawLineFromPercentageArray(connectingline);
 
-            arrayOfStats.forEach((stat) => {
-                var percentageOffsetFromLeft =
-                    (stat.unixtime - leastAndGreatestObject["leastTime"]) /
-                    timeRange;
-                var percentageOffsetFromBottomViews =
-                    (stat.views - leastAndGreatestObject["leastViews"]) / viewRange;
+            var arrayStatsLength = arrayOfStats.length;
+
+            const offsetCalcBottom  = (views)  => {
+               return (views - leastAndGreatestObject["leastViews"]) / viewRange;
+            }
+
+            const offsetCalcLeft  = (unixtime)  => {
+              return (unixtime - leastAndGreatestObject["leastTime"]) / timeRange;
+           }
+
+            arrayOfStats
+            .map((stat) => {
+              stat["fromleft"] = offsetCalcLeft(stat.unixtime);
+              stat['frombot'] =  offsetCalcBottom(stat.views);
+
+              return stat;
+            })
+            .forEach((stat,statIndex) => {
+              //  var percentageOffsetFromLeft = offsetCalcLeft(stat.unixtime)
+             // var percentageOffsetFromLeft = offsetCalcLeft(stat.unixtime)
+              //  var percentageOffsetFromBottomViews = offsetCalcBottom(stat.views)
+
+               var shouldDrawDot:boolean = true;
+
+              var modulusStat = 2;
+
+              if (arrayStatsLength > 10000) {
+                modulusStat = 4;
+              }
+
+               if (arrayStatsLength > 3800) {
+                if (statIndex != 0 && statIndex != arrayStatsLength - 1) {
+                  if (statIndex % modulusStat != 0) {
+                    //if neighbouring dots are under 1 pixel away
+                   if (Math.abs(stat.fromleft - arrayOfStats[statIndex-1].fromleft) < 1 && Math.abs(stat.fromleft - arrayOfStats[statIndex+1].fromleft) < 1) {
+                    shouldDrawDot = false;
+                   }
+                  }
+                }
+               }
+
+              if (shouldDrawDot === true) {
                 drawDotFromPercentage(
-                    percentageOffsetFromLeft,
-                    percentageOffsetFromBottomViews
-                );
+                  stat.fromleft,
+                  stat.frombot
+              );
+              }
             });
 
 
