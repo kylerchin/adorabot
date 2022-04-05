@@ -547,18 +547,30 @@ cassandraclient
                 while (
                     yAxisDrawMillions < leastAndGreatestObject["greatestViews"]
                 ) {
-                    // console.log('yaxisdraw', yAxisDrawMillions)
-                    var percylegend =
-                        (yAxisDrawMillions - leastAndGreatestObject["leastViews"]) /
-                        viewRange;
-                    var pointy =
-                        canvasHeightRange - (canvasHeightRange * percylegend) + paddingTop;
-                    ctxSubYLineLegend.moveTo(paddingLeft - 50, pointy);
-                    ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy);
-                    ctxSubYLineLegend.stroke();
+                    
+                    var shouldDrawHorizontalLegend  = true;
 
                     if (viewRange > 9.0e7) {
-                        if ((yAxisDrawMillions / 1.0e6) % 10) {
+                        if ((yAxisDrawMillions / 1.0e6) % 5 === 0) {
+                        } else {
+                            shouldDrawHorizontalLegend = false;
+                        }
+                    }
+
+                    if (shouldDrawHorizontalLegend) {
+                        // console.log('yaxisdraw', yAxisDrawMillions)
+                    var percylegend =
+                    (yAxisDrawMillions - leastAndGreatestObject["leastViews"]) /
+                    viewRange;
+                var pointy =
+                    canvasHeightRange - (canvasHeightRange * percylegend) + paddingTop;
+                ctxSubYLineLegend.moveTo(paddingLeft - 50, pointy);
+                ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy);
+                ctxSubYLineLegend.stroke();
+                    }
+
+                    if (viewRange > 9.0e7) {
+                        if ((yAxisDrawMillions / 1.0e6) % 10 === 0) {
                             ctxLegendYLabel.fillText(
                                 `${yAxisDrawMillions / 1.0e6}M`,
                                 30,
@@ -567,7 +579,7 @@ cassandraclient
                         }
                     } else {
                         if (viewRange > 2.0e7) {
-                            if ((yAxisDrawMillions / 1.0e6) % 2) {
+                            if ((yAxisDrawMillions / 1.0e6) % 2 === 0) {
                                 ctxLegendYLabel.fillText(
                                     `${yAxisDrawMillions / 1.0e6}M`,
                                     30,
