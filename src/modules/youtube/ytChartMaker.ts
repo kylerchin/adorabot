@@ -686,7 +686,7 @@ cassandraclient
                 if (statIndex != 0 && statIndex != arrayStatsLength - 1) {
                   if (statIndex % modulusStat != 0) {
                     //if neighbouring dots are under 1 pixel away
-                   if (Math.abs(stat.fromleft - arrayOfStats[statIndex-1].fromleft) < 1 && Math.abs(stat.fromleft - arrayOfStats[statIndex+1].fromleft) < 1) {
+                   if (Math.abs(stat.fromleft - arrayOfStats[statIndex-1].fromleft) <amountToHide && Math.abs(stat.fromleft - arrayOfStats[statIndex+1].fromleft) < amountToHide) {
                     shouldDrawDot = false;
                    }
                   }
