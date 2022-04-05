@@ -189,6 +189,7 @@ cassandraclient
         }
     })
     .on("end", function () {
+      var cassandratimedone = Date.now()
         if (optionsObject.addOnPoints) {
             optionsObject.addOnPoints.forEach((eachPoint) => {
                 numberOfRows += 1;
@@ -729,6 +730,8 @@ cassandraclient
         });
         dogstatsd.histogram('adorabot.ytchart.chartdrawtimehist', Date.now() - beginningTime);
         dogstatsd.histogram('adorabot.ytchart.chartdrawtimecompresshist', Date.now() -compressionStart);
+        dogstatsd.histogram('adorabot.ytchart.chartdrawtimedrawhist', cassandratimedone - compressionStart);
+        dogstatsd.histogram('adorabot.ytchart.chartdrawtimecassandrahist', beginningTime - cassandratimedone);
         // console.log(bufferinfo);
         console.log('chart finished drawing, time to resolve')
        resolve(bufferinfo)
