@@ -210,6 +210,18 @@ export async function fetchStatsForAll(inputObj:fetchAllInterface) {
                     } else {
                         console.log(thisVideoSectionNumber + 'not matching input hash of ', inputObj.currentSegment)
                     }
+
+                    if (shouldRun === false) {
+                        if (row.added) {
+                            var currentTime = row.added.getDate().getTime()
+
+                            if (currentTime < (Date.now() - (86400 * 1000 * 5))) {
+
+                                shouldRun = true;
+
+                            }
+                        }
+                    }
                 }
 
                 if (shouldRun === true) {
