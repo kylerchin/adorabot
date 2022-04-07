@@ -213,12 +213,14 @@ export async function fetchStatsForAll(inputObj:fetchAllInterface) {
 
                     if (shouldRun === false) {
                         if (row.added) {
-                            var currentTime = row.added.getDate().getTime()
+                            var currentTime = row.added.getDate().getTime();
 
-                            if (currentTime < (Date.now() - (86400 * 1000 * 5))) {
+                            if (currentTime) {
+                                if (currentTime < (Date.now() - (86400 * 1000 * 2))) {
 
-                                shouldRun = true;
-
+                                    shouldRun = true;
+    
+                                }
                             }
                         }
                     }
