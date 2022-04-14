@@ -17,6 +17,10 @@ export function inspect(args:inspectFunction) {
     
     logger.discordInfoLogger.info(`Inspect responding to ${args.message.id}`)
 
+        if (args.message.content.match(/koretz/gi)) {
+            args.message.reply("https://www.youtube.com/watch?v=62gb35Xk6fs")
+        }
+
         //transforms the user id list into a list to be banned
         //this line prevents accidental role mentions from being added
         var roleMentionsRemoved = args.message.content.replace(/<@&(\d{18})>/g, '')
