@@ -44,7 +44,7 @@ const getServer = async (guildID,client) => {
 const lookupexistingsubscriptionquery = 'SELECT * FROM adoramoderation.guildssubscribedtoautoban WHERE serverid = ?';
 
 export async function listAllGuilds(message,client) {
-
+try {
     await cassandraclient.execute('SELECT * FROM adoramoderation.guildssubscribedtoautoban')
     .then(async(resultsOfGuildsSub) => {
         console.log('resultsOfGuildsSub', resultsOfGuildsSub.rows)
@@ -55,7 +55,7 @@ export async function listAllGuilds(message,client) {
                     id: eachGuild.id,
                     memberCount: eachGuild.memberCount,
                     name: eachGuild.name,
-                    canban: eachGuild.me.has("BAN_MEMBERS")
+                    canban: eachGuild.me.permissions.has("BAN_MEMBERS")
                 }
             })
             return arrayOfGuilds;
@@ -135,6 +135,10 @@ export async function listAllGuilds(message,client) {
         console.error(error)
         logger.discordErrorLogger.error(error)})
     
+} catch (error) {
+    console.error(error)
+}
+   
   
 }
 
