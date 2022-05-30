@@ -54,7 +54,8 @@ export async function listAllGuilds(message,client) {
                 return {
                     id: eachGuild.id,
                     memberCount: eachGuild.memberCount,
-                    name: eachGuild.name
+                    name: eachGuild.name,
+                    canban: eachGuild.me.has("BAN_MEMBERS")
                 }
             })
             return arrayOfGuilds;
@@ -77,6 +78,7 @@ export async function listAllGuilds(message,client) {
 
             var isGuildSubscribed = false;
             var isGuildListed = false;
+            var stringForCanBanState = ':notepad_spiral:';
 
             
             var stringForAdorabanState = ':notepad_spiral:';
@@ -86,6 +88,12 @@ export async function listAllGuilds(message,client) {
             if (resultOfFilteredRows.length > 0) {
                 isGuildListed = true;
                 isGuildSubscribed = resultOfFilteredRows[0].subscribed;
+            }
+
+            if (eachGuild.canban) {
+                stringForCanBanState = ":white_check_mark:";
+            } else {
+                stringForCanBanState = ":x:";
             }
 
             if (isGuildSubscribed) {
@@ -106,11 +114,15 @@ export async function listAllGuilds(message,client) {
         }
 
 
-            return `${stringForAdorabanState} | \`${eachGuild.id}\` | \`${eachGuild.memberCount}\` ${guildNameToUse}`
+            return `${stringForCanBanState}${stringForAdorabanState} | \`${eachGuild.id}\` | \`${eachGuild.memberCount}\` ${guildNameToUse}`
         })
     
         var arrayOfSplitStrings = Util.splitMessage(arrayOfTextGuildsInString.join("\n"))
     
+        const listofcolsdesc = "Has Ban Perms | Is Autoban on | GuildID | Member Count | Guild Name\n"
+
+        message.channel.send("listofcolsdesc")
+
         var arrayOfPages = arrayOfSplitStrings.map((string,n) => {return new Discord.MessageEmbed({"description": string,
             "footer": {
                 "text": `Page ${n+1}/${arrayOfSplitStrings.length}`
