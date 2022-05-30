@@ -121,7 +121,7 @@ try {
     
         const listofcolsdesc = "Has Ban Perms | Is Autoban on | GuildID | Member Count | Guild Name\n"
 
-        message.channel.send("listofcolsdesc")
+        message.channel.send(listofcolsdesc)
 
         var arrayOfPages = arrayOfSplitStrings.map((string,n) => {return new Discord.MessageEmbed({"description": string,
             "footer": {
