@@ -216,7 +216,7 @@ export async function fetchStatsForAll(inputObj:fetchAllInterface) {
                             var currentTime = row.added.getDate().getTime();
 
                             if (currentTime) {
-                                if (currentTime < (Date.now() - (86400 * 1000 * 2))) {
+                                if (currentTime > (Date.now() - (86400 * 1000 * 3))) {
 
                                     shouldRun = true;
     

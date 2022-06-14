@@ -25,7 +25,7 @@ export async function listChartsDownload() {
   await listCharts((err, charts)=> {
     forEach(charts, function (eachChart) {
   
-      var chartcode = eachChart.url.replace("http://www.billboard.com/charts/", "")
+      var chartcode = eachChart.url.replace("http://www.billboard.com/charts/", "").replace(/\//g,'');
       var shortCode = officialToAdoraBBcode(chartcode)
       chartShortObject[`${shortCode}`] = chartcode
       chartShortObject[chartcode] = chartcode
