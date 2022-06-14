@@ -128,6 +128,10 @@ export function helpDirectory(helpDirArgs: helpDirArgs) {
             {
               "name": "I have an idea for a command or feedback!",
               "value": "We'd love to hear it! Please join our support server and tell us! Run `a!invite` for the invite link to our Support & Suggestion Adorabot Discord Server"
+            },
+            {
+              "name": "Links",
+              "value": "Terms of Service: https://github.com/kylerchin/adorabot/blob/master/tos.md\nPrivacy Policy: https://github.com/kylerchin/adorabot/blob/master/privacy.md"
             }
             /*{
               "name": "Credits",
