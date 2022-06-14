@@ -660,7 +660,46 @@ cassandraclient
                     yper: percentageOffsetFromBottomViews,
                 };
             });
+
+            const lengthofstatsprewhiteline = arrayOfStats.length;
+
+            const tolerance = 0.2;
+
+            let connectinglinefilteredforwhiteline = connectingline.filter((eachDot, eachIndexWhite:number) => {
+                var verdictonkeep = true;
+
+                if (eachIndexWhite != 0 && eachIndexWhite != lengthofstatsprewhiteline -1) {
+                    if (
+                        Math.abs(eachDot.xper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
+                        Math.abs(eachDot.xper - connectingline[eachIndexWhite + 1].xper) < tolerance &&
+                        Math.abs(eachDot.yper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
+                        Math.abs(eachDot.yper - connectingline[eachIndexWhite + 1].xper) < tolerance 
+                    ) {
+                        verdictonkeep = false
+                }
+            } else {
+                if (eachIndexWhite === 0 ) {
+                    if (
+                    Math.abs(eachDot.xper - connectingline[eachIndexWhite + 1].xper) < tolerance &&
+                    Math.abs(eachDot.yper - connectingline[eachIndexWhite + 1].xper) < tolerance ) {
+                        verdictonkeep = true;
+                    }
+                }
+
+                if (eachIndexWhite === lengthofstatsprewhiteline -1) {
+                    if (
+                    Math.abs(eachDot.xper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
+                    Math.abs(eachDot.yper - connectingline[eachIndexWhite - 1].xper) < tolerance ) {
+                        verdictonkeep = true;
+                    }
+                }
+            }
+            return verdictonkeep = false;
+        })
+
+            if (connectingline.length >= 2) {
             drawLineFromPercentageArray(connectingline);
+            }
 
             var arrayStatsLength = arrayOfStats.length;
 

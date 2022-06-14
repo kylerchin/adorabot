@@ -3,6 +3,7 @@ import { logger } from "./logger";
 const { listCharts,getChart } = require('billboard-top-100');
 var forEach = require("for-each")
 const Discord = require('discord.js');
+import axios from "axios"
 import {ReactionCollectorOptions,CollectorFilter} from 'discord.js'
 var _ = require('lodash')
 import {Message} from 'discord.js'
@@ -320,6 +321,7 @@ export async function billboardCharts(message,command,args,client) {
       } else {
          // Start typing in a channel, or increase the typing count by one
          message.channel.sendTyping();
+         /*
          if(args[1]) {
              getChart(chartCodeProcessed, args[1], async (err, chart) => {
                  sendChartScrollable(chart,message,err,chartCodeProcessed)
@@ -330,6 +332,11 @@ export async function billboardCharts(message,command,args,client) {
                  sendChartScrollable(chart,message,err,chartCodeProcessed)
                })
          }
+
+         
+         */
+
+         axios.get("")
       }
        
     }
