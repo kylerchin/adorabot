@@ -217,7 +217,7 @@ export function adoraToOfficialBBcode(chartname) {
     return chartShortObject[`${chartname}`]
 }
 
-export async function billboardListChartsScrollable(message,command,args) {
+export async function billboardListChartsScrollable(message) {
 
     var pages = []
 
@@ -340,7 +340,7 @@ export async function billboardCharts(message,command,args,client) {
       message.reply(chartCodeProcessed)
     } else {
       if(args[0] === "list" || args[0] === "listchart" || args[0] === "listcharts" || args[0] === 'charts') {
-        billboardListChartsScrollable(message,command,args)
+        billboardListChartsScrollable(message)
     } else {
       message.reply(`searching for \`${searchString}\``)
       message.channel.send("The billboard command is currently unstable. Certain pages may not work and we are working on an update. We apologize for the inconvenience\n Join the Adora Support Server via `a!invite` to get updates on when a fix will be delivered! ")
@@ -436,4 +436,19 @@ axios.get(urlforbillboard)
   }
 
       
+}
+
+export function billboardinteraction(interaction, client) {
+  // Defer to send an ephemeral reply later
+  interaction.deferReply()
+  .then(console.log)
+  .catch(console.error);
+
+  var chartstring = interaction.options.getString('chart');
+
+  if (chartstring) {
+    if (chartstring.trim().toLowerCase() === "list") {
+      billboardListChartsScrollable(interaction)
+    }
+  }
 }
