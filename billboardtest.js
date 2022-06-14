@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const cheerio = require('cheerio');
-var chartid = "billboard-korea-100"
+var chartid = "hot-100"
 
 axios.get("https://www.billboard.com/charts/" + chartid)
 .then(async (response) => {
@@ -23,7 +23,7 @@ axios.get("https://www.billboard.com/charts/" + chartid)
 
         var obj = {
             rank: bbcheeriorow('.lrv-u-background-color-black > .c-label').html().replace(/\n/g,'').replace(/\t/g,''),
-            cover: bbcheeriorow('.c-lazy-image__img').attr('src')
+            cover: bbcheeriorow('.lrv-a-crop-1x1 > .c-lazy-image__img').attr('data-lazy-src')
         }
 
         var titlefetch = bbcheeriorow('.c-title')
