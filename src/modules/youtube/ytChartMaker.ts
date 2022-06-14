@@ -699,7 +699,7 @@ cassandraclient
             return verdictonkeep = false;
         })
 
-            if (connectinglinefilteredforwhiteline .length >= 2) {
+            if (connectinglinefilteredforwhiteline.length >= 2) {
             drawLineFromPercentageArray(connectinglinefilteredforwhiteline );
             }
 
