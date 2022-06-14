@@ -2,13 +2,21 @@ import { logger } from "./logger";
 
 const { listCharts,getChart } = require('billboard-top-100');
 var forEach = require("for-each")
-const Discord = require('discord.js');
 import axios from "axios"
+const Discord = require('discord.js')
 import {ReactionCollectorOptions,CollectorFilter} from 'discord.js'
 var _ = require('lodash')
 import {Message} from 'discord.js'
 import {hexCodeToColorNumber} from './util'
 const { config } = require('./../../config.json');
+import cheerio from 'cheerio'
+
+interface interfaceforbbrow {
+  rank: any;
+  cover: string;
+  artist?: string;
+  title?: string;
+}
 
 var chartShortObject = {}
 
@@ -35,44 +43,54 @@ catch (billboarderr) {
 }
 }
 
-async function sendChartScrollable(chart,message: Message,err,chartCode) {
+async function sendChartScrollable(chart,message: Message, chartCode) {
     //console.log(chart)
     //console.log(chart.songs)
-    if (err) console.log(err);
     //message.channel.send(chart.week)
 
-    const arrayOfEmbeds = chart.songs.map((song) => {
+    const arrayOfEmbeds = chart.map((song) => {
         
         console.log(song)
-        var embedObject = { 
-            "title": `#${song.rank} - ${song.title}`,
+        var embedObject:any = { 
            /* "author": {
                 //"name": song.artist
                 "name": `#${ song.rank}`
             },*/
-            "thumbnail": {
-                "url": song.cover
-            },
-            "description": `${song.artist}`,
+           
+          //  "description": `${song.artist}`,
             "fields": [
                 {
                     "name": "Weeks on Chart",
-                    "value": `${song.position.weeksOnChart} weeks`,
+                    "value": `feature in dev`,
                     "inline": true
                 },
                 {
                     "name": "Peak Position",
-                    "value": `#${song.position.peakPosition}`,
+                    "value": `feature in dev`,
                     "inline": true
                 },
                 {
                     "name": "Position Last Week",
-                    "value": `#${song.position.positionLastWeek}`,
+                    //"value": `#${song.position.positionLastWeek}`,
+                    "value": "feature in dev",
                     "inline": true
                 }
             ]
         }
+        
+        if (song.cover != "https://www.billboard.com/wp-content/themes/vip/pmc-billboard-2021/assets/public/lazyload-fallback.gif") {
+          embedObject.thumbnail =  {
+            "url": song.cover
+        }
+        }
 
+        if (song.artist) {
+          embedObject.title = `#${song.rank} - ${song.title}`
+          embedObject.description = `${song.artist}`
+        }
+         else {
+          embedObject.title = `#${song.rank} - ${song.title}`
+         }
         
 
         return embedObject;
@@ -205,7 +223,7 @@ export async function billboardListChartsScrollable(message,command,args) {
 
         forEach(charts, function (eachChart, key) {
         
-        var chartCode = eachChart.url.replace("http://www.billboard.com/charts/", "")
+        var chartCode = eachChart.url.replace("http://www.billboard.com/charts/", "").replace(/\//g, '')
 
         chartCode = officialToAdoraBBcode(chartCode)
         
@@ -298,7 +316,7 @@ export async function billboardListChartsScrollable(message,command,args) {
 
 export async function billboardCharts(message,command,args,client) {
     const searchString = message.content.trim().replace(config.token,"").replace(/a!/g,"").trim().replace(command,"").replace(/ /gm,"").trim()
-    message.reply(`searching for \`${searchString}\``)
+    
     if(args.length < 1 || args[0] === "help") {
         await billboardChartsHelpPage(message,command,args)
     } else 
@@ -310,9 +328,13 @@ export async function billboardCharts(message,command,args,client) {
       if(args[0] === "list" || args[0] === "listchart" || args[0] === "listcharts" || args[0] === 'charts') {
         billboardListChartsScrollable(message,command,args)
     } else {
-      //message.channel.send("The billboard command is currently unstable. Certain pages may not work and we are working on an update. We apologize for the inconvenience\n Join the Adora Support Server via `a!invite` to get updates on when a fix will be delivered! ")
+      message.reply(`searching for \`${searchString}\``)
+      message.channel.send("The billboard command is currently unstable. Certain pages may not work and we are working on an update. We apologize for the inconvenience\n Join the Adora Support Server via `a!invite` to get updates on when a fix will be delivered! ")
+
 
       var chartCodeProcessed = adoraToOfficialBBcode(searchString)
+
+
 
       if(typeof(chartCodeProcessed) === "undefined") {
         message.channel.send("Invalid chart, use `a!bb list` to see a full list of valid chart")
@@ -336,7 +358,59 @@ export async function billboardCharts(message,command,args,client) {
          
          */
 
-         axios.get("")
+         
+axios.get("https://www.billboard.com/charts/" + chartCodeProcessed)
+.then(async (response) => {
+   // console.log(response.data);
+   const $ = cheerio.load(response.data);
+   
+  var rowsoftable =  $('.o-chart-results-list-row').html()
+
+  //console.log(rowsoftable)
+
+ if (rowsoftable) {
+   // console.log(rowsoftable[0])
+
+    var arrayofhtml = $('.o-chart-results-list-row').toArray().map((x) => { return $(x).html()});
+
+    //console.log(rowsoftable)
+    var arrayofresults = arrayofhtml.map((eachitem) => {
+        const bbcheeriorow = cheerio.load(eachitem);
+
+        var obj:interfaceforbbrow = {
+            rank: bbcheeriorow('.lrv-u-background-color-black > .c-label').html().replace(/\n/g,'').replace(/\t/g,''),
+            cover: bbcheeriorow('.c-lazy-image__img').attr('src')
+        }
+
+        var titlefetch = bbcheeriorow('.c-title')
+
+        if (titlefetch) {
+            obj.title = titlefetch.html().replace(/\n/g,'').replace(/\t/g,'')
+        }
+
+        var artistfetch = bbcheeriorow('.lrv-u-flex-grow-1 > .c-label')
+
+        if (artistfetch) {
+            if (artistfetch.html()) {
+                obj.artist = artistfetch.html().replace(/\n/g,'').replace(/\t/g,'')
+            }
+           
+        }
+
+     return obj
+    })
+ 
+    console.log(arrayofhtml.length)
+
+    console.log(arrayofresults[0])
+    console.log(arrayofresults[20])
+    sendChartScrollable(arrayofresults,message,chartCodeProcessed)
+
+    //c-lazy-image__img
+ }
+   
+}).catch(error => {console.error(error)})
+
       }
        
     }

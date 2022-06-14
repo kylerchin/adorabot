@@ -43,6 +43,7 @@
     "bufferutil": "^4.0.3",
     "canvas": "^2.9.1",
     "cassandra-driver": "^4.6.1",
+    "cheerio": "^1.0.0-rc.11",
     "cheerio-without-node-native": "^1.0.0-rc.2",
     "cloudflare-bypasser": "^0.0.3",
     "cors": "^2.8.5",
