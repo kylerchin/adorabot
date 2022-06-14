@@ -89,7 +89,7 @@ function drawCoordinates(x, y) {
 
 function drawSquareCoordinates(x,y) {
     ctx.fillStyle = "#41ffca";
-    ctx.fillRect(x - 3, y - 3, 6, 6);
+    ctx.fillRect(x - 4, y - 4, 8, 8);
 }
 
 function drawDotFromPercentage(xper, yper) {
