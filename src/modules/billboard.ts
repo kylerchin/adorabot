@@ -385,14 +385,14 @@ axios.get("https://www.billboard.com/charts/" + chartCodeProcessed)
         var titlefetch = bbcheeriorow('.c-title')
 
         if (titlefetch) {
-            obj.title = titlefetch.html().replace(/\n/g,'').replace(/\t/g,'')
+            obj.title = titlefetch.html().replace(/\n/g,'').replace(/\t/g,'').replace(/&amp;/g,"&");
         }
 
         var artistfetch = bbcheeriorow('.lrv-u-flex-grow-1 > .c-label')
 
         if (artistfetch) {
             if (artistfetch.html()) {
-                obj.artist = artistfetch.html().replace(/\n/g,'').replace(/\t/g,'')
+                obj.artist = artistfetch.html().replace(/\n/g,'').replace(/\t/g,'').replace(/&amp;/g,"&")
             }
            
         }
