@@ -143,7 +143,12 @@ async function createCommands() {
 commands.forEach(async command => {
   await interaction
 .createApplicationCommand(command)
-.then(console.log)
+.then((output:any) => {
+  console.log(output);
+  if (output.errors) {
+    console.error(output.errors)
+  }
+})
 .catch(console.error);
 }
 )
