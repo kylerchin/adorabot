@@ -186,23 +186,6 @@ export function helpDirectoryTest(helpDirArgs: helpDirArgs) {
         ]
       },
       {
-        "title": "Billboard Polls",
-        "description": "Latest Billboard Poll Scores and Vote Links",
-        "color": 0xe7acc2,
-        "fields": [
-          {
-            "name": "`a!bbp`",
-            "value": "View vote tallys for billboard polls, run command for a list of polls",
-            "inline": true
-          },
-          {
-            "name": "`a!bv`",
-            "value": "Show Voting links for billboard polls, run command for a list of polls",
-            "inline": true
-          },
-        ]
-      },
-      {
         "title": "Moderation commands",
         "description": "Make protecting your community easier!",
         "color": 0xd6b5d4,
