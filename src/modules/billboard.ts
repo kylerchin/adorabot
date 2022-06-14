@@ -44,13 +44,13 @@ catch (billboarderr) {
 }
 
 async function sendChartScrollable(chart,message: Message, chartCode) {
-    //console.log(chart)
+   try { //console.log(chart)
     //console.log(chart.songs)
     //message.channel.send(chart.week)
 
     const arrayOfEmbeds = chart.map((song) => {
         
-        console.log(song)
+       // console.log(song)
         var embedObject:any = { 
            /* "author": {
                 //"name": song.artist
@@ -90,7 +90,7 @@ async function sendChartScrollable(chart,message: Message, chartCode) {
         }
          else {
           embedObject.title = `#${song.rank} - ${song.title}`
-         }
+ }
         
 
         return embedObject;
@@ -110,7 +110,7 @@ async function sendChartScrollable(chart,message: Message, chartCode) {
 
     var pageCounter = 0;
     message.channel.send({
-      "content": `${chartCode} Chart | ${chart.week}`,
+      "content": `${chartCode} Chart`,
       embeds: groupedEmbeds[pageCounter]}).then(messageBillboardEmbed => {
 
       //  message.channel.stopTyping();
