@@ -367,9 +367,15 @@ export async function billboardCharts(message,command,args,client) {
 
          
          */
+        
+         var urlforbillboard = "https://www.billboard.com/charts/" + chartCodeProcessed;
+
+         if (args[1]) {
+          urlforbillboard = urlforbillboard + "/" + args[1]
+         } 
 
          
-axios.get("https://www.billboard.com/charts/" + chartCodeProcessed)
+axios.get(urlforbillboard)
 .then(async (response) => {
    // console.log(response.data);
    const $ = cheerio.load(response.data);
