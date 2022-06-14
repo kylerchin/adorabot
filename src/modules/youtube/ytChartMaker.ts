@@ -717,7 +717,7 @@ cassandraclient
             drawLineFromPercentageArray(connectinglinefilteredforwhiteline );
             }*/
 
-            drawLineFromPercentageArray(arrayOfStats );
+            drawLineFromPercentageArray( connectingline );
 
             var arrayStatsLength = arrayOfStats.length;
 
