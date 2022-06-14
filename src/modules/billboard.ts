@@ -27,6 +27,8 @@ try {
   chartShortObject['korea-100'] = "billboard-korea-100";
 chartShortObject['kpop'] = "billboard-korea-100";
 
+chartShortObject['hot100'] = "hot-100";
+
     await listCharts((err, charts)=> {
     forEach(charts, function (eachChart) {
   
