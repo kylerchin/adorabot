@@ -697,7 +697,7 @@ cassandraclient
                     if (
                     Math.abs(eachDot.xper - connectingline[eachIndexWhite + 1].xper) < tolerance &&
                     Math.abs(eachDot.yper - connectingline[eachIndexWhite + 1].xper) < tolerance ) {
-                        verdictonkeep = true;
+                        verdictonkeep = false;
                     }
                 }
 
@@ -705,11 +705,11 @@ cassandraclient
                     if (
                     Math.abs(eachDot.xper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
                     Math.abs(eachDot.yper - connectingline[eachIndexWhite - 1].xper) < tolerance ) {
-                        verdictonkeep = true;
+                        verdictonkeep = false;
                     }
                 }
             }
-            return verdictonkeep = false;
+            return verdictonkeep;
         })
 
             if (connectinglinefilteredforwhiteline.length >= 2) {
