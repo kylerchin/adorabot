@@ -358,7 +358,7 @@ export async function billboardCharts(message,command,args,client) {
       var chartCodeProcessed = adoraToOfficialBBcode(searchString)
 
       if(typeof(chartCodeProcessed) === "undefined") {
-        message.channel.send("Invalid chart, use `a!bb list` to see a full list of valid chart")
+        message.channel.send("Invalid chart, use `a!bb list` to see a full list of valid charts")
         billboardChartsHelpPage(message,command,args)
        // message.channel.stopTyping();
       } else {
@@ -384,59 +384,8 @@ export async function billboardCharts(message,command,args,client) {
          if (args[1]) {
           urlforbillboard = urlforbillboard + "/" + args[1]
          } 
-
          
-axios.get(urlforbillboard)
-.then(async (response) => {
-   // console.log(response.data);
-   const $ = cheerio.load(response.data);
-   
-  var rowsoftable =  $('.o-chart-results-list-row').html()
-
-  //console.log(rowsoftable)
-
- if (rowsoftable) {
-   // console.log(rowsoftable[0])
-
-    var arrayofhtml = $('.o-chart-results-list-row').toArray().map((x) => { return $(x).html()});
-
-    //console.log(rowsoftable)
-    var arrayofresults = arrayofhtml.map((eachitem) => {
-        const bbcheeriorow = cheerio.load(eachitem);
-
-        var obj:interfaceforbbrow = {
-            rank: bbcheeriorow('.lrv-u-background-color-black > .c-label').html().replace(/\n/g,'').replace(/\t/g,''),
-            cover: bbcheeriorow('.c-lazy-image__img').attr('data-lazy-src')
-        }
-
-        var titlefetch = bbcheeriorow('.c-title')
-
-        if (titlefetch) {
-            obj.title = titlefetch.html().replace(/\n/g,'').replace(/\t/g,'').replace(/&amp;/g,"&");
-        }
-
-        var artistfetch = bbcheeriorow('.lrv-u-flex-grow-1 > .c-label')
-
-        if (artistfetch) {
-            if (artistfetch.html()) {
-                obj.artist = artistfetch.html().replace(/\n/g,'').replace(/\t/g,'').replace(/&amp;/g,"&")
-            }
-           
-        }
-
-     return obj
-    })
- 
-    console.log(arrayofhtml.length)
-
-    console.log(arrayofresults[0])
-    console.log(arrayofresults[20])
-    sendChartScrollable(arrayofresults,message,chartCodeProcessed)
-
-    //c-lazy-image__img
- }
-   
-}).catch(error => {console.error(error)})
+         requestbbchart(urlforbillboard,message,chartCodeProcessed)
 
       }
        
@@ -458,6 +407,81 @@ export function billboardinteraction(interaction, client) {
   if (chartstring) {
     if (chartstring.trim().toLowerCase() === "list") {
       billboardListChartsScrollable(interaction)
+    } else {
+     
+      var chartCodeProcessed = adoraToOfficialBBcode(chartstring)
+
+      if(typeof(chartCodeProcessed) === "undefined") {
+        interaction.channel.send("Invalid chart, use `/bb list` to see a full list of valid charts")
+       // billboardChartsHelpPage(interaction,command,args)
+       // message.channel.stopTyping();
+      } else {
+
+        var urlforbillboard = "https://www.billboard.com/charts/" + chartCodeProcessed;
+
+        var datestring = interaction.options.getString('date')
+
+        if (datestring) {
+         urlforbillboard = urlforbillboard + "/" + datestring
+        } 
+        
+        requestbbchart(urlforbillboard,interaction,chartCodeProcessed)
+      } 
+    }
     }
   }
+
+
+async function requestbbchart(urlforbillboard,message,chartCodeProcessed) {
+  axios.get(urlforbillboard)
+  .then(async (response) => {
+     // console.log(response.data);
+     const $ = cheerio.load(response.data);
+     
+    var rowsoftable =  $('.o-chart-results-list-row').html()
+  
+    //console.log(rowsoftable)
+  
+   if (rowsoftable) {
+     // console.log(rowsoftable[0])
+  
+      var arrayofhtml = $('.o-chart-results-list-row').toArray().map((x) => { return $(x).html()});
+  
+      //console.log(rowsoftable)
+      var arrayofresults = arrayofhtml.map((eachitem) => {
+          const bbcheeriorow = cheerio.load(eachitem);
+  
+          var obj:interfaceforbbrow = {
+              rank: bbcheeriorow('.lrv-u-background-color-black > .c-label').html().replace(/\n/g,'').replace(/\t/g,''),
+              cover: bbcheeriorow('.c-lazy-image__img').attr('data-lazy-src')
+          }
+  
+          var titlefetch = bbcheeriorow('.c-title')
+  
+          if (titlefetch) {
+              obj.title = titlefetch.html().replace(/\n/g,'').replace(/\t/g,'').replace(/&amp;/g,"&");
+          }
+  
+          var artistfetch = bbcheeriorow('.lrv-u-flex-grow-1 > .c-label')
+  
+          if (artistfetch) {
+              if (artistfetch.html()) {
+                  obj.artist = artistfetch.html().replace(/\n/g,'').replace(/\t/g,'').replace(/&amp;/g,"&")
+              }
+             
+          }
+  
+       return obj
+      })
+   
+      console.log(arrayofhtml.length)
+  
+      console.log(arrayofresults[0])
+      console.log(arrayofresults[20])
+      sendChartScrollable(arrayofresults,message,chartCodeProcessed)
+  
+      //c-lazy-image__img
+   }
+     
+  }).catch(error => {console.error(error)})
 }
