@@ -66,22 +66,24 @@ const phi = 1.618033988749895;
 var legendDepth = 100;
 var legendDepthSub = 60;
 
-var paddingLeft = 200;
-var paddingRight = 100;
-var paddingTop = 100;
-var paddingBottom = 200;
-var canvasHeightRange = canvas.height - paddingTop - paddingBottom;
-var canvasWidthRange = canvas.width - paddingLeft - paddingRight;
+const paddingLeft = 200;
+const paddingRight = 100;
+const paddingTop = 100;
+const paddingBottom = 200;
+const canvasHeightRange = canvas.height - paddingTop - paddingBottom;
+const canvasWidthRange = canvas.width - paddingLeft - paddingRight;
 
 var pointSize = 9;
 var markerLineWidth = 10;
+
+const twopi = Math.PI * 2;
 
 function drawCoordinates(x, y) {
     //  var ctx = canvas.getContext("2d");
 
     ctx.fillStyle = "#41ffca";
     ctx.beginPath();
-    ctx.arc(x, y, pointSize, 0, Math.PI * 2, true);
+    ctx.arc(x, y, pointSize, 0, twopi, true);
     ctx.fill();
 }
 
