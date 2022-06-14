@@ -87,12 +87,25 @@ function drawCoordinates(x, y) {
     ctx.fill();
 }
 
+function drawSquareCoordinates(x,y) {
+    ctx.fillStyle = "#41ffca";
+    ctx.fillRect(x - 3, y - 3, 6, 6);
+}
+
 function drawDotFromPercentage(xper, yper) {
     var xDrawPlace = Math.round(canvasWidthRange * xper + paddingLeft);
     var yDrawPlace = Math.round(
         canvasHeightRange - canvasHeightRange * yper + paddingTop
     );
     drawCoordinates(xDrawPlace, yDrawPlace);
+}
+
+function drawSquareFromPercentage(xper, yper) {
+    var xDrawPlace = Math.round(canvasWidthRange * xper + paddingLeft);
+    var yDrawPlace = Math.round(
+        canvasHeightRange - canvasHeightRange * yper + paddingTop
+    );
+    drawSquareCoordinates(xDrawPlace, yDrawPlace);
 }
 
 // [{xper: 0.1, yper:0.1}]
@@ -713,6 +726,12 @@ cassandraclient
               return (unixtime - leastAndGreatestObject["leastTime"]) / timeRange;
            }
 
+           var drawsquare = true;
+
+           if (arrayOfStats.length < 1000) {
+            drawsquare = false;
+           }
+
             arrayOfStats
             .map((stat) => {
               stat["fromleft"] = offsetCalcLeft(stat.unixtime);
@@ -721,6 +740,8 @@ cassandraclient
               return stat;
             })
             .forEach((stat,statIndex) => {
+
+               
               //  var percentageOffsetFromLeft = offsetCalcLeft(stat.unixtime)
              // var percentageOffsetFromLeft = offsetCalcLeft(stat.unixtime)
               //  var percentageOffsetFromBottomViews = offsetCalcBottom(stat.views)
@@ -755,10 +776,18 @@ cassandraclient
                }
 
               if (shouldDrawDot === true) {
-                drawDotFromPercentage(
-                  stat.fromleft,
-                  stat.frombot
-              );
+                if (drawsquare) {
+                    drawSquareFromPercentage(
+                        stat.fromleft,
+                        stat.frombot
+                    )
+                } else {
+                    drawDotFromPercentage(
+                        stat.fromleft,
+                        stat.frombot
+                    );
+                }
+                
               }
             });
 
