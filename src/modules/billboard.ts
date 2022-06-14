@@ -146,7 +146,7 @@ async function sendChartScrollable(chart,message: Message|CommandInteraction, ch
                 pageCounter--
               }
               messageBillboardEmbed.edit({embeds: groupedEmbeds[pageCounter]})
-              r.users.remove(r.users.cache.filter(u => u === message.author).first())
+              r.users.remove(r.users.cache.filter(u => u.id === idtomatch).first())
           })
 
           forwards.on('collect', (r, u) => {
@@ -156,7 +156,7 @@ async function sendChartScrollable(chart,message: Message|CommandInteraction, ch
                 pageCounter++
               }
               messageBillboardEmbed.edit({embeds: groupedEmbeds[pageCounter]})
-              r.users.remove(r.users.cache.filter(u => u === message.author).first())
+              r.users.remove(r.users.cache.filter(u => u.id === idtomatch).first())
           })
 
           deleteCollector.on('collect', (r, u) => {
@@ -289,9 +289,11 @@ export async function billboardListChartsScrollable(message) {
 
           message.channel.send(messageToSendBillboard).then((messageBillboardEmbed: Message) => {
   
+            const idtomatch = message.user.id || message.author.id
+
               // Filters
-              const backwardsFilter = (reaction, user) => reaction.emoji.name === '⬅' && user.id === message.author.id
-              const forwardsFilter = (reaction, user) => reaction.emoji.name === '➡' && user.id === message.author.id
+              const backwardsFilter = (reaction, user) => reaction.emoji.name === '⬅' && user.id === idtomatch
+              const forwardsFilter = (reaction, user) => reaction.emoji.name === '➡' && user.id === idtomatch
   
               const timeOfTimer = 60*60*1000
               const backwards = messageBillboardEmbed.createReactionCollector({filter: backwardsFilter, time: timeOfTimer})
@@ -306,7 +308,7 @@ export async function billboardListChartsScrollable(message) {
                   embed.setDescription(pages[page-1])
                   embed.setFooter(`Page ${page} of ${pages.length}`)
                   messageBillboardEmbed.edit({embeds: [embed]})
-                  r.users.remove(r.users.cache.filter(u => u === message.author).first())
+                  r.users.remove(r.users.cache.filter(u => u.id === idtomatch).first())
               })
   
               forwards.on('collect', (r, u) => {
@@ -318,7 +320,7 @@ export async function billboardListChartsScrollable(message) {
                   embed.setDescription(pages[page-1])
                   embed.setFooter(`Page ${page} of ${pages.length}`)
                   messageBillboardEmbed.edit({embeds: [embed]})
-                  r.users.remove(r.users.cache.filter(u => u === message.author).first())
+                  r.users.remove(r.users.cache.filter(u => u.id === idtomatch).first())
               })
             
 
