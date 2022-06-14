@@ -680,6 +680,7 @@ cassandraclient
 
             const tolerance = 0.2;
 
+            /*
             let connectinglinefilteredforwhiteline = connectingline.filter((eachDot, eachIndexWhite:number) => {
                 var verdictonkeep = true;
 
@@ -714,7 +715,9 @@ cassandraclient
 
             if (connectinglinefilteredforwhiteline.length >= 2) {
             drawLineFromPercentageArray(connectinglinefilteredforwhiteline );
-            }
+            }*/
+
+            drawLineFromPercentageArray(arrayOfStats );
 
             var arrayStatsLength = arrayOfStats.length;
 
