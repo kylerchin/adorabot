@@ -59,7 +59,7 @@ const commands = [
       "description": "Optional Date for Historical charts. \"YYYY-MM-DD\" format, dashes required"
     }
   ]
-},*/
+},
 {
   "name": "ban",
   "description": "Bans users, only works in server for users with ban perms",
@@ -88,9 +88,9 @@ const commands = [
       "required": true
     }
   ]
-},
+},*/
 {
-  "name": "Kick",
+  "name": "kick",
   "description": "Kick users, only works in server for users with kick perms",
   "options": [
     {
