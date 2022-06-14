@@ -4,7 +4,7 @@ const { listCharts,getChart } = require('billboard-top-100');
 var forEach = require("for-each")
 import axios from "axios"
 const Discord = require('discord.js')
-import {ReactionCollectorOptions,CollectorFilter} from 'discord.js'
+import {ReactionCollectorOptions,CollectorFilter, CommandInteraction} from 'discord.js'
 var _ = require('lodash')
 import {Message} from 'discord.js'
 import {hexCodeToColorNumber} from './util'
@@ -50,7 +50,7 @@ catch (billboarderr) {
 }
 }
 
-async function sendChartScrollable(chart,message: Message, chartCode) {
+async function sendChartScrollable(chart,message: Message|CommandInteraction, chartCode) {
    try { //console.log(chart)
     //console.log(chart.songs)
     //message.channel.send(chart.week)
@@ -127,10 +127,12 @@ async function sendChartScrollable(chart,message: Message, chartCode) {
 
             console.log("finished part 1")
 
+        const idtomatch = message.user.id || message.author.id
+
           // Filters
-          const backwardsFilter = (reaction, user) => reaction.emoji.name === '⬅' && user.id === message.author.id
-          const forwardsFilter = (reaction, user) => reaction.emoji.name === '➡' && user.id === message.author.id
-          const deleteFilter = (reaction, user) => reaction.emoji.name === '🗑' && user.id === message.author.id
+          const backwardsFilter = (reaction, user) => reaction.emoji.name === '⬅' && user.id === idtomatch
+          const forwardsFilter = (reaction, user) => reaction.emoji.name === '➡' && user.id === idtomatch
+          const deleteFilter = (reaction, user) => reaction.emoji.name === '🗑' && user.id === idtomatch
 
           const timeOfTimer = 60*60*1000
           const backwards = messageBillboardEmbed.createReactionCollector({filter: backwardsFilter, time: timeOfTimer})
