@@ -697,8 +697,8 @@ cassandraclient
             return verdictonkeep = false;
         })
 
-            if (connectingline.length >= 2) {
-            drawLineFromPercentageArray(connectingline);
+            if (connectinglinefilteredforwhiteline .length >= 2) {
+            drawLineFromPercentageArray(connectinglinefilteredforwhiteline );
             }
 
             var arrayStatsLength = arrayOfStats.length;
