@@ -8,7 +8,8 @@ const interaction = new DiscordInteractions({
   publicKey: config.publickey,
 });
 
-const commands = [{
+const commands = [
+  /*{
   name: "ping",
   description: "View bot latency."
 },
@@ -41,7 +42,7 @@ const commands = [{
 {
   "name": "mama",
   "description": "View Real-Time Charts for MAMA Awards 2021: Worldwide Fans’ Choice TOP 10"
-},
+},*/
 {
   "name": "billboard",
   "description": "View latest & historical Billboard Charts",
