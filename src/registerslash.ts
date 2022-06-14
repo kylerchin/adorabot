@@ -103,7 +103,7 @@ const commands = [
 },*/
 {
   "name": "autoban",
-  "description": "Auto ban known-raid accounts from blacklists before they come to your server,/autoban help for more info",
+  "description": "Autoban known banlisted raid accounts before they come to your server. /autoban help for info",
   "options": [
     {
       "type": 1,
