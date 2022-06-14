@@ -21,8 +21,13 @@ interface interfaceforbbrow {
 var chartShortObject = {}
 
 export async function listChartsDownload() {
-  try {
-  await listCharts((err, charts)=> {
+try {
+ 
+   chartShortObject['korea100'] = "billboard-korea-100";
+  chartShortObject['korea-100'] = "billboard-korea-100";
+chartShortObject['kpop'] = "billboard-korea-100";
+
+    await listCharts((err, charts)=> {
     forEach(charts, function (eachChart) {
   
       var chartcode = eachChart.url.replace("http://www.billboard.com/charts/", "").replace(/\//g,'');
@@ -175,7 +180,8 @@ async function sendChartScrollable(chart,message: Message, chartCode) {
     //message.channel.send(chart.songs[0].rank) // prints rank of top song (1) for week of August 27, 2016
     //message.channel.send(chart.songs[0].cover) // prints URL for Billboard cover image of top song for week of August 27, 2016
 }
-
+catch (err) {console.error(err)}
+}
 export async function billboardChartsHelpPage(message,command,args) {
     message.channel.send({embeds: [{
         "title": "Billboard Charts Help Page",
@@ -219,9 +225,15 @@ export async function billboardListChartsScrollable(message,command,args) {
 
         var currentPage:string = "";
         var currentPageStage:string = "";
+       
+       var injected = [
+{
+"url":"http://www.billboard.com/charts/kpop"
+},
+...charts
+]
 
-
-        forEach(charts, function (eachChart, key) {
+        forEach(injected, function (eachChart, key) {
         
         var chartCode = eachChart.url.replace("http://www.billboard.com/charts/", "").replace(/\//g, '')
 
@@ -333,8 +345,6 @@ export async function billboardCharts(message,command,args,client) {
 
 
       var chartCodeProcessed = adoraToOfficialBBcode(searchString)
-
-
 
       if(typeof(chartCodeProcessed) === "undefined") {
         message.channel.send("Invalid chart, use `a!bb list` to see a full list of valid chart")
