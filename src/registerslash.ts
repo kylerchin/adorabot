@@ -88,7 +88,7 @@ const commands = [
       "required": true
     }
   ]
-},*/
+},
 {
   "name": "kick",
   "description": "Kick users, only works in server for users with kick perms",
@@ -100,10 +100,10 @@ const commands = [
       "required": true
     }
   ]
-},
+},*/
 {
   "name": "autoban",
-  "description": "Automatically block known-raid accounts from blacklists before they come to your server,/autoban help for more info",
+  "description": "Auto ban known-raid accounts from blacklists before they come to your server,/autoban help for more info",
   "options": [
     {
       "type": 1,
@@ -122,6 +122,7 @@ const commands = [
     }
   ]
 },
+/*
 {
   "name": "inspect",
   "description": "Shows info of user like Flags, Account creation time, Banlist status, and icon!",
@@ -133,7 +134,7 @@ const commands = [
       "required": true
     },
   ]
-}
+}*/
 ];
 
 
@@ -147,6 +148,9 @@ commands.forEach(async command => {
   console.log(output);
   if (output.errors) {
     console.error(output.errors)
+    if (output.errors.description._errors) {
+      console.error(output.errors.description._errors)
+    }
   }
 })
 .catch(console.error);
