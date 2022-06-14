@@ -221,6 +221,7 @@ export function adoraToOfficialBBcode(chartname) {
 
 export async function billboardListChartsScrollable(message) {
 
+   try {
     var pages = []
 
     await listCharts((err, charts)=> {
@@ -329,6 +330,10 @@ export async function billboardListChartsScrollable(message) {
               })
           })
     });
+   } catch (err) {
+    console.error(err);
+    logger.discordErrorLogger.error(err)
+   }
         
 }
 
