@@ -389,7 +389,7 @@ axios.get("https://www.billboard.com/charts/" + chartCodeProcessed)
 
         var obj:interfaceforbbrow = {
             rank: bbcheeriorow('.lrv-u-background-color-black > .c-label').html().replace(/\n/g,'').replace(/\t/g,''),
-            cover: bbcheeriorow('.c-lazy-image__img').attr('src')
+            cover: bbcheeriorow('.c-lazy-image__img').attr('data-lazy-src')
         }
 
         var titlefetch = bbcheeriorow('.c-title')
