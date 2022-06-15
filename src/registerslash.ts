@@ -66,7 +66,7 @@ const commands = [
   "options": [
     {
       "type": 3,
-      "name": "bans",
+      "name": "users",
       "description": "Insert 1 or more userids and/or mentions to ban",
       "required": true
     },
@@ -74,6 +74,12 @@ const commands = [
       "type": 5,
       "name": "purgemsgs",
       "description": "If enabled, deletes messages in this server from the users"
+    },
+    {
+      "type": 3,
+      "name": "reason",
+      "description": "Reason for ban",
+      "required": false
     }
   ]
 },
@@ -83,9 +89,15 @@ const commands = [
   "options": [
     {
       "type": 3,
-      "name": "unbans",
+      "name": "users",
       "description": "Insert 1 or more userids and/or mentions to unban",
       "required": true
+    },
+    {
+      "type": 3,
+      "name": "reason",
+      "description": "Reason for unban",
+      "required": false
     }
   ]
 },
@@ -95,9 +107,15 @@ const commands = [
   "options": [
     {
       "type": 3,
-      "name": "kick",
+      "name": "users",
       "description": "Insert 1 or more userids and/or mentions to kick",
       "required": true
+    },
+    {
+      "type": 3,
+      "name": "reason",
+      "description": "Reason for kick",
+      "required": false
     }
   ]
 },
