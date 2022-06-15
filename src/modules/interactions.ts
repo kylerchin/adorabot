@@ -66,12 +66,12 @@ export async function processInteraction(args: processInteractionType) {
 
 
     var interactionLogger: any = {
-      "interaction": interaction,
+      "command": interaction.commandName,
       "authorname": interaction.user.tag,
       "type": 'interactioncreate'
     }
 
-    if (args.interaction.inGuild()) {
+    if (interaction.guild) {
       interactionLogger["guildName"] = interaction.guild.name;
       interactionLogger["guildId"] = interaction.guildId;
     }
@@ -81,6 +81,8 @@ export async function processInteraction(args: processInteractionType) {
     }
 
     await logger.discordInfoLogger.info(interactionLogger);
+    
+    await logger.discordDebugLogger.debug(interactionLogger);
 
 
     //await logger.discordElasticLogger.info(`${JSON.stringify(interaction), {'type': 'interactionCreate'}}`)
