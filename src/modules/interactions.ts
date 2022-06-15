@@ -60,6 +60,7 @@ export async function processInteraction(args: processInteractionType) {
           break;
         default:
         // console.log(`Sorry, we are out of ${expr}.`);
+          await interaction.reply("Command not found")
       }
     }
 

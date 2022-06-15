@@ -10,7 +10,7 @@ interface helpDirArgs {
 
 export function helppageinteraction(interaction:CommandInteraction) {
    //msg.channel.send("**Adora Commands**").catch(console.error());;
-   helpDirArgs.message.channel.send({
+   interaction.reply({
     "content": "**Adora Commands**",
     "embeds": [{
       "title": "Music Charts & Statistics",
