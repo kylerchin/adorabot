@@ -30,7 +30,7 @@ export async function bankickinteraction(interaction:CommandInteraction) {
                 var banOptionsObject:any = {
                     reason: reason
                 }
-                if (interaction.options.getString('purgemsgs') === true) {
+                if (interaction.options.getBoolean('purgemsgs') === true) {
                     banOptionsObject.days = 7
                 } 
                 
