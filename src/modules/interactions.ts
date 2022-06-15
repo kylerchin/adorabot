@@ -34,6 +34,8 @@ export async function processInteraction(args: processInteractionType) {
           await ytparty({ message: interaction, client: args.interaction.client })
         case 'billboard':
           await billboardinteraction(interaction, args.interaction.client)
+        case 'ban':
+          
         case 'mama':
           // await mamaAwards2021Interaction(interaction) 
           await interaction.reply('The 2021 Mama Awards Votes have ended. Come back next year!')

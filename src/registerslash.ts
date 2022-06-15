@@ -59,7 +59,7 @@ const commands = [
       "description": "Optional Date for Historical charts. \"YYYY-MM-DD\" format, dashes required"
     }
   ]
-},
+},*/
 {
   "name": "ban",
   "description": "Bans users, only works in server for users with ban perms",
@@ -83,7 +83,7 @@ const commands = [
   "options": [
     {
       "type": 3,
-      "name": "bans",
+      "name": "unbans",
       "description": "Insert 1 or more userids and/or mentions to unban",
       "required": true
     }
@@ -95,12 +95,12 @@ const commands = [
   "options": [
     {
       "type": 3,
-      "name": "bans",
+      "name": "kick",
       "description": "Insert 1 or more userids and/or mentions to kick",
       "required": true
     }
   ]
-},*/
+},
 {
   "name": "autoban",
   "description": "Autoban known banlisted raid accounts before they come to your server. /autoban help for info",

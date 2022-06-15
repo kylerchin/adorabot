@@ -81,6 +81,28 @@ function arrayOfUserIdsFromMessage(message) {
     return { arrayOfIds: arrayOfUserIdsToBan, reason: reasonForBanRegister }
 }
 
+export function arrayofuseridsfromstring(inputstring) {
+    var roleMentionsRemoved =  inputstring.replace(/<@&(\d{18})>/g, '')
+
+
+    // don't put in attachment links into the fuckin ban list
+   // var attachments = message.attachments
+  //  var urlsInMessage = []
+
+    //var removedMessageAttachmentURLsFromContent = roleMentionsRemoved
+
+    //forEach(attachments, (attach) => {
+      //  urlsInMessage.push(attach.url)
+       // removedMessageAttachmentURLsFromContent = removedMessageAttachmentURLsFromContent.replaceAll(attach.url, "")
+    //})
+    //transforms the user id list into a list to be banned
+    var arrayOfUserIdsToBan = _.uniq(roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g));
+
+    var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*ban(\ )*)/g, '').trim().replace(emptylinesregex, "")
+
+    return { arrayOfIds: arrayOfUserIdsToBan, reason: reasonForBanRegister }
+}
+
 interface unbanSubArgsInterface {
     userid: string;
     reason: string;
