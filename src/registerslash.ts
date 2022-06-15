@@ -122,19 +122,18 @@ const commands = [
     }
   ]
 },
-/*
 {
   "name": "inspect",
   "description": "Shows info of user like Flags, Account creation time, Banlist status, and icon!",
   "options": [
     {
       "type": 3,
-      "name": "bans",
+      "name": "users",
       "description": "Insert 1 or more userids and/or mentions to inspect",
       "required": true
     },
   ]
-}*/
+}
 ];
 
 

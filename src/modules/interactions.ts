@@ -9,6 +9,7 @@ const { config } = require('./../../config.json');
 
 
 import { youtubeVideoStatsInteraction } from './youtube/youtube'
+import { inspectInteraction } from './inspect';
 
 interface processInteractionType {
   interaction: any;
@@ -45,6 +46,8 @@ export async function processInteraction(args: processInteractionType) {
         case 'kick':
 
           await interaction.reply("feature in development")
+        case 'inspect':
+          await inspectInteraction(interaction)
         case 'mama':
           // await mamaAwards2021Interaction(interaction) 
           await interaction.reply('The 2021 Mama Awards Votes have ended. Come back next year!')
