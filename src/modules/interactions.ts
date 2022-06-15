@@ -5,6 +5,7 @@ import { logger, tracer, span } from './logger'
 import { ping, pingInteraction } from './ping'
 import { mamaAwards2021Interaction } from './get2021mamavoteinfo'
 import { billboardinteraction } from './billboard'
+import {interactionautoban} from './interactionautoban'
 const { config } = require('./../../config.json');
 
 
@@ -38,8 +39,8 @@ export async function processInteraction(args: processInteractionType) {
         case 'ban':
           await interaction.reply("feature in development")
         case 'autoban':
+          await interactionautoban(interaction)
 
-          await interaction.reply("feature in development")
         case 'unban':
 
           await interaction.reply("feature in development")

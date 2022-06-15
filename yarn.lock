@@ -2926,7 +2926,7 @@
     "tweetnacl" "^1.0.3"
     "ws" "^7.4.4"
 
-"discord.js@^13.1.0", "discord.js@^13.6.0":
+"discord.js@^13.1.0", "discord.js@^13.8.0":
   "integrity" "sha512-EPAA/2VLycYN5wSzavqa4iJ6qj3UtQFtHw5TH/60Fj29ymfEsCQVn//o1mTpwDxzwb+rPIrWhkxKIGGnjfv0Iw=="
   "resolved" "https://registry.npmjs.org/discord.js/-/discord.js-13.8.0.tgz"
   "version" "13.8.0"
