@@ -6,6 +6,7 @@ import { ping, pingInteraction } from './ping'
 import { mamaAwards2021Interaction } from './get2021mamavoteinfo'
 import { billboardinteraction } from './billboard'
 import {interactionautoban} from './interactionautoban'
+import {bankickinteraction} from './bankickinteraction'
 const { config } = require('./../../config.json');
 
 
@@ -37,13 +38,13 @@ export async function processInteraction(args: processInteractionType) {
         case 'billboard':
           await billboardinteraction(interaction, args.interaction.client)
         case 'ban':
-          await interaction.reply("feature in development")
+          bankickinteraction(interaction)
         case 'autoban':
           await interactionautoban(interaction)
         case 'unban':
-          await interaction.reply("feature in development")
+          bankickinteraction(interaction)
         case 'kick':
-          await interaction.reply("feature in development")
+          bankickinteraction(interaction)
         case 'inspect':
           await inspectInteraction(interaction)
         case 'mama':
