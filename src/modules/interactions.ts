@@ -79,7 +79,7 @@ export async function processInteraction(args: processInteractionType) {
       interactionLogger['commandOptions'] = interaction.options.data
     }
 
-    await logger.discordInfoLogger.info(interactionLogger)
+    await logger.discordInfoLogger.info(interactionLogger);
 
 
     //await logger.discordElasticLogger.info(`${JSON.stringify(interaction), {'type': 'interactionCreate'}}`)
