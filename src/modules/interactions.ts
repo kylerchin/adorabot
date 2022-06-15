@@ -4,7 +4,7 @@ import { geniusLyricsFromInteraction } from './genius';
 import { logger, tracer, span } from './logger'
 import { ping, pingInteraction } from './ping'
 import { mamaAwards2021Interaction } from './get2021mamavoteinfo'
-import {billboardinteraction} from './billboard'
+import { billboardinteraction } from './billboard'
 const { config } = require('./../../config.json');
 
 
@@ -35,7 +35,16 @@ export async function processInteraction(args: processInteractionType) {
         case 'billboard':
           await billboardinteraction(interaction, args.interaction.client)
         case 'ban':
-          
+          await interaction.reply("feature in development")
+        case 'autoban':
+
+          await interaction.reply("feature in development")
+        case 'unban':
+
+          await interaction.reply("feature in development")
+        case 'kick':
+
+          await interaction.reply("feature in development")
         case 'mama':
           // await mamaAwards2021Interaction(interaction) 
           await interaction.reply('The 2021 Mama Awards Votes have ended. Come back next year!')
