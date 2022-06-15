@@ -65,7 +65,9 @@ export async function interactionautoban(interaction:CommandInteraction) {
                 }
 
                 //if argument is empty or if the first argument is not a valid toggle argument
-                if (interaction.options.getSubcommand() === "help") {
+                const autobansubcommand = interaction.options.getSubcommand()
+               
+                if (autobansubcommand === "help") {
 
                     var autobanstatustext: string;
                     if (readExistingSubscriptionStatus) {
@@ -95,6 +97,63 @@ export async function interactionautoban(interaction:CommandInteraction) {
                             ]
                         }]
                     })
+                }
+
+                if (interaction.member.permissions.has("ADMINISTRATOR")) {
+                    if (autobansubcommand === "on" || autobansubcommand === "off") {
+
+
+                        if (autobansubcommand === "on" ) {
+                            subscribeStateToWrite = true
+                        }
+                        if (autobansubcommand === "off") {
+                            subscribeStateToWrite = false
+                        }
+
+                        const query = 'INSERT INTO adoramoderation.guildssubscribedtoautoban (serverid, subscribed, lastchangedbyid, lastchangedtime, firstchangedbyid, firstchangedtime) VALUES (?, ?, ?, ?, ?, ?)';
+                        
+                        var params;
+                        
+                        
+
+                        if (isNewEntry) {
+                            params = [interaction.guild.id, subscribeStateToWrite, interaction.user.id, firstchangedtimefirststate, firstchangedbyidfirststate, firstchangedtimefirststate];
+                        } else {
+                            params = [interaction.guild.id, subscribeStateToWrite, interaction.user.id, TimeUuid.now(), firstchangedbyidfirststate, firstchangedtimefirststate];
+                        }
+
+                         //console.log(params)
+                         await cassandraclient.execute(query, params, { prepare: true }, function (err) {
+                            console.log(err);
+                            //Inserted in the cluster
+                        });
+
+                        if (subscribeStateToWrite === true) {
+                            await interaction.reply(
+                                {
+                                    "embeds": [{
+                                        "description": " ╭₊˚ʚ[🍰]ɞ・[This server is now subscribed to autobans!]\n╰₊˚ʚ[🍩]ɞ・[To turn it off, type `a!autoban off`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
+                                        "image": {
+                                            "url": "https://user-images.githubusercontent.com/7539174/111216153-49369c80-8591-11eb-8eaf-0a0f13bf875c.png"
+                                        }
+                                    }]
+                                }
+                            ).catch()
+                        } else {
+                            await interaction.reply(
+                                {
+                                    "embeds": [{
+                                        "description": " ╭₊˚ʚ[:herb:]ɞ・[This server is now unsubscribed to autobans!] \n ﹕˚₊  ❀ ꒱⋅** :warning: You're no longer protected from known raiders from entering your safe space :warning: ** ๑˚₊⊹ \n╰₊˚ʚ[:fish_cake:]ɞ・[To turn autoban back on, type `a!autoban on`] \` \n★ ⋆◗ ૪ 𖤩˖࣪ ◖ ִֶָ ໑ ָ࣪ ¡﹆:spider:ꔛ:candy:ෆ ✿:rabbit2::cherries:*◞:chains: ˊˎ -",
+                                        "image": {
+                                            "url": "https://user-images.githubusercontent.com/7539174/111224943-5b6a0800-859c-11eb-90bc-8806a51fd681.jpg"
+                                        }
+                                    }]
+                                }
+                            ).catch()
+                        }
+                    }
+                } else {
+                    interaction.channel.send("You don't have permission to toggle this feature. Only Administrators of the current guild can turn autoban on and off \n 𓆩 𓆪 ʾ ִֶָ%˓ ᵎ ҂ ࣪˖﹫𓂃⌁. ࣪˖")
                 }
             })
         

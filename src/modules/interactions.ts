@@ -40,12 +40,9 @@ export async function processInteraction(args: processInteractionType) {
           await interaction.reply("feature in development")
         case 'autoban':
           await interactionautoban(interaction)
-
         case 'unban':
-
           await interaction.reply("feature in development")
         case 'kick':
-
           await interaction.reply("feature in development")
         case 'inspect':
           await inspectInteraction(interaction)
