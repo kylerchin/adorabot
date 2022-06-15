@@ -1,4 +1,4 @@
-import {Message} from 'discord.js';
+import {CommandInteraction, Message} from 'discord.js';
 import { logger } from './logger';
 
 interface helpDirArgs {
@@ -6,6 +6,101 @@ interface helpDirArgs {
     command: any,
     args: any,
     [key:string]: any
+}
+
+export function helppageinteraction(interaction:CommandInteraction) {
+   //msg.channel.send("**Adora Commands**").catch(console.error());;
+   helpDirArgs.message.channel.send({
+    "content": "**Adora Commands**",
+    "embeds": [{
+      "title": "Music Charts & Statistics",
+      "description": "Access live information across music charts and platforms",
+      "color": 0xf3ccbd,
+      "fields": [
+        {
+          "name": "`/billboard list/[Chart Name]`",
+          "value": "View latest & historical Billboard Charts, run /billboard list for list of chart ids."
+        },
+        /*{
+          "name": "`a!bbp`",
+          "value": "View statistics for billboard polls, run command for more info"
+        },
+        {
+          "name": "`a!bv`",
+          "value": "Retrieve voting links for billboard polls, run command for a list of polls"
+        },*/
+        {
+          "name": "`/youtube`",
+          "value": "`/youtube <video link / search for a video>`: Realtime view counter for YouTube videos. \n Example: `/youtube fake love music video` or `/youtube https://www.youtube.com/watch?v=gdZLi9oWNZg`"
+        },
+        {
+          "name": "`/lyrics [Search Term]`",
+          "value": "Shows lyrics of a song from Genius"
+        }
+      ]
+    },
+   {
+      "title": "YouTube Player",
+      "description": "Watch YouTube Videos in Voice Channel Together",
+      "color": 0xeebcbb,
+      "fields": [
+        {
+          "name": "`/ytparty`",
+          "value": "Start a YouTube Watch Party in the current voice channel."
+        }
+      ]
+    },
+    {
+      "title": "Moderation commands",
+      "description": "Make protecting your community easier!",
+      "color": 0xd6b5d4,
+      "fields": [
+        {
+          "name": "`/autoban`",
+          "value": "Automatically block known-raid accounts from blacklists before they come to your server, /autoban help for more info\n`/autoban on` to enable the global blacklist, `/autoban off` to turn it off."
+        },
+        {
+          "name": "`/ban (mentions/userids) [reason] [purgemsgs]`",
+          "value": "`/ban` can ban as many users via mention or user ids with an optional reason"
+        },
+        {
+          "name": "`/unban (mentions/userids) [reason]`",
+          "value": "Unban as many users via mention or user ids with an optional reason"
+        },
+        {
+          "name": "`/inspect (mentions/userids)`",
+          "value": "Shows info of user like Flags, Account creation time, Banlist status, and icon!"
+        }
+      ]
+    },
+    {
+      "title": "General commands",
+      "description": "Ping, Support server, and vote for the bot commands",
+      "color": 0xb2c9e9,
+      "fields": [
+        {
+          "name": "`/ping`",
+          "value": "Pong! Returns the bot's latency to Discord's servers."
+        },
+        {
+          "name": "`/invite`",
+          "value": "Invite the bot to all your friend's servers! Shows invite link and support server."
+        },
+        {
+          "name": "I have an idea for a command or feedback!",
+          "value": "We'd love to hear it! Please join our support server and tell us! Run `a!invite` for the invite link to our Support & Suggestion Adorabot Discord Server"
+        },
+        {
+          "name": "Links",
+          "value": "Terms of Service: https://github.com/kylerchin/adorabot/blob/master/tos.md\nPrivacy Policy: https://github.com/kylerchin/adorabot/blob/master/privacy.md"
+        }
+        /*{
+          "name": "Credits",
+          "value": "Developer: Kyler#9100\nAdmins: Moka\nThank you to all that contribute code, feedback, and ban reports! Y'all make this bot better so thanks for using it"
+        }*/
+      ]
+    }]
+  }).catch((error) => {logger.discordErrorLogger.error(error)});
 }
 
 export function helpDirectory(helpDirArgs: helpDirArgs) {
@@ -39,7 +134,7 @@ export function helpDirectory(helpDirArgs: helpDirArgs) {
             }
           ]
         },
-      /*  {
+       {
           "title": "YouTube Player",
           "description": "Watch YouTube Videos in Voice Channel Together",
           "color": 0xeebcbb,
@@ -49,7 +144,7 @@ export function helpDirectory(helpDirArgs: helpDirArgs) {
               "value": "Start a YouTube Watch Party in the current voice channel."
             }
           ]
-        },*/
+        },
         {
           "title": "Billboard Polls",
           "description": "Latest Billboard Poll Scores and Vote Links",
