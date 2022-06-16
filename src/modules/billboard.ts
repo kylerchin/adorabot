@@ -433,6 +433,7 @@ export function billboardinteraction(interaction, client) {
 
 
 async function requestbbchart(urlforbillboard,message,chartCodeProcessed) {
+try {
   axios.get(urlforbillboard)
   .then(async (response) => {
      // console.log(response.data);
@@ -484,4 +485,7 @@ async function requestbbchart(urlforbillboard,message,chartCodeProcessed) {
    }
      
   }).catch(error => {console.error(error)})
+} catch (errorbb) {
+  console.error(errorbb)
+}
 }

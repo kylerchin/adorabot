@@ -347,8 +347,6 @@ cassandraclient
 
             var monthsAdded = []
 
-
-
             while (timeLegend < leastAndGreatestObject["greatestTime"]) {
 
                 //console.log("draw legend")
