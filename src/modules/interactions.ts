@@ -21,6 +21,7 @@ interface processInteractionType {
 
 export async function processInteraction(args: processInteractionType) {
   try {
+
     const interaction = args.interaction
     if (interaction.isCommand) {
 

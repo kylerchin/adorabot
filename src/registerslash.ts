@@ -154,11 +154,11 @@ const commands = [
 }*/
 {
   "name": "help",
-  "description": "List of commands",
+  "description": "List of commands on Adora bot",
 },
 {
   "name": "invite",
-  "description": "Invite to your own server + Link to Adora support server",
+  "description": "Invite Adora bot to your own server + Link to Adora support server",
 },
 ];
 
