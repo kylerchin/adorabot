@@ -1,5 +1,7 @@
 import {CommandInteraction, Message, MessageOptions} from 'discord.js'
 
+import {lookuplocale} from './lookuptablelocale'
+
 export async function ping(message:Message,client) {
 
     const isDM: boolean = message.guild === null;
@@ -51,21 +53,21 @@ export async function pingInteraction(interaction:CommandInteraction,client) {
 
           pingEmbedResponse = {
             "embeds": [{
-              "description": `**펑!** If the Latency is significantly higher than the API Latency, the bot is likely ratelimited in this channel or guild.`,
+              "description": `${lookuplocale({locale: interaction.locale, key: "ping1"})}`,
               "fields": [
                 {
-                  "name": "Shard #",
+                  "name": lookuplocale({locale: interaction.locale, key: "shardnum"}),
                   "value": `${!(isDM) ? `${interaction.guild.shardId.toString()}` : 'DMs'}`,
                   "inline": true
                 },
                 {
-                  "name": "Latency",
-                  "value": `\`${pingReturn.createdTimestamp - timestampOfInteraction}ms\``,
+                  "name": lookuplocale({locale: interaction.locale, key: "latency"}),
+                  "value": `\`${pingReturn.createdTimestamp - timestampOfInteraction}${lookuplocale({locale: interaction.locale, key: "ms"})}\``,
                   "inline": true
                 },
                 {
-                  "name": "API WebSocket Latency",
-                  "value": `\`${Math.round(client.ws.ping)}ms\``,
+                  "name": lookuplocale({locale: interaction.locale, key: "wslatency"}),
+                  "value": `\`${Math.round(client.ws.ping)}${lookuplocale({locale: interaction.locale, key: "ms"})}\``,
                   "inline": true
                 }
               ]
