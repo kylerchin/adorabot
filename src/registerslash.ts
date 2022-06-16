@@ -9,10 +9,13 @@ const interaction = new DiscordInteractions({
 });
 
 const commands = [
-  /*{
+  {
   name: "ping",
+  "name_localizations": {
+    "ko": "핑"
+  },
   description: "View bot latency."
-},
+},/*
 {
   "name": "lyrics",
   "description": "Lookup a song's lyrics",
