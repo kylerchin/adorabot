@@ -24,6 +24,26 @@ export const lookuptable = {
     "ms": {
         "ko": "밀리초",
         "en": "ms"
+    },
+    "views": {
+        "ko": "조회수",
+        "en": "Views"
+    },
+    "likes": {
+        "ko": "좋아요",
+        "en": "Likes"
+    },
+    "dislikes": {
+        "ko": "싫어요",
+        "en": "Likes"
+    },
+    "comments": {
+        "ko": "댓글",
+        "en": "Comments"
+    },
+    "publishedat": {
+    "en": "Published at",        
+    "ko": "발행일"
     }
 }
 
@@ -34,7 +54,7 @@ interface lookupoptions {
 
 export function lookuplocale(lookupopt) {
     if (lookuptable[lookupopt.key]) {
-        if (lookupopt.locale === null || lookupopt.locale === undefined) {
+        if (lookupopt.locale === null || lookupopt.locale === undefined  || lookupopt.locale === "") {
             return lookuptable[lookupopt.key]["en"]
         }
        if (lookuptable[lookupopt.key][lookupopt.locale]) {

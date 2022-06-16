@@ -12,7 +12,7 @@ const { MessageAttachment } = require('discord.js');
 //import {Embed} from "discord.js"
 var importconfigfile = editJsonFile(`${__dirname}/../../../removedytvids.json`);
 const axios = require('axios').default;
-
+import {lookuplocale} from './lookuptablelocale'
 import {replyorfollowup} from './../replyorfollowup'
 // Exporting the class which will be 
 // used in another file 
@@ -120,27 +120,44 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
                   },
                   "fields": [
                     {
-                      "name": "Views :eyes:",
-                      "value": `${parseInt(videostats.viewCount).toLocaleString('en-US')}`,
+                      "name": `${lookuplocale({
+                        key: "views",
+                        locale: message.locale
+                      })} :eyes:`,
+                      "value": `${parseInt(videostats.viewCount).toLocaleString( 'en-US')}`,
                       inline: false
                     },
                     {
-                      "name": "Likes :thumbsup:",
-                      "value": parseInt(videostats.likeCount).toLocaleString('en-US'),
+                      "name": `${lookuplocale({
+                        key: "likes",
+                        locale: message.locale
+                      })} :thumbsup:`,
+                      "value": parseInt(videostats.likeCount).toLocaleString( 'en-US'),
                       "inline": true
                     },
                     {
-                      "name": "Dislikes :thumbsdown:",
-                      "value": parseInt(videostats.dislikeCount).toLocaleString('en-US'),
+                      "name": `${lookuplocale({
+                        key: "dislikes",
+                        locale: message.locale
+                      })} :thumbsdown:`,
+                      "value": parseInt(videostats.dislikeCount).toLocaleString( 'en-US'),
                       "inline": true
                     },
                     {
-                      "name": "Comments :speech_balloon:",
+                      "name": `${lookuplocale({
+                        key: "comments",
+                        locale: message.locale
+                      })} :speech_balloon:`,
                       "value": parseInt(videostats.commentCount).toLocaleString('en-US'),
                       inline: false
                     },
                     {
-                      "name": "Published at",
+                      "name": `${
+                        lookuplocale({
+                          key: "publishedat",
+                          locale: message.locale
+                        })
+                      }`,
                       "value":`${discordDate}`,
                       inline: false
                     }
