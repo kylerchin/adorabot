@@ -15,11 +15,13 @@ export const lookuptable = {
     },
     "latency": {
         "ko": "레이턴시",
-        "en": "Latency"
+        "en": "Latency",
+        "zh-CN": "延迟"
     },
     "wslatency": {
         "ko": "웹소켓 API 레이턴시",
-        "en": "Websocket API Latency"
+        "en": "Websocket API Latency",
+        "zh-CN": "Websocket 应用程序接口 延迟"
     },
     "ms": {
         "ko": "밀리초",
