@@ -1,6 +1,10 @@
 import { isUndefined } from "lodash";
 
 export const lookuptable = {
+    "pinginit": {
+        "en": "핑?",
+        "ko": "Ping?"
+    },
     "ping1": {
         "en": "**Pong!** If the Latency is significantly higher than the API Latency, the bot is likely ratelimited in this channel or guild.",
         "ko": "지연 시간이 API 지연 시간보다 훨씬 높으면 봇이 이 채널이나 길드에서 비율이 제한될 수 있습니다."

@@ -44,7 +44,7 @@ export async function pingInteraction(interaction:CommandInteraction,client) {
   const isDM: boolean = interaction.guild === null;
      // Calculates ping between sending a interaction and editing it, giving a nice round-trip latency.
         // The second ping is an average latency between the bot and the websocket server (one-way, not round-trip)
-        await interaction.reply("Ping?")
+        await interaction.reply(lookuplocale({locale: interaction.locale, key: "pinginit"}))
         
         
         await interaction.fetchReply().then(async (pingReturn:Message) => {
