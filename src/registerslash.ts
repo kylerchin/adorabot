@@ -9,7 +9,7 @@ const interaction = new DiscordInteractions({
 });
 
 const commands = [
-  /*{
+  {
   name: "ping",
   "name_localizations": {
     "ko": "핑"
