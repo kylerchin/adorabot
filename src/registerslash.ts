@@ -9,7 +9,7 @@ const interaction = new DiscordInteractions({
 });
 
 const commands = [
-  {
+  /*{
   name: "ping",
   "name_localizations": {
     "ko": "핑"
@@ -24,17 +24,6 @@ const commands = [
       "type": 3,
       "name": "song",
       "description": "The name of the song, artist, album, and/or a line in a song",
-      "required": true
-    }
-]},
-{
-  "name": "yt",
-  "description": "YouTube View Count Tracker with Graphs",
-  "options": [
-    {
-      "type": 3,
-      "name": "search-or-url",
-      "description": "The search query or URL of a YouTube video",
       "required": true
     }
 ]},
@@ -155,6 +144,29 @@ const commands = [
     },
   ]
 }*/
+{
+  "name": "yt",
+  "name_localizations": {
+    "ko": "유튜브"
+  },
+  "description": "YouTube View Count Tracker with Graphs",
+  "description_localizations": {
+    "ko": "유튜브 조회수 추적기 및 그래프"
+  },
+  "options": [
+    {
+      "type": 3,
+      "name": "search-or-url",
+      "description": "The search query or URL of a YouTube video",
+      "required": true,
+      "name_localizations": {
+        "ko": "검색 또는 URL"
+      },
+      "description_localizations": {
+        "ko": "유튜브 동영상의 검색어 또는 URL"
+      }
+    }
+]},
 {
   "name": "help",
   "description": "List of commands on Adora bot",
