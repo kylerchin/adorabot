@@ -12,7 +12,7 @@ const { MessageAttachment } = require('discord.js');
 //import {Embed} from "discord.js"
 var importconfigfile = editJsonFile(`${__dirname}/../../../removedytvids.json`);
 const axios = require('axios').default;
-import {lookuplocale} from './lookuptablelocale'
+import {lookuplocale} from './../lookuptablelocale'
 import {replyorfollowup} from './../replyorfollowup'
 // Exporting the class which will be 
 // used in another file 
