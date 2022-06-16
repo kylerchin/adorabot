@@ -472,11 +472,11 @@ export async function commandHandler(msg, client, config, dogstatsd, startupTime
       }
 
       if(command === "addguildautoban") {
-        turnOnAdorabanInGuild(msg,args[0],client)
+        turnOnAdorabanInGuild(msg,args[0].trim(),client)
       }
 
       if(command === "removeguildautoban") {
-        turnOffAdorabanInGuild(msg,args[0],client)
+        turnOffAdorabanInGuild(msg,args[0].trim(),client)
       }
 
       try {
