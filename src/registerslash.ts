@@ -186,12 +186,9 @@ commands.forEach(async command => {
 .createApplicationCommand(command)
 .then((output:any) => {
   console.log(output);
-  if (output.errors) {
-    console.error(output.errors)
-    if (output.errors.description._errors) {
-      console.error(output.errors.description._errors)
-    }
-  }
+ 
+    console.error(JSON.stringify(output.errors))
+   
 })
 .catch(console.error);
 }
