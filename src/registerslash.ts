@@ -160,10 +160,10 @@ const commands = [
       "description": "The search query or URL of a YouTube video",
       "required": true,
       "name_localizations": {
-        "ko": "검색 또는 URL"
+        "ko": "검색 또는 링크"
       },
       "description_localizations": {
-        "ko": "유튜브 동영상의 검색어 또는 URL"
+        "ko": "유튜브 동영상의 검색어 또는 링크"
       }
     }
 ]},
