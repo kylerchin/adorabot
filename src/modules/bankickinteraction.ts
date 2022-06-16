@@ -7,7 +7,22 @@ import { Client, Message, Guild, CommandInteraction } from 'discord.js'
 export async function bankickinteraction(interaction:CommandInteraction) {
 
     if (interaction.guild) {
-        //transforms the user id list into a list to be banned
+        var hasperms = false;
+
+        if (interaction.commandName === "ban" || interaction.commandName === "unban") {
+            if (interaction.member.permissions.has("BAN_MEMBERS")) {
+                hasperms = true;
+            }
+        }
+
+        if (interaction.commandName === "kick") {
+            if (interaction.member.permissions.has("KICK_MEMBERS")) {
+                hasperms = true;
+            }
+        }
+
+        if (hasperms === true) {
+              //transforms the user id list into a list to be banned
         //this line prevents accidental role mentions from being added
         var roleMentionsRemoved = interaction.options.getString('users').replace(/<@&(\d{18})>/g, '')
 
@@ -66,6 +81,10 @@ export async function bankickinteraction(interaction:CommandInteraction) {
             })
         });
 
+        } else {
+            interaction.reply("You don't have permissions to do that!")
+        }
+      
     } else {
         interaction.reply("this only works in servers. Please try again.")
     }
