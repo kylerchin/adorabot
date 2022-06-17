@@ -9,6 +9,8 @@ import { uniq } from './util'
 import { Client, Message, Guild,Interaction, CommandInteraction } from 'discord.js'
 import { cassandraclient } from './cassandraclient'
 import { strikeBanHammer } from './strikeBanHammer'
+
+import {lookuplocale} from './lookuptablelocale'
 //let file = editJsonFile(`${__dirname}/config.json`);
 //Generate time with TimeUuid.now();
 const emptylinesregex = /\n/ig;
