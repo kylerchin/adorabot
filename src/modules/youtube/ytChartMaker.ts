@@ -4,6 +4,7 @@ import { cassandraclient } from "../cassandraclient";
 import {logger, tracer} from "../logger"
 import {dogstatsd} from '../dogstats'
 import { resolve } from 'path';
+import {lookuplocale} from './../lookuptablelocale';
 const TimeUuid = require("cassandra-driver").types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require("canvas");
 const editJsonFile = require("edit-json-file");
@@ -21,6 +22,7 @@ interface optionsInterface {
   [key: string]: any;
   addOnPoints?: AddOnPointsEntity[] | null;
   publishedAt?: Date;
+  locale?: any;
 }
 
 interface AddOnPointsEntity {
@@ -374,7 +376,16 @@ cassandraclient
                         )
                     ).getTime();
 
-                    var monthCodeToWrite = `${countMonth + 1}월`
+                            var identifierformonth = `월`
+
+                            if (optionsObject.locale) {
+                                identifierformonth = lookuplocale({
+                                    key: "monthchar",
+                                    locale: optionsObject.locale
+                                })
+                            }
+
+                    var monthCodeToWrite = `${countMonth + 1}${identifierformonth}`
 
                               //console.log("draw legend")
                 var percxmonth =
@@ -384,7 +395,7 @@ cassandraclient
                     ctxLegendXLabel.fillText(
                         `${monthCodeToWrite}`,
                         pointxmonth,
-                        canvas.height - 45
+                        canvas.height - 40
                     );
 
                     if (countMonth === 11) {

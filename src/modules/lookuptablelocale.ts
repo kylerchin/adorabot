@@ -46,6 +46,13 @@ export const lookuptable = {
     "publishedat": {
     "en": "Published at",        
     "ko": "발행일"
+    },
+    "monthchar": {
+        "en": "월",
+        "ko": "월",
+        "ja": "月",
+        "zh-CN": "月",
+        "zh-TW": "月"
     }
 }
 
