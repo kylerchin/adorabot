@@ -29,19 +29,23 @@ export const lookuptable = {
     },
     "views": {
         "ko": "조회수",
-        "en": "Views"
+        "en": "Views",
+        "zn-CN": "次观看"
     },
     "likes": {
         "ko": "좋아요",
-        "en": "Likes"
+        "en": "Likes",
+        "zn-CN": "顶一下"
     },
     "dislikes": {
         "ko": "싫어요",
-        "en": "Likes"
+        "en": "Dislikes",
+        "zh-CN": "踩一下"
     },
     "comments": {
         "ko": "댓글",
-        "en": "Comments"
+        "en": "Comments",
+        "zn-CN": "条评论"
     },
     "publishedat": {
     "en": "Published at",        
