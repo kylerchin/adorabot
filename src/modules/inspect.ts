@@ -46,7 +46,8 @@ export function sendinspectembedsfromuseridlist(message,arrayOfUserIdsToLookup) 
       _.set(embed, 'author.name', individualUserId)
       _.set(embed, 'fields[0].name',"Adora Global Banlist")
 
-      await args.client.users.fetch(individualUserId, true, true).then(async (user) => {discordUser['user'] = user;
+  
+      await message.client.users.fetch(individualUserId, true, true).then(async (user) => {discordUser['user'] = user;
   }).catch((fetcherror) => {discordUser['error'] = fetcherror});
 
       await cassandraclient.execute("SELECT * FROM adoramoderation.banneduserlist WHERE banneduserid = ?", [individualUserId])

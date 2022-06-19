@@ -347,6 +347,57 @@ cassandraclient
 
             var monthsAdded = []
 
+
+            
+
+            if (timeRange >= 40 * 60 * 24 * 1000 * 20) {
+
+               
+                var initMonth = new Date(leastAndGreatestObject["leastTime"]).getUTCMonth();
+                var initYear = new Date(leastAndGreatestObject["leastTime"]).getUTCFullYear();
+
+                var arrayOfMonths = []
+
+                var lastMonth = new Date(leastAndGreatestObject["greatestTime"]).getUTCMonth();
+                var lastYear = new Date(leastAndGreatestObject["greatestTime"]).getUTCFullYear();
+
+                var countMonth = initMonth;
+                var countYear = initYear;
+
+                while ((countMonth <= lastMonth) || countYear <= lastYear) {
+
+                    var averagePointForThisMonth = new Date(
+                        Date.UTC(
+                            countYear,
+                            countMonth,
+                            15
+                        )
+                    ).getTime();
+
+                    var monthCodeToWrite = `${countMonth + 1}월`
+
+                              //console.log("draw legend")
+                var percxmonth =
+                (averagePointForThisMonth - leastAndGreatestObject["leastTime"]) / timeRange;
+            var pointxmonth = canvasWidthRange * percxmonth + paddingLeft;
+
+                    ctxLegendXLabel.fillText(
+                        `${monthCodeToWrite}`,
+                        pointxmonth,
+                        canvas.height - 45
+                    );
+
+                    if (countMonth === 11) {
+                        countMonth = 0;
+                        countYear++;
+                    } else {
+                        countMonth++;
+                    }
+                }
+
+            }
+
+
             while (timeLegend < leastAndGreatestObject["greatestTime"]) {
 
                 //console.log("draw legend")
@@ -363,57 +414,6 @@ cassandraclient
                 var monthsLabelsOffsetFromBottom = 25;
                 var modulusForDays = 1;
 
-                if (timeRange >= 40 * 60 * 24 * 1000 * 20) {
-                    //bigger than 40 days
-                    //draw Months
-
-                    var monthCodeToWrite = `${new Date(timeLegend).getUTCMonth() + 1}월`
-
-                    var averagePointForThisMonth = new Date(
-                        Date.UTC(
-                            leastTimeDateObject.getUTCFullYear(),
-                            leastTimeDateObject.getUTCMonth(),
-                            15,
-                            leastTimeDateObject.getUTCHours()
-                        )
-                    ).getTime();
-
-
-                    var monthref = new Date(timeLegend).getUTCFullYear() + '-' + new Date(timeLegend).getUTCMonth()
-                    if (averagePointForThisMonth > leastAndGreatestObject.leastTime &&
-                        averagePointForThisMonth < leastAndGreatestObject.greatestTime) {
-                        if (new Date(timeLegend).getUTCDate() === 15) {
-                            ctxLegendXLabel.fillText(
-                                `${monthCodeToWrite}`,
-                                pointx,
-                                canvas.height - monthsLabelsOffsetFromBottom
-                            );
-
-                        }
-                    } else {
-                        var farpoint = 0;
-
-                        if (averagePointForThisMonth < leastAndGreatestObject.leastTime) {
-                            farpoint = paddingLeft;
-                        } else {
-                            farpoint = canvas.width - paddingRight;
-                        }
-
-                        if (!(monthsAdded.includes(monthref))) {
-                            ctxLegendXLabel.fillText(
-                                `${monthCodeToWrite}`,
-                                farpoint,
-                                canvas.height - monthsLabelsOffsetFromBottom
-                            );
-                            monthsAdded.push(monthref)
-                        }
-
-
-                    }
-
-
-
-                }
 
                 //more than 20 days
                 if (timeRange > 60 * 60 * 24 * 1000 * 20) {
