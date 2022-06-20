@@ -32,53 +32,48 @@ interface AddOnPointsEntity {
   likes?: number;
   dislikes?: number;
 }
-export async function ytChart(id, optionsObject: optionsInterface) {
-  var beginningTime = Date.now()
-  if (false) {
-    return new Promise(async (resolve, reject) => {
-      const worker = new Worker(path.resolve(__dirname, "workerYtChart.js"), { id, optionsObject });
-      worker.on('message', (message) => {
-        console.log('outmsg',message)
-        resolve(message);
-        dogstatsd.histogram('adorabot.ytchart.chartdrawtimehist', Date.now() - beginningTime);
-      });
-      worker.on('error', (error) => {
-        console.error(error)
-        reject(error)
-      });
-      worker.on('exit', (code) => {
-        if (code !== 0)
-          reject(new Error(`Worker stopped with exit code ${code}`));
-      })
-    });
-  }
 
+interface imagegeninterface {
+    numberOfRows: number;
+    viewRange: number;
+    leastAndGreatestObject:any;
+    isBlocked: boolean;
+    titletext: string;
+    arrayOfStats: Array<any>;
+    cassandratimedone?: number;
+    beginningTime?:number;
+    timeRange?:number;
+    locale?:number;
+    publishedAt?:any;
+}
 
-  //non worker system
-  if (true) {
-    return new Promise(async (resolve, reject) => {
+export async function imageGeneratorFunction(optionsForImageGen: imagegeninterface) {
 
-const canvas = createCanvas(3840, 2160);
-const ctx = canvas.getContext("2d");
-const ctxLegendXLabel = canvas.getContext("2d");
-const x = canvas.width / 2;
+    var {publishedAt, locale, timeRange, numberOfRows,viewRange,leastAndGreatestObject,isBlocked,titletext,arrayOfStats,beginningTime,cassandratimedone} = optionsForImageGen;
 
-const phi = 1.618033988749895;
+    const canvas = createCanvas(3840, 2160);
+    const ctx = canvas.getContext("2d");
+    const ctxLegendXLabel = canvas.getContext("2d");
+    const x = canvas.width / 2;
+    
+    const phi = 1.618033988749895;
+    
+    var legendDepth = 100;
+    var legendDepthSub = 60;
+    
+    const paddingLeft = 200;
+    const paddingRight = 100;
+    const paddingTop = 100;
+    const paddingBottom = 200;
+    const canvasHeightRange = canvas.height - paddingTop - paddingBottom;
+    const canvasWidthRange = canvas.width - paddingLeft - paddingRight;
 
-var legendDepth = 100;
-var legendDepthSub = 60;
-
-const paddingLeft = 200;
-const paddingRight = 100;
-const paddingTop = 100;
-const paddingBottom = 200;
-const canvasHeightRange = canvas.height - paddingTop - paddingBottom;
-const canvasWidthRange = canvas.width - paddingLeft - paddingRight;
-
+    
 var pointSize = 9;
 var markerLineWidth = 10;
 
 const twopi = Math.PI * 2;
+
 
 function drawCoordinates(x, y) {
     //  var ctx = canvas.getContext("2d");
@@ -110,7 +105,7 @@ function drawSquareFromPercentage(xper, yper) {
     drawSquareCoordinates(xDrawPlace, yDrawPlace);
 }
 
-// [{xper: 0.1, yper:0.1}]
+    // [{xper: 0.1, yper:0.1}]
 function drawLineFromPercentageArray(array) {
     console.log("drawLine underlying");
 
@@ -143,16 +138,657 @@ function drawLineFromPercentageArray(array) {
     ctxline.closePath();
 }
 
-var queryVideo =
-    "SELECT * FROM adorastats.ytvideostats WHERE videoid = ?";
-var paramsVideo = [id];
-
-const options = { fetchSize: 2000, prepare: true };
-
 // Stream ended, there aren't any more rows
 ctx.fillStyle = "#282828";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
-//return bufferinfo;
+
+if (numberOfRows === 0 || viewRange < 3 || isBlocked || (leastAndGreatestObject["leastTime"] == null)) {
+    // Write "Not Enough Data"
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "200px Lexend Deca";
+    // ctx.rotate(0.1)
+    ctx.textAlign = "center";
+    ctx.fillText(
+        "Not enough data\nto render this chart.",
+        x,
+        canvas.height / 2 - 100
+    );
+
+    ctx.font = "70px Lexend Deca";
+    const yToDrawSubtitle = canvas.height / 2 + 270;
+    if (isBlocked) {
+        ctx.fillText(
+            "This video / channel has been restricted from rendering a chart",
+            x,
+            yToDrawSubtitle
+        );
+    } else {
+        ctx.fillText(
+            "This might improve in a few seconds, minutes or hours when new data is recieved from YouTube.\n Run the command again to confirm.",
+            x,
+            yToDrawSubtitle
+        );
+    }
+} else {
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "150px Lexend Deca";
+    // ctx.rotate(0.1)
+    ctx.textAlign = "center";
+    ctx.fillText(`${titletext}`, x, 200);
+    // ctx.fillText(``, x, 300)
+
+    //var viewRange:number =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews'];
+    //var timeRange:number =  leastAndGreatestObject['greatestTime'] -  leastAndGreatestObject['leastTime'];
+
+    console.log("leastTime", leastAndGreatestObject["leastTime"]);
+    console.log("greatestTime", leastAndGreatestObject["greatestTime"]);
+    console.log("numberOfRows", numberOfRows);
+
+    var leastTimeDateObject = new Date(
+        leastAndGreatestObject["leastTime"]
+    );
+
+    var lowestDateToChart = new Date(
+        Date.UTC(
+            leastTimeDateObject.getUTCFullYear(),
+            leastTimeDateObject.getUTCMonth(),
+            leastTimeDateObject.getUTCDate()
+        )
+    ).getTime();
+
+    var timeLegend = lowestDateToChart;
+
+    var pointybottom =
+        canvas.height - paddingBottom + legendDepth * (1 / phi);
+    var pointytop =
+        canvas.height - paddingBottom - legendDepth * (1 - 1 / phi);
+
+    var pointybottomminor =
+        canvas.height - paddingBottom + legendDepthSub * (1 / phi);
+    var pointytopminor =
+        canvas.height - paddingBottom - legendDepthSub * (1 - 1 / phi);
+
+    const ctxSubLegend = canvas.getContext("2d");
+    ctxSubLegend.strokeStyle = "#b1b1b1";
+
+    // timeLegend += 60 * 60 * 24 * 1000
+
+    ctxLegendXLabel.fillStyle = "#818181";
+    ctxLegendXLabel.font = "50px Lexend Deca";
+    // ctx.rotate(0.1)
+    ctxLegendXLabel.textAlign = "center";
+
+    var numberOfDaysDone = 0;
+
+    var monthsAdded = []
+
+
+    
+
+    if (timeRange >= 40 * 60 * 24 * 1000 * 20) {
+
+       
+        var initMonth = new Date(leastAndGreatestObject["leastTime"]).getUTCMonth();
+        var initYear = new Date(leastAndGreatestObject["leastTime"]).getUTCFullYear();
+
+        var arrayOfMonths = []
+
+        var lastMonth = new Date(leastAndGreatestObject["greatestTime"]).getUTCMonth();
+        var lastYear = new Date(leastAndGreatestObject["greatestTime"]).getUTCFullYear();
+
+        var countMonth = initMonth;
+        var countYear = initYear;
+
+        while ((countMonth <= lastMonth) || countYear <= lastYear) {
+
+            var averagePointForThisMonth = new Date(
+                Date.UTC(
+                    countYear,
+                    countMonth,
+                    15
+                )
+            ).getTime();
+
+                    var identifierformonth = `월`
+
+                    if (locale) {
+                        identifierformonth = lookuplocale({
+                            key: "monthchar",
+                            locale: locale
+                        })
+                    }
+
+            var monthCodeToWrite = `${countMonth + 1}${identifierformonth}`
+
+                      //console.log("draw legend")
+        var percxmonth =
+        (averagePointForThisMonth - leastAndGreatestObject["leastTime"]) / timeRange;
+    var pointxmonth = canvasWidthRange * percxmonth + paddingLeft;
+
+            ctxLegendXLabel.fillText(
+                `${monthCodeToWrite}`,
+                pointxmonth,
+                canvas.height - 40
+            );
+
+            if (countMonth === 11) {
+                countMonth = 0;
+                countYear++;
+            } else {
+                countMonth++;
+            }
+        }
+
+    }
+
+
+    while (timeLegend < leastAndGreatestObject["greatestTime"]) {
+
+        //console.log("draw legend")
+        var percxlegend =
+            (timeLegend - leastAndGreatestObject["leastTime"]) / timeRange;
+        var pointx = canvasWidthRange * percxlegend + paddingLeft;
+        ctxSubLegend.beginPath();
+        ctxSubLegend.moveTo(pointx, pointytop);
+        ctxSubLegend.lineTo(pointx, pointybottom);
+        ctxSubLegend.stroke();
+        ctxSubLegend.closePath();
+
+        var daysLabelsOffsetFromBottom = 40;
+        var monthsLabelsOffsetFromBottom = 25;
+        var modulusForDays = 1;
+
+
+        //more than 20 days
+        if (timeRange > 60 * 60 * 24 * 1000 * 20) {
+            daysLabelsOffsetFromBottom = 80;
+            modulusForDays = 2;
+        }
+
+
+        //more than 40 days
+        if (timeRange > 60 * 60 * 24 * 1000 * 40) {
+            modulusForDays = 3;
+        }
+
+        if (numberOfDaysDone % modulusForDays == 0) {
+            //less than 40 days
+            if (timeRange < 40 * 60 * 24 * 1000 * 20) {
+
+                // month and date
+                ctxLegendXLabel.fillText(
+                    `${new Date(timeLegend).getUTCMonth() + 1}/${new Date(timeLegend).getUTCDate()}`,
+                    pointx,
+                    canvas.height - daysLabelsOffsetFromBottom
+                );
+
+            } else {
+                //bigger than 40 days
+                //draw only the date
+                ctxLegendXLabel.fillText(
+                    `${new Date(timeLegend).getUTCDate()}`,
+                    pointx,
+                    canvas.height - daysLabelsOffsetFromBottom
+                );
+            }
+
+        }
+
+        timeLegend += 60 * 60 * 24 * 1000;
+        numberOfDaysDone += 1;
+    }
+
+    //under 5 days
+    var hourDerivative = 60 * 60 * 1000;
+
+    var modulusHourInterval = 1;
+
+    var modulusHourIntervalLabel = 2;
+
+    // if the time window is less than 5 days, draw the hours
+    if (timeRange < 5 * 60 * 60 * 24 * 1000) {
+        if (timeRange < 2 * 60 * 60 * 24 * 1000) {
+            //if the time window is less than 48 hours, draw ticks every hour
+            modulusHourInterval = 1;
+        } else {
+            if (timeRange < 2 * 60 * 60 * 24 * 1000) {
+                //draw ticks every 2 hours
+                modulusHourInterval = 2;
+            } else {
+                //draw ticks every 3 hrs
+                modulusHourInterval = 3;
+            }
+        }
+
+        if (timeRange < 60 * 60 * 24 * 1000) {
+            //if the time window is less than 24 hours, draw labels every hour
+            modulusHourIntervalLabel = 1;
+        } else {
+            //draw labels every 2 hours
+            modulusHourIntervalLabel = 2;
+
+            if (timeRange < 2 * 60 * 60 * 24 * 1000) {
+                //draw ticks every 2 hours
+                modulusHourIntervalLabel = 2;
+            } else {
+                if (timeRange < 4 * 60 * 60 * 24 * 1000) {
+                    //draw ticks every 3 hrs
+                    modulusHourIntervalLabel = 3;
+                } else {
+                    //draw ticks every 3 hrs
+                    modulusHourIntervalLabel = 6;
+                }
+
+            }
+        }
+        var lowestHourToChart = new Date(
+            Date.UTC(
+                leastTimeDateObject.getUTCFullYear(),
+                leastTimeDateObject.getUTCMonth(),
+                leastTimeDateObject.getUTCDate(),
+                leastTimeDateObject.getUTCHours()
+            )
+        ).getTime();
+        var timeHourLegend = lowestHourToChart;
+
+        const ctxSubMinorLegend = canvas.getContext("2d");
+        ctxSubMinorLegend.strokeStyle = "#a1a1a1";
+        ctxSubMinorLegend.lineWidth = markerLineWidth;
+        while (timeHourLegend < leastAndGreatestObject["greatestTime"]) {
+            var utchour = new Date(timeHourLegend).getUTCHours();
+            if (utchour % modulusHourInterval === 0) {
+                if (timeHourLegend > leastAndGreatestObject["leastTime"]) {
+                    var percxlegend =
+                        (timeHourLegend - leastAndGreatestObject["leastTime"]) /
+                        timeRange;
+                    var pointx = canvasWidthRange * percxlegend + paddingLeft;
+
+                    ctxSubMinorLegend.moveTo(pointx, pointytopminor);
+                    ctxSubMinorLegend.lineTo(pointx, pointybottomminor);
+                    ctxSubMinorLegend.stroke();
+                    //console.log('utchours', new Date(timeHourLegend).getUTCHours())
+                    if (utchour % modulusHourIntervalLabel === 0) {
+                        ctxLegendXLabel.fillText(
+                            `${new Date(timeHourLegend).getUTCHours()}:00`,
+                            pointx,
+                            canvas.height - 100
+                        );
+                    }
+                }
+            }
+            //console.log("draw legend")
+
+            timeHourLegend += hourDerivative;
+        }
+    }
+
+    const ctxSubYLineLegend = canvas.getContext("2d");
+    ctxSubYLineLegend.strokeStyle = "#818181";
+
+    const ctxLegendYLabel = canvas.getContext("2d");
+    ctxLegendYLabel.fillStyle = "#a1a1a1";
+    ctxLegendYLabel.font = "50px Lexend Deca";
+    ctxLegendYLabel.textBaseline = "middle";
+    // ctx.rotate(0.1)
+    ctxLegendYLabel.textAlign = "left";
+    // draw y axis graph
+    // if (leastAndGreatestObject['greatestViews'] < (20 * 1.0e6)) {
+
+    if (true) {
+        //draw million lines
+        var yAxisDrawMillions =
+            (Math.floor(leastAndGreatestObject["leastViews"] / 1.0e6) + 1) *
+            1.0e6;
+        //console.log('yaxisdraw', yAxisDrawMillions)
+
+        while (
+            yAxisDrawMillions < leastAndGreatestObject["greatestViews"]
+        ) {
+            
+            var shouldDrawHorizontalLegend  = true;
+
+            if (viewRange > 9.0e7) {
+                if ((yAxisDrawMillions / 1.0e6) % 5 === 0) {
+                } else {
+                    shouldDrawHorizontalLegend = false;
+                }
+            }
+
+            if (shouldDrawHorizontalLegend) {
+                // console.log('yaxisdraw', yAxisDrawMillions)
+            var percylegend =
+            (yAxisDrawMillions - leastAndGreatestObject["leastViews"]) /
+            viewRange;
+        var pointy =
+            canvasHeightRange - (canvasHeightRange * percylegend) + paddingTop;
+        ctxSubYLineLegend.moveTo(paddingLeft - 50, pointy);
+        ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy);
+        ctxSubYLineLegend.stroke();
+            }
+
+            if (viewRange > 9.0e7) {
+                if ((yAxisDrawMillions / 1.0e6) % 10 === 0) {
+                    ctxLegendYLabel.fillText(
+                        `${yAxisDrawMillions / 1.0e6}M`,
+                        30,
+                        pointy
+                    );
+                }
+            } else {
+                if (viewRange > 2.0e7) {
+                    if ((yAxisDrawMillions / 1.0e6) % 2 === 0) {
+                        ctxLegendYLabel.fillText(
+                            `${yAxisDrawMillions / 1.0e6}M`,
+                            30,
+                            pointy
+                        );
+                    }
+                } else {
+                    ctxLegendYLabel.fillText(
+                        `${yAxisDrawMillions / 1.0e6}M`,
+                        30,
+                        pointy
+                    );
+                }
+            }
+
+
+            yAxisDrawMillions += 1.0e6;
+
+        }
+    }
+
+    var hundredthousandint =
+        (Math.floor(leastAndGreatestObject["leastViews"] / 1.0e5) + 1) *
+        1.0e5;
+    if (viewRange < 2.0e6) {
+        console.log("view range under 2 million");
+        while (
+            hundredthousandint < leastAndGreatestObject["greatestViews"]
+        ) {
+            if (hundredthousandint % 1.0e6 === 0) {
+                console.log("skip cuz it's 1 million");
+            } else {
+                if (
+                    hundredthousandint > leastAndGreatestObject["leastViews"]
+                ) {
+                    console.log("draw 100 interval");
+                    // console.log('yaxisdraw', yAxisDrawMillions)
+                    var percylegend =
+                        (hundredthousandint -
+                            leastAndGreatestObject["leastViews"]) /
+                        viewRange;
+                    var pointy =
+                        canvasHeightRange -
+                        canvasHeightRange * percylegend +
+                        paddingTop;
+                    ctxSubYLineLegend.moveTo(paddingLeft - 50, pointy);
+                    ctxSubYLineLegend.lineTo(
+                        canvas.width - paddingRight,
+                        pointy
+                    );
+                    ctxSubYLineLegend.stroke();
+
+                    var nameOfNumber = "";
+                    if (hundredthousandint < 1.0e6) {
+                        nameOfNumber = `${hundredthousandint / 1.0e3}K`;
+                    } else {
+                        nameOfNumber = `${hundredthousandint / 1.0e6}M`;
+                    }
+                    ctxLegendYLabel.fillText(
+                        `${nameOfNumber}`,
+                        30,
+                        pointy
+                    );
+                }
+            }
+            hundredthousandint += 1.0e5;
+        }
+    }
+
+    var connectingline = arrayOfStats.map((stat) => {
+        var percentageOffsetFromLeft =
+            (stat.unixtime - leastAndGreatestObject["leastTime"]) /
+            timeRange;
+        var percentageOffsetFromBottomViews =
+            (stat.views - leastAndGreatestObject["leastViews"]) / viewRange;
+        return {
+            xper: percentageOffsetFromLeft,
+            yper: percentageOffsetFromBottomViews,
+        };
+    });
+
+    const lengthofstatsprewhiteline = arrayOfStats.length;
+
+    const tolerance = 0.2;
+
+    /*
+    let connectinglinefilteredforwhiteline = connectingline.filter((eachDot, eachIndexWhite:number) => {
+        var verdictonkeep = true;
+
+        if (eachIndexWhite != 0 && eachIndexWhite != lengthofstatsprewhiteline -1) {
+            if (
+                Math.abs(eachDot.xper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
+                Math.abs(eachDot.xper - connectingline[eachIndexWhite + 1].xper) < tolerance &&
+                Math.abs(eachDot.yper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
+                Math.abs(eachDot.yper - connectingline[eachIndexWhite + 1].xper) < tolerance 
+            ) {
+                verdictonkeep = false
+        }
+    } else {
+        if (eachIndexWhite === 0 ) {
+            if (
+            Math.abs(eachDot.xper - connectingline[eachIndexWhite + 1].xper) < tolerance &&
+            Math.abs(eachDot.yper - connectingline[eachIndexWhite + 1].xper) < tolerance ) {
+                verdictonkeep = false;
+            }
+        }
+
+        if (eachIndexWhite === lengthofstatsprewhiteline -1) {
+            if (
+            Math.abs(eachDot.xper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
+            Math.abs(eachDot.yper - connectingline[eachIndexWhite - 1].xper) < tolerance ) {
+                verdictonkeep = false;
+            }
+        }
+    }
+    return verdictonkeep;
+})
+
+    if (connectinglinefilteredforwhiteline.length >= 2) {
+    drawLineFromPercentageArray(connectinglinefilteredforwhiteline );
+    }*/
+
+    drawLineFromPercentageArray( connectingline );
+
+    var arrayStatsLength = arrayOfStats.length;
+
+    const offsetCalcBottom  = (views)  => {
+       return (views - leastAndGreatestObject["leastViews"]) / viewRange;
+    }
+
+    const offsetCalcLeft  = (unixtime)  => {
+      return (unixtime - leastAndGreatestObject["leastTime"]) / timeRange;
+   }
+
+   var drawsquare = true;
+
+   if (arrayOfStats.length < 1000) {
+    drawsquare = false;
+   }
+
+    arrayOfStats
+    .map((stat) => {
+      stat["fromleft"] = offsetCalcLeft(stat.unixtime);
+      stat['frombot'] =  offsetCalcBottom(stat.views);
+
+      return stat;
+    })
+    .forEach((stat,statIndex) => {
+
+       
+      //  var percentageOffsetFromLeft = offsetCalcLeft(stat.unixtime)
+     // var percentageOffsetFromLeft = offsetCalcLeft(stat.unixtime)
+      //  var percentageOffsetFromBottomViews = offsetCalcBottom(stat.views)
+
+       var shouldDrawDot:boolean = true;
+
+      var modulusStat = 2;
+
+      if (arrayStatsLength > 5000) {
+        modulusStat = 3;
+      }
+
+      if (arrayStatsLength > 10000) {
+        modulusStat = 4;
+      }
+
+      if (arrayStatsLength > 15000) {
+        modulusStat = 12;
+      }
+
+      var amountToHide = 1/3000
+
+       if (arrayStatsLength > 3800) {
+        if (statIndex != 0 && statIndex != arrayStatsLength - 1) {
+          if (statIndex % modulusStat != 0) {
+            //if neighbouring dots are under 1 pixel away
+           if (Math.abs(stat.fromleft - arrayOfStats[statIndex-1].fromleft) <amountToHide && Math.abs(stat.fromleft - arrayOfStats[statIndex+1].fromleft) < amountToHide) {
+            shouldDrawDot = false;
+           }
+          }
+        }
+       }
+
+      if (shouldDrawDot === true) {
+        if (drawsquare) {
+            drawSquareFromPercentage(
+                stat.fromleft,
+                stat.frombot
+            )
+        } else {
+            drawDotFromPercentage(
+                stat.fromleft,
+                stat.frombot
+            );
+        }
+        
+      }
+    });
+
+
+    if (publishedAt) {
+        var publishedAtTime = publishedAt.getTime()
+        if (publishedAtTime > leastAndGreatestObject["leastTime"] && publishedAtTime < leastAndGreatestObject["greatestTime"]) {
+            var ctxRelease = canvas.getContext('2d')
+            ctxRelease.strokeStyle = '#fce464'
+            ctxRelease.lineWidth = 15;
+            var percxreleasetime =
+                (publishedAtTime - leastAndGreatestObject["leastTime"]) /
+                timeRange;
+            var pointxreleasetime = canvasWidthRange * percxreleasetime + paddingLeft;
+            ctxRelease.beginPath();
+            ctxRelease.moveTo(pointxreleasetime, paddingTop);
+            ctxRelease.lineTo(pointxreleasetime, canvas.height - paddingBottom);
+            ctxRelease.stroke();
+            ctxRelease.closePath();
+
+            ctxRelease.textAlign = "right";
+            var xforreleasetext = pointxreleasetime - 80;
+            ctxRelease.font = "150px Lexend Deca";
+            if (
+                xforreleasetext < 500
+            ) {
+                ctxRelease.textAlign = "left";
+                xforreleasetext = pointxreleasetime + 80;
+            }
+            ctxRelease.fillStyle = "#fce464";
+            ctxRelease.fillText(
+                "Release Time",
+                xforreleasetext,
+                canvas.height - paddingBottom - 150
+            );
+
+
+        }
+
+    }
+
+
+    //now draw legends
+    var ctxlegend = canvas.getContext("2d");
+    ctxlegend.strokeStyle = "#e7acc2";
+
+    ctxlegend.beginPath();
+
+    //y axis
+    ctxlegend.moveTo(paddingLeft, paddingTop);
+    ctxlegend.lineTo(paddingLeft, canvas.height - paddingBottom);
+    ctxlegend.stroke();
+    //x axis
+    ctxlegend.moveTo(paddingLeft, canvas.height - paddingBottom);
+    ctxlegend.lineTo(
+        canvas.width - paddingRight,
+        canvas.height - paddingBottom
+    );
+    ctxlegend.stroke();
+
+    ctxlegend.closePath()
+        ;
+
+}
+
+var compressionStart = Date.now()
+const bufferinfo = canvas.toBuffer("image/jpeg", {
+    compressionLevel: 1,
+});
+if (beginningTime) {
+    dogstatsd.histogram('adorabot.ytchart.chartdrawtimehist', Date.now() - beginningTime);
+}
+dogstatsd.histogram('adorabot.ytchart.chartdrawtimecompresshist', Date.now() -compressionStart);
+if (cassandratimedone) {
+    dogstatsd.histogram('adorabot.ytchart.chartdrawtimedrawhist',  compressionStart - cassandratimedone);
+if (beginningTime) {
+    dogstatsd.histogram('adorabot.ytchart.chartdrawtimecassandrahist', cassandratimedone - beginningTime );
+}
+}
+
+
+
+resolve(bufferinfo)
+}
+
+export async function ytChart(id, optionsObject: optionsInterface) {
+  var beginningTime = Date.now()
+  if (false) {
+    return new Promise(async (resolve, reject) => {
+      const worker = new Worker(path.resolve(__dirname, "workerYtChart.js"), { id, optionsObject });
+      worker.on('message', (message) => {
+        console.log('outmsg',message)
+        resolve(message);
+        dogstatsd.histogram('adorabot.ytchart.chartdrawtimehist', Date.now() - beginningTime);
+      });
+      worker.on('error', (error) => {
+        console.error(error)
+        reject(error)
+      });
+      worker.on('exit', (code) => {
+        if (code !== 0)
+          reject(new Error(`Worker stopped with exit code ${code}`));
+      })
+    });
+  }
+
+
+  //non worker system
+  if (true) {
+    return new Promise(async (resolve, reject) => {
+
+
+
+var queryVideo =
+    "SELECT * FROM adorastats.ytvideostats WHERE videoid = ?";
+var paramsVideo = [id];
 
 var leastAndGreatestObject = {
     leastTime: null,
@@ -269,614 +905,26 @@ cassandraclient
         } catch (error) {
             console.log(error);
         }
-        if (numberOfRows === 0 || viewRange < 3 || isBlocked || (leastAndGreatestObject["leastTime"] == null)) {
-            // Write "Not Enough Data"
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "200px Lexend Deca";
-            // ctx.rotate(0.1)
-            ctx.textAlign = "center";
-            ctx.fillText(
-                "Not enough data\nto render this chart.",
-                x,
-                canvas.height / 2 - 100
-            );
-
-            ctx.font = "70px Lexend Deca";
-            const yToDrawSubtitle = canvas.height / 2 + 270;
-            if (isBlocked) {
-                ctx.fillText(
-                    "This video / channel has been restricted from rendering a chart",
-                    x,
-                    yToDrawSubtitle
-                );
-            } else {
-                ctx.fillText(
-                    "This might improve in a few seconds, minutes or hours when new data is recieved from YouTube.\n Run the command again to confirm.",
-                    x,
-                    yToDrawSubtitle
-                );
-            }
-        } else {
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "150px Lexend Deca";
-            // ctx.rotate(0.1)
-            ctx.textAlign = "center";
-            ctx.fillText(`View Count Chart`, x, 200);
-            // ctx.fillText(``, x, 300)
-
-            //var viewRange:number =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews'];
-            //var timeRange:number =  leastAndGreatestObject['greatestTime'] -  leastAndGreatestObject['leastTime'];
-
-            console.log("leastTime", leastAndGreatestObject["leastTime"]);
-            console.log("greatestTime", leastAndGreatestObject["greatestTime"]);
-            console.log("numberOfRows", numberOfRows);
-
-            var leastTimeDateObject = new Date(
-                leastAndGreatestObject["leastTime"]
-            );
-
-            var lowestDateToChart = new Date(
-                Date.UTC(
-                    leastTimeDateObject.getUTCFullYear(),
-                    leastTimeDateObject.getUTCMonth(),
-                    leastTimeDateObject.getUTCDate()
-                )
-            ).getTime();
-
-            var timeLegend = lowestDateToChart;
-
-            var pointybottom =
-                canvas.height - paddingBottom + legendDepth * (1 / phi);
-            var pointytop =
-                canvas.height - paddingBottom - legendDepth * (1 - 1 / phi);
-
-            var pointybottomminor =
-                canvas.height - paddingBottom + legendDepthSub * (1 / phi);
-            var pointytopminor =
-                canvas.height - paddingBottom - legendDepthSub * (1 - 1 / phi);
-
-            const ctxSubLegend = canvas.getContext("2d");
-            ctxSubLegend.strokeStyle = "#b1b1b1";
-
-            // timeLegend += 60 * 60 * 24 * 1000
-
-            ctxLegendXLabel.fillStyle = "#818181";
-            ctxLegendXLabel.font = "50px Lexend Deca";
-            // ctx.rotate(0.1)
-            ctxLegendXLabel.textAlign = "center";
-
-            var numberOfDaysDone = 0;
-
-            var monthsAdded = []
-
-
-            
-
-            if (timeRange >= 40 * 60 * 24 * 1000 * 20) {
-
-               
-                var initMonth = new Date(leastAndGreatestObject["leastTime"]).getUTCMonth();
-                var initYear = new Date(leastAndGreatestObject["leastTime"]).getUTCFullYear();
-
-                var arrayOfMonths = []
-
-                var lastMonth = new Date(leastAndGreatestObject["greatestTime"]).getUTCMonth();
-                var lastYear = new Date(leastAndGreatestObject["greatestTime"]).getUTCFullYear();
-
-                var countMonth = initMonth;
-                var countYear = initYear;
-
-                while ((countMonth <= lastMonth) || countYear <= lastYear) {
-
-                    var averagePointForThisMonth = new Date(
-                        Date.UTC(
-                            countYear,
-                            countMonth,
-                            15
-                        )
-                    ).getTime();
-
-                            var identifierformonth = `월`
-
-                            if (optionsObject.locale) {
-                                identifierformonth = lookuplocale({
-                                    key: "monthchar",
-                                    locale: optionsObject.locale
-                                })
-                            }
-
-                    var monthCodeToWrite = `${countMonth + 1}${identifierformonth}`
-
-                              //console.log("draw legend")
-                var percxmonth =
-                (averagePointForThisMonth - leastAndGreatestObject["leastTime"]) / timeRange;
-            var pointxmonth = canvasWidthRange * percxmonth + paddingLeft;
-
-                    ctxLegendXLabel.fillText(
-                        `${monthCodeToWrite}`,
-                        pointxmonth,
-                        canvas.height - 40
-                    );
-
-                    if (countMonth === 11) {
-                        countMonth = 0;
-                        countYear++;
-                    } else {
-                        countMonth++;
-                    }
-                }
-
-            }
-
-
-            while (timeLegend < leastAndGreatestObject["greatestTime"]) {
-
-                //console.log("draw legend")
-                var percxlegend =
-                    (timeLegend - leastAndGreatestObject["leastTime"]) / timeRange;
-                var pointx = canvasWidthRange * percxlegend + paddingLeft;
-                ctxSubLegend.beginPath();
-                ctxSubLegend.moveTo(pointx, pointytop);
-                ctxSubLegend.lineTo(pointx, pointybottom);
-                ctxSubLegend.stroke();
-                ctxSubLegend.closePath();
-
-                var daysLabelsOffsetFromBottom = 40;
-                var monthsLabelsOffsetFromBottom = 25;
-                var modulusForDays = 1;
-
-
-                //more than 20 days
-                if (timeRange > 60 * 60 * 24 * 1000 * 20) {
-                    daysLabelsOffsetFromBottom = 80;
-                    modulusForDays = 2;
-                }
-
-
-                //more than 40 days
-                if (timeRange > 60 * 60 * 24 * 1000 * 40) {
-                    modulusForDays = 3;
-                }
-
-                if (numberOfDaysDone % modulusForDays == 0) {
-                    //less than 40 days
-                    if (timeRange < 40 * 60 * 24 * 1000 * 20) {
-
-                        // month and date
-                        ctxLegendXLabel.fillText(
-                            `${new Date(timeLegend).getUTCMonth() + 1}/${new Date(timeLegend).getUTCDate()}`,
-                            pointx,
-                            canvas.height - daysLabelsOffsetFromBottom
-                        );
-
-                    } else {
-                        //bigger than 40 days
-                        //draw only the date
-                        ctxLegendXLabel.fillText(
-                            `${new Date(timeLegend).getUTCDate()}`,
-                            pointx,
-                            canvas.height - daysLabelsOffsetFromBottom
-                        );
-                    }
-
-                }
-
-                timeLegend += 60 * 60 * 24 * 1000;
-                numberOfDaysDone += 1;
-            }
-
-            //under 5 days
-            var hourDerivative = 60 * 60 * 1000;
-
-            var modulusHourInterval = 1;
-
-            var modulusHourIntervalLabel = 2;
-
-            // if the time window is less than 5 days, draw the hours
-            if (timeRange < 5 * 60 * 60 * 24 * 1000) {
-                if (timeRange < 2 * 60 * 60 * 24 * 1000) {
-                    //if the time window is less than 48 hours, draw ticks every hour
-                    modulusHourInterval = 1;
-                } else {
-                    if (timeRange < 2 * 60 * 60 * 24 * 1000) {
-                        //draw ticks every 2 hours
-                        modulusHourInterval = 2;
-                    } else {
-                        //draw ticks every 3 hrs
-                        modulusHourInterval = 3;
-                    }
-                }
-
-                if (timeRange < 60 * 60 * 24 * 1000) {
-                    //if the time window is less than 24 hours, draw labels every hour
-                    modulusHourIntervalLabel = 1;
-                } else {
-                    //draw labels every 2 hours
-                    modulusHourIntervalLabel = 2;
-
-                    if (timeRange < 2 * 60 * 60 * 24 * 1000) {
-                        //draw ticks every 2 hours
-                        modulusHourIntervalLabel = 2;
-                    } else {
-                        if (timeRange < 4 * 60 * 60 * 24 * 1000) {
-                            //draw ticks every 3 hrs
-                            modulusHourIntervalLabel = 3;
-                        } else {
-                            //draw ticks every 3 hrs
-                            modulusHourIntervalLabel = 6;
-                        }
-
-                    }
-                }
-                var lowestHourToChart = new Date(
-                    Date.UTC(
-                        leastTimeDateObject.getUTCFullYear(),
-                        leastTimeDateObject.getUTCMonth(),
-                        leastTimeDateObject.getUTCDate(),
-                        leastTimeDateObject.getUTCHours()
-                    )
-                ).getTime();
-                var timeHourLegend = lowestHourToChart;
-
-                const ctxSubMinorLegend = canvas.getContext("2d");
-                ctxSubMinorLegend.strokeStyle = "#a1a1a1";
-                ctxSubMinorLegend.lineWidth = markerLineWidth;
-                while (timeHourLegend < leastAndGreatestObject["greatestTime"]) {
-                    var utchour = new Date(timeHourLegend).getUTCHours();
-                    if (utchour % modulusHourInterval === 0) {
-                        if (timeHourLegend > leastAndGreatestObject["leastTime"]) {
-                            var percxlegend =
-                                (timeHourLegend - leastAndGreatestObject["leastTime"]) /
-                                timeRange;
-                            var pointx = canvasWidthRange * percxlegend + paddingLeft;
-
-                            ctxSubMinorLegend.moveTo(pointx, pointytopminor);
-                            ctxSubMinorLegend.lineTo(pointx, pointybottomminor);
-                            ctxSubMinorLegend.stroke();
-                            //console.log('utchours', new Date(timeHourLegend).getUTCHours())
-                            if (utchour % modulusHourIntervalLabel === 0) {
-                                ctxLegendXLabel.fillText(
-                                    `${new Date(timeHourLegend).getUTCHours()}:00`,
-                                    pointx,
-                                    canvas.height - 100
-                                );
-                            }
-                        }
-                    }
-                    //console.log("draw legend")
-
-                    timeHourLegend += hourDerivative;
-                }
-            }
-
-            const ctxSubYLineLegend = canvas.getContext("2d");
-            ctxSubYLineLegend.strokeStyle = "#818181";
-
-            const ctxLegendYLabel = canvas.getContext("2d");
-            ctxLegendYLabel.fillStyle = "#a1a1a1";
-            ctxLegendYLabel.font = "50px Lexend Deca";
-            ctxLegendYLabel.textBaseline = "middle";
-            // ctx.rotate(0.1)
-            ctxLegendYLabel.textAlign = "left";
-            // draw y axis graph
-            // if (leastAndGreatestObject['greatestViews'] < (20 * 1.0e6)) {
-
-            if (true) {
-                //draw million lines
-                var yAxisDrawMillions =
-                    (Math.floor(leastAndGreatestObject["leastViews"] / 1.0e6) + 1) *
-                    1.0e6;
-                //console.log('yaxisdraw', yAxisDrawMillions)
-
-                while (
-                    yAxisDrawMillions < leastAndGreatestObject["greatestViews"]
-                ) {
-                    
-                    var shouldDrawHorizontalLegend  = true;
-
-                    if (viewRange > 9.0e7) {
-                        if ((yAxisDrawMillions / 1.0e6) % 5 === 0) {
-                        } else {
-                            shouldDrawHorizontalLegend = false;
-                        }
-                    }
-
-                    if (shouldDrawHorizontalLegend) {
-                        // console.log('yaxisdraw', yAxisDrawMillions)
-                    var percylegend =
-                    (yAxisDrawMillions - leastAndGreatestObject["leastViews"]) /
-                    viewRange;
-                var pointy =
-                    canvasHeightRange - (canvasHeightRange * percylegend) + paddingTop;
-                ctxSubYLineLegend.moveTo(paddingLeft - 50, pointy);
-                ctxSubYLineLegend.lineTo(canvas.width - paddingRight, pointy);
-                ctxSubYLineLegend.stroke();
-                    }
-
-                    if (viewRange > 9.0e7) {
-                        if ((yAxisDrawMillions / 1.0e6) % 10 === 0) {
-                            ctxLegendYLabel.fillText(
-                                `${yAxisDrawMillions / 1.0e6}M`,
-                                30,
-                                pointy
-                            );
-                        }
-                    } else {
-                        if (viewRange > 2.0e7) {
-                            if ((yAxisDrawMillions / 1.0e6) % 2 === 0) {
-                                ctxLegendYLabel.fillText(
-                                    `${yAxisDrawMillions / 1.0e6}M`,
-                                    30,
-                                    pointy
-                                );
-                            }
-                        } else {
-                            ctxLegendYLabel.fillText(
-                                `${yAxisDrawMillions / 1.0e6}M`,
-                                30,
-                                pointy
-                            );
-                        }
-                    }
-
-
-                    yAxisDrawMillions += 1.0e6;
-
-                }
-            }
-
-            var hundredthousandint =
-                (Math.floor(leastAndGreatestObject["leastViews"] / 1.0e5) + 1) *
-                1.0e5;
-            if (viewRange < 2.0e6) {
-                console.log("view range under 2 million");
-                while (
-                    hundredthousandint < leastAndGreatestObject["greatestViews"]
-                ) {
-                    if (hundredthousandint % 1.0e6 === 0) {
-                        console.log("skip cuz it's 1 million");
-                    } else {
-                        if (
-                            hundredthousandint > leastAndGreatestObject["leastViews"]
-                        ) {
-                            console.log("draw 100 interval");
-                            // console.log('yaxisdraw', yAxisDrawMillions)
-                            var percylegend =
-                                (hundredthousandint -
-                                    leastAndGreatestObject["leastViews"]) /
-                                viewRange;
-                            var pointy =
-                                canvasHeightRange -
-                                canvasHeightRange * percylegend +
-                                paddingTop;
-                            ctxSubYLineLegend.moveTo(paddingLeft - 50, pointy);
-                            ctxSubYLineLegend.lineTo(
-                                canvas.width - paddingRight,
-                                pointy
-                            );
-                            ctxSubYLineLegend.stroke();
-
-                            var nameOfNumber = "";
-                            if (hundredthousandint < 1.0e6) {
-                                nameOfNumber = `${hundredthousandint / 1.0e3}K`;
-                            } else {
-                                nameOfNumber = `${hundredthousandint / 1.0e6}M`;
-                            }
-                            ctxLegendYLabel.fillText(
-                                `${nameOfNumber}`,
-                                30,
-                                pointy
-                            );
-                        }
-                    }
-                    hundredthousandint += 1.0e5;
-                }
-            }
-
-            var connectingline = arrayOfStats.map((stat) => {
-                var percentageOffsetFromLeft =
-                    (stat.unixtime - leastAndGreatestObject["leastTime"]) /
-                    timeRange;
-                var percentageOffsetFromBottomViews =
-                    (stat.views - leastAndGreatestObject["leastViews"]) / viewRange;
-                return {
-                    xper: percentageOffsetFromLeft,
-                    yper: percentageOffsetFromBottomViews,
-                };
-            });
-
-            const lengthofstatsprewhiteline = arrayOfStats.length;
-
-            const tolerance = 0.2;
-
-            /*
-            let connectinglinefilteredforwhiteline = connectingline.filter((eachDot, eachIndexWhite:number) => {
-                var verdictonkeep = true;
-
-                if (eachIndexWhite != 0 && eachIndexWhite != lengthofstatsprewhiteline -1) {
-                    if (
-                        Math.abs(eachDot.xper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
-                        Math.abs(eachDot.xper - connectingline[eachIndexWhite + 1].xper) < tolerance &&
-                        Math.abs(eachDot.yper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
-                        Math.abs(eachDot.yper - connectingline[eachIndexWhite + 1].xper) < tolerance 
-                    ) {
-                        verdictonkeep = false
-                }
-            } else {
-                if (eachIndexWhite === 0 ) {
-                    if (
-                    Math.abs(eachDot.xper - connectingline[eachIndexWhite + 1].xper) < tolerance &&
-                    Math.abs(eachDot.yper - connectingline[eachIndexWhite + 1].xper) < tolerance ) {
-                        verdictonkeep = false;
-                    }
-                }
-
-                if (eachIndexWhite === lengthofstatsprewhiteline -1) {
-                    if (
-                    Math.abs(eachDot.xper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
-                    Math.abs(eachDot.yper - connectingline[eachIndexWhite - 1].xper) < tolerance ) {
-                        verdictonkeep = false;
-                    }
-                }
-            }
-            return verdictonkeep;
-        })
-
-            if (connectinglinefilteredforwhiteline.length >= 2) {
-            drawLineFromPercentageArray(connectinglinefilteredforwhiteline );
-            }*/
-
-            drawLineFromPercentageArray( connectingline );
-
-            var arrayStatsLength = arrayOfStats.length;
-
-            const offsetCalcBottom  = (views)  => {
-               return (views - leastAndGreatestObject["leastViews"]) / viewRange;
-            }
-
-            const offsetCalcLeft  = (unixtime)  => {
-              return (unixtime - leastAndGreatestObject["leastTime"]) / timeRange;
-           }
-
-           var drawsquare = true;
-
-           if (arrayOfStats.length < 1000) {
-            drawsquare = false;
-           }
-
-            arrayOfStats
-            .map((stat) => {
-              stat["fromleft"] = offsetCalcLeft(stat.unixtime);
-              stat['frombot'] =  offsetCalcBottom(stat.views);
-
-              return stat;
-            })
-            .forEach((stat,statIndex) => {
-
-               
-              //  var percentageOffsetFromLeft = offsetCalcLeft(stat.unixtime)
-             // var percentageOffsetFromLeft = offsetCalcLeft(stat.unixtime)
-              //  var percentageOffsetFromBottomViews = offsetCalcBottom(stat.views)
-
-               var shouldDrawDot:boolean = true;
-
-              var modulusStat = 2;
-
-              if (arrayStatsLength > 5000) {
-                modulusStat = 3;
-              }
-
-              if (arrayStatsLength > 10000) {
-                modulusStat = 4;
-              }
-
-              if (arrayStatsLength > 15000) {
-                modulusStat = 12;
-              }
-
-              var amountToHide = 1/3000
-
-               if (arrayStatsLength > 3800) {
-                if (statIndex != 0 && statIndex != arrayStatsLength - 1) {
-                  if (statIndex % modulusStat != 0) {
-                    //if neighbouring dots are under 1 pixel away
-                   if (Math.abs(stat.fromleft - arrayOfStats[statIndex-1].fromleft) <amountToHide && Math.abs(stat.fromleft - arrayOfStats[statIndex+1].fromleft) < amountToHide) {
-                    shouldDrawDot = false;
-                   }
-                  }
-                }
-               }
-
-              if (shouldDrawDot === true) {
-                if (drawsquare) {
-                    drawSquareFromPercentage(
-                        stat.fromleft,
-                        stat.frombot
-                    )
-                } else {
-                    drawDotFromPercentage(
-                        stat.fromleft,
-                        stat.frombot
-                    );
-                }
-                
-              }
-            });
-
-
-            if (optionsObject.publishedAt) {
-                var publishedAtTime = optionsObject.publishedAt.getTime()
-                if (publishedAtTime > leastAndGreatestObject["leastTime"] && publishedAtTime < leastAndGreatestObject["greatestTime"]) {
-                    var ctxRelease = canvas.getContext('2d')
-                    ctxRelease.strokeStyle = '#fce464'
-                    ctxRelease.lineWidth = 15;
-                    var percxreleasetime =
-                        (publishedAtTime - leastAndGreatestObject["leastTime"]) /
-                        timeRange;
-                    var pointxreleasetime = canvasWidthRange * percxreleasetime + paddingLeft;
-                    ctxRelease.beginPath();
-                    ctxRelease.moveTo(pointxreleasetime, paddingTop);
-                    ctxRelease.lineTo(pointxreleasetime, canvas.height - paddingBottom);
-                    ctxRelease.stroke();
-                    ctxRelease.closePath();
-
-                    ctxRelease.textAlign = "right";
-                    var xforreleasetext = pointxreleasetime - 80;
-                    ctxRelease.font = "150px Lexend Deca";
-                    if (
-                        xforreleasetext < 500
-                    ) {
-                        ctxRelease.textAlign = "left";
-                        xforreleasetext = pointxreleasetime + 80;
-                    }
-                    ctxRelease.fillStyle = "#fce464";
-                    ctxRelease.fillText(
-                        "Release Time",
-                        xforreleasetext,
-                        canvas.height - paddingBottom - 150
-                    );
-
-
-                }
-
-            }
-
-
-            //now draw legends
-            var ctxlegend = canvas.getContext("2d");
-            ctxlegend.strokeStyle = "#e7acc2";
-
-            ctxlegend.beginPath();
-
-            //y axis
-            ctxlegend.moveTo(paddingLeft, paddingTop);
-            ctxlegend.lineTo(paddingLeft, canvas.height - paddingBottom);
-            ctxlegend.stroke();
-            //x axis
-            ctxlegend.moveTo(paddingLeft, canvas.height - paddingBottom);
-            ctxlegend.lineTo(
-                canvas.width - paddingRight,
-                canvas.height - paddingBottom
-            );
-            ctxlegend.stroke();
-
-            ctxlegend.closePath()
-                ;
-
-        }
-
-        var compressionStart = Date.now()
-        const bufferinfo = canvas.toBuffer("image/png", {
-            compressionLevel: 1,
-        });
-        dogstatsd.histogram('adorabot.ytchart.chartdrawtimehist', Date.now() - beginningTime);
-        dogstatsd.histogram('adorabot.ytchart.chartdrawtimecompresshist', Date.now() -compressionStart);
-        dogstatsd.histogram('adorabot.ytchart.chartdrawtimedrawhist',  compressionStart - cassandratimedone);
-        dogstatsd.histogram('adorabot.ytchart.chartdrawtimecassandrahist', cassandratimedone - beginningTime );
+       
         // console.log(bufferinfo);
         console.log('chart finished drawing, time to resolve')
-       resolve(bufferinfo)
-
+       
+        imageGeneratorFunction({
+            numberOfRows,
+            viewRange,
+            leastAndGreatestObject,
+            isBlocked,
+            titletext: "View Chart",
+            arrayOfStats,
+            timeRange,
+            locale: optionsObject.locale
+        }).then((bufferinfo) => {
+            
+        resolve(bufferinfo)
+        })
+        .catch((errordraw) => {
+            console.error(errordraw)
+        })
 
 
         console.log('resolved chart')
