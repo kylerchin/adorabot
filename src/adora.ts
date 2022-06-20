@@ -95,7 +95,7 @@ async function setPresenceForAdoraCustom(presencetext) {
 
 async function setPresenceForAdora() {
   // Set the client user's presence
-  client.user.setPresence({ activities: [{ name: 'a!help \n 💜 Invite me to your server please! do a!invite' }], status: 'online' });
+  client.user.setPresence({ activities: [{ name: '/help \n 💜 Invite me to your server please! do /invite' }], status: 'online' });
 }
 
 async function moderationCassandra() {
