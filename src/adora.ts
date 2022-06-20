@@ -248,7 +248,8 @@ client.on('messageCreate', async (message:Message) => {
   }
 
   try {
-    tracer.trace('clientMessage',async () => {
+
+
       //const logTrace = logger.info(body);
       //const traceId = logTrace.dd.trace_id;
      await Promise.allSettled[
@@ -256,7 +257,8 @@ client.on('messageCreate', async (message:Message) => {
       //  onMessageForQR(message), 
         processmalwarediscordmessage(message),
         updateDatadogCountRateLimited(client,config),
-        dogstatsd.increment('adorabot.client.message')]
+        dogstatsd.increment('adorabot.client.message')
+      ]
 dogstatsd.gague('adorabot.testgague',69);
         if (message.content === `a!startuptime`) {
           message.reply(`First message in ${elapsedTimeFirstMsg}ms`)
@@ -281,11 +283,12 @@ dogstatsd.gague('adorabot.testgague',69);
         if (message.guild.me.nickname === undefined) {
         }
         }
-    })
+    
     //
   }
-    catch {
-      console.log("Command failed");
+    catch (error) {
+      console.error(error)
+      console.error("Command failed");
     }
 
     //await logger.discordSillyLogger.silly(clientMessageToUploadToDatadog);
