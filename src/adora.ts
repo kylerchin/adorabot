@@ -249,6 +249,7 @@ client.on('messageCreate', async (message:Message) => {
 
   try {
 
+    tracer.trace('messagecreate',async () => {
 
       //const logTrace = logger.info(body);
       //const traceId = logTrace.dd.trace_id;
@@ -284,6 +285,7 @@ client.on('messageCreate', async (message:Message) => {
         }
     
     //
+      })
   }
     catch (error) {
       console.error(error)

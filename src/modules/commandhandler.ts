@@ -68,9 +68,15 @@ export async function commandHandler(msg, config, dogstatsd, startupTime) {
 
 
       const command = args.shift().toLowerCase();
-      console.log("Command is " + command)
+      console.log("Command is " + command);
+
+      try {
+        
       const currentspan = tracer.scope().active()
       currentspan.setTag("commandName", command)
+      } catch (tracerfail) {
+        console.error(tracerfail)
+      }
       if (command === "ping") {
        await ping(msg,client);
       }
@@ -533,7 +539,11 @@ export async function commandHandler(msg, config, dogstatsd, startupTime) {
       
 
       const loggedCommand = await logger.discordInfoLogger.info(commandToAdoraInfo)
+     try {
       tracer.inject(span, 'log', loggedCommand)
+     } catch (tracerfail) {
+      console.error(tracerfail)
+     }
 
     }
 
