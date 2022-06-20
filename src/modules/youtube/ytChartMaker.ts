@@ -753,7 +753,7 @@ if (beginningTime) {
 }
 }
 
-resolve(bufferinfo)
+return bufferinfo;
 }
 
 export async function ytChart(id, optionsObject: optionsInterface) {
