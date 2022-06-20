@@ -253,13 +253,12 @@ client.on('messageCreate', async (message:Message) => {
       //const logTrace = logger.info(body);
       //const traceId = logTrace.dd.trace_id;
      await Promise.allSettled[
-        commandHandler(message,client,config,dogstatsd,startupTime), 
+        commandHandler(message,config,dogstatsd,startupTime), 
       //  onMessageForQR(message), 
         processmalwarediscordmessage(message),
         updateDatadogCountRateLimited(client,config),
         dogstatsd.increment('adorabot.client.message')
       ]
-dogstatsd.gague('adorabot.testgague',69);
         if (message.content === `a!startuptime`) {
           message.reply(`First message in ${elapsedTimeFirstMsg}ms`)
         }
