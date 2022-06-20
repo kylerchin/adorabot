@@ -43,7 +43,7 @@ interface imagegeninterface {
     cassandratimedone?: number;
     beginningTime?:number;
     timeRange?:number;
-    locale?:number;
+    locale?:any;
     publishedAt?:any;
 }
 
