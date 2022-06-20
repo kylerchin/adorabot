@@ -753,8 +753,6 @@ if (beginningTime) {
 }
 }
 
-
-
 resolve(bufferinfo)
 }
 
@@ -917,7 +915,9 @@ cassandraclient
             titletext: "View Chart",
             arrayOfStats,
             timeRange,
-            locale: optionsObject.locale
+            locale: optionsObject.locale,
+            beginningTime,
+            cassandratimedone
         }).then((bufferinfo) => {
             
         resolve(bufferinfo)
