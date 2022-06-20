@@ -42,7 +42,9 @@ import { removeAllPoints, removeVideoId, spitoutlist } from "./trackedListManage
 import { banFromGuild, inspectGuild, listAllGuilds, listAllGuildsAndInsertAutoban, turnOnAdorabanInGuild, turnOffAdorabanInGuild } from "./inspectGuild";
 import { spotifySearchForStatsFromMessage } from "./spotify";
 
-export async function commandHandler(msg, client, config, dogstatsd, startupTime) {
+export async function commandHandler(msg, config, dogstatsd, startupTime) {
+
+  let client = msg.client;
 
   const isDM: boolean = msg.guild === null;
 
