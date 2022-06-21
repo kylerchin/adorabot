@@ -104,6 +104,19 @@ export async function youtubeChannelStats(message:Message, command, client, conf
     
 }
 
+function convertUrlToVideoId(ytquery) {
+    if (ytquery.match(/youtube.com\/shorts\//g)) {
+        var precurser = ytquery.replace("?feature=share","").replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
+    }
+         // Valid url
+    if (ytquery.includes("youtu.be/")) {
+        var precurser = ytquery.replace("youtu.be/", "www.youtube.com/watch?v=")
+    } else {
+        var precurser = ytquery
+    }
+    return getQueryParam('v', precurser)
+}
+
 export async function youtubeVideoStatsInteraction(interaction: any, config:any) {
 
         // Defer to send an ephemeral reply later
@@ -118,16 +131,7 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
     var ytquery = interaction.options.getString('search-or-url');
 
     if (isUrl(ytquery)) {
-        if (ytquery.match(/youtube.com\/shorts\//g)) {
-            var precurser = ytquery.replace("?feature=share","").replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
-        }
-             // Valid url
-        if (ytquery.includes("youtu.be/")) {
-            var precurser = ytquery.replace("youtu.be/", "www.youtube.com/watch?v=")
-        } else {
-            var precurser = ytquery
-        }
-        videoID = getQueryParam('v', precurser)
+      videoid = convertUrlToVideoId(ytquery)
         
 
        
