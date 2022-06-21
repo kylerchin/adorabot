@@ -131,7 +131,7 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
     var ytquery = interaction.options.getString('search-or-url');
 
     if (isUrl(ytquery)) {
-      videoid = convertUrlToVideoId(ytquery)
+      videoID = convertUrlToVideoId(ytquery)
         
 
        
@@ -240,16 +240,7 @@ export async function youtubeVideoStats(message:Message, command, client, config
 
     var videoID = "dQw4w9WgXcQ"
     if (isUrl(args[0])) {
-        if (args[0].match(/youtube.com\/shorts\//g)) {
-            var precurser = args[0].replace("?feature=share","").replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
-        }
-        // Valid url
-        if (args[0].includes("youtu.be/")) {
-            var precurser = args[0].replace("youtu.be/", "www.youtube.com/watch?v=")
-        } else {
-            var precurser = args[0]
-        }
-        videoID = getQueryParam('v', precurser)
+        videoID = videoID = convertUrlToVideoId(args[0])
         sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
     } else {
         // Invalid url
