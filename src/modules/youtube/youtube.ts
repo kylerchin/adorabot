@@ -237,7 +237,7 @@ export async function youtubeVideoStats(message:Message, command, client, config
     var videoID = "dQw4w9WgXcQ"
     if (isUrl(args[0])) {
         if (args[0].match(/youtube.com\/shorts\//g)) {
-            var precurser = args[0].replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
+            var precurser = args[0].replace("?feature=share","").replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
         }
         // Valid url
         if (args[0].includes("youtu.be/")) {
