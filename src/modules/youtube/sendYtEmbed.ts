@@ -126,7 +126,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
                         locale: message.locale
                       })} :eyes:`,
                       "value": `${parseInt(videostats.viewCount).toLocaleString( 'en-US')}`,
-                      inline: false
+                      inline: true
                     },
                     {
                       "name": `${lookuplocale({
@@ -136,6 +136,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
                       "value": parseInt(videostats.likeCount).toLocaleString( 'en-US'),
                       "inline": true
                     },
+                    /*
                     {
                       "name": `${lookuplocale({
                         key: "dislikes",
@@ -143,14 +144,14 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
                       })} :thumbsdown:`,
                       "value": parseInt(videostats.dislikeCount).toLocaleString( 'en-US'),
                       "inline": true
-                    },
+                    },*/
                     {
                       "name": `${lookuplocale({
                         key: "comments",
                         locale: message.locale
                       })} :speech_balloon:`,
                       "value": parseInt(videostats.commentCount).toLocaleString('en-US'),
-                      inline: false
+                      inline: true
                     },
                     {
                       "name": `${
