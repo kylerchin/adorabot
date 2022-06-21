@@ -409,7 +409,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
                         //console.log('utchours', new Date(timeHourLegend).getUTCHours())
                         if (utchour % modulusHourIntervalLabel === 0) {
                             ctxLegendXLabel.fillText(
-                                `${new Date(timeHourLegend).getUTCHours()}:00`,
+                                `${new Date(timeHourLegend).getUTCHours()}:${new Date(timeHourLegend).getUTCMinutes()}`,
                                 pointx,
                                 canvas.height - 100
                             );
@@ -531,7 +531,11 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
                         var nameOfNumber = "";
                         if (hundredthousandint < 1.0e6) {
-                            nameOfNumber = `${hundredthousandint / 1.0e3}K`;
+                            var endingk = "K"
+                            if (locale === "kr") {
+                                endingk = "천"
+                            }
+                            nameOfNumber = `${hundredthousandint / 1.0e3}${endingk}`;
                         } else {
                             nameOfNumber = `${hundredthousandint / 1.0e6}M`;
                         }
@@ -770,7 +774,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
             leastViews: null,
             greatestViews: null,
         };
-        
+
         var numberOfRows = 0;
 
         var arrayOfStats = [];
