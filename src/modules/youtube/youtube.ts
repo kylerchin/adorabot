@@ -106,13 +106,15 @@ export async function youtubeChannelStats(message:Message, command, client, conf
 
 function convertUrlToVideoId(ytquery) {
     if (ytquery.match(/youtube.com\/shorts\//g)) {
+        console.log('match')
         var precurser = ytquery.replace("?feature=share","").replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
-    }
-         // Valid url
+    } else {
+             // Valid url
     if (ytquery.includes("youtu.be/")) {
         var precurser = ytquery.replace("youtu.be/", "www.youtube.com/watch?v=")
     } else {
         var precurser = ytquery
+    }
     }
     return getQueryParam('v', precurser)
 }
