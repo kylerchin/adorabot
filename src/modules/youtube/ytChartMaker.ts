@@ -758,190 +758,166 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
 export async function ytChart(id, optionsObject: optionsInterface) {
     var beginningTime = Date.now()
-    if (false) {
-        return new Promise(async (resolve, reject) => {
-            const worker = new Worker(path.resolve(__dirname, "workerYtChart.js"), { id, optionsObject });
-            worker.on('message', (message) => {
-                console.log('outmsg', message)
-                resolve(message);
-                dogstatsd.histogram('adorabot.ytchart.chartdrawtimehist', Date.now() - beginningTime);
-            });
-            worker.on('error', (error) => {
-                console.error(error)
-                reject(error)
-            });
-            worker.on('exit', (code) => {
-                if (code !== 0)
-                    reject(new Error(`Worker stopped with exit code ${code}`));
-            })
-        });
-    }
 
+    return new Promise(async (resolve, reject) => {
 
-    //non worker system
-    if (true) {
-        return new Promise(async (resolve, reject) => {
+        var queryVideo = "SELECT * FROM adorastats.ytvideostats WHERE videoid = ?";
+        var paramsVideo = [id];
 
+        var leastAndGreatestObject = {
+            leastTime: null,
+            greatestTime: null,
+            leastViews: null,
+            greatestViews: null,
+        };
+        
+        var numberOfRows = 0;
 
+        var arrayOfStats = [];
 
-            var queryVideo =
-                "SELECT * FROM adorastats.ytvideostats WHERE videoid = ?";
-            var paramsVideo = [id];
-
-            var leastAndGreatestObject = {
-                leastTime: null,
-                greatestTime: null,
-                leastViews: null,
-                greatestViews: null,
-            };
-            var numberOfRows = 0;
-
-            var arrayOfStats = [];
-
-            function leastAndGreatestCheck(x, leastX, greatestX) {
-                if (leastAndGreatestObject[leastX] === null) {
-                    console.log("set least X");
+        function leastAndGreatestCheck(x, leastX, greatestX) {
+            if (leastAndGreatestObject[leastX] === null) {
+                console.log("set least X");
+                leastAndGreatestObject[leastX] = x;
+            } else {
+                if (x < leastAndGreatestObject[leastX]) {
                     leastAndGreatestObject[leastX] = x;
-                } else {
-                    if (x < leastAndGreatestObject[leastX]) {
-                        leastAndGreatestObject[leastX] = x;
-                    }
-                }
-
-                if (leastAndGreatestObject[greatestX] === null) {
-                    leastAndGreatestObject[greatestX] = x;
-                } else {
-                    if (x > leastAndGreatestObject[greatestX]) {
-                        leastAndGreatestObject[greatestX] = x;
-                    }
                 }
             }
 
-            cassandraclient
-                .stream(queryVideo, paramsVideo)
-                .on("readable", function () {
-                    // 'readable' is emitted as soon a row is received and parsed
-                    let row;
-                    while ((row = this.read())) {
+            if (leastAndGreatestObject[greatestX] === null) {
+                leastAndGreatestObject[greatestX] = x;
+            } else {
+                if (x > leastAndGreatestObject[greatestX]) {
+                    leastAndGreatestObject[greatestX] = x;
+                }
+            }
+        }
+
+        cassandraclient
+            .stream(queryVideo, paramsVideo)
+            .on("readable", function () {
+                // 'readable' is emitted as soon a row is received and parsed
+                let row;
+                while ((row = this.read())) {
+                    numberOfRows += 1;
+
+                    //  console.log(row)
+                    //console.log(result)
+                    var time = row.time.getDate().getTime();
+                    leastAndGreatestCheck(time, "leastTime", "greatestTime");
+                    // console.log("views", row.views)
+                    var views = parseInt(row.views.toString());
+                    leastAndGreatestCheck(views, "leastViews", "greatestViews");
+
+                    arrayOfStats.push({
+                        unixtime: time,
+                        views: views,
+                    });
+                }
+            })
+            .on("end", function () {
+                var cassandratimedone = Date.now()
+                if (optionsObject.addOnPoints) {
+                    optionsObject.addOnPoints.forEach((eachPoint) => {
                         numberOfRows += 1;
 
-                        //  console.log(row)
-                        //console.log(result)
-                        var time = row.time.getDate().getTime();
-                        leastAndGreatestCheck(time, "leastTime", "greatestTime");
+                        var addontime = eachPoint.time;
+                        leastAndGreatestCheck(addontime, "leastTime", "greatestTime");
                         // console.log("views", row.views)
-                        var views = parseInt(row.views.toString());
-                        leastAndGreatestCheck(views, "leastViews", "greatestViews");
+                        var addonviews = eachPoint.views;
+                        leastAndGreatestCheck(addonviews, "leastViews", "greatestViews");
+
+                        if (optionsObject.publishedAt) {
+                            if (leastAndGreatestObject["leastTime"] < optionsObject.publishedAt.getTime() && leastAndGreatestObject["greatestTime"] > optionsObject.publishedAt.getTime()) {
+                                leastAndGreatestObject["leastTime"] = optionsObject.publishedAt.getTime() - (1000 * 60)
+                            }
+                        }
+
 
                         arrayOfStats.push({
-                            unixtime: time,
-                            views: views,
+                            unixtime: addontime,
+                            views: addonviews,
                         });
-                    }
-                })
-                .on("end", function () {
-                    var cassandratimedone = Date.now()
-                    if (optionsObject.addOnPoints) {
-                        optionsObject.addOnPoints.forEach((eachPoint) => {
-                            numberOfRows += 1;
+                    });
+                }
+                // Stream ended, there aren't any more rows
+                var viewRange: number = 0;
+                if (leastAndGreatestObject["greatestViews"] && leastAndGreatestObject["leastViews"]) {
+                    viewRange = leastAndGreatestObject["greatestViews"] -
+                        leastAndGreatestObject["leastViews"];
+                } else {
+                    viewRange = 0;
+                }
 
-                            var addontime = eachPoint.time;
-                            leastAndGreatestCheck(addontime, "leastTime", "greatestTime");
-                            // console.log("views", row.views)
-                            var addonviews = eachPoint.views;
-                            leastAndGreatestCheck(addonviews, "leastViews", "greatestViews");
+                var timeRange: number = 0;
 
-                            if (optionsObject.publishedAt) {
-                                if (leastAndGreatestObject["leastTime"] < optionsObject.publishedAt.getTime() && leastAndGreatestObject["greatestTime"] > optionsObject.publishedAt.getTime()) {
-                                    leastAndGreatestObject["leastTime"] = optionsObject.publishedAt.getTime() - (1000 * 60)
-                                }
-                            }
+                if (leastAndGreatestObject["greatestTime"] && leastAndGreatestObject["leastTime"]) {
+                    timeRange = leastAndGreatestObject["greatestTime"] -
+                        leastAndGreatestObject["leastTime"];
+                }
 
+                var loadedRemovedData = importconfigfile.get();
 
-                            arrayOfStats.push({
-                                unixtime: addontime,
-                                views: addonviews,
-                            });
-                        });
-                    }
-                    // Stream ended, there aren't any more rows
-                    var viewRange: number = 0;
-                    if (leastAndGreatestObject["greatestViews"] && leastAndGreatestObject["leastViews"]) {
-                        viewRange = leastAndGreatestObject["greatestViews"] -
-                            leastAndGreatestObject["leastViews"];
-                    } else {
-                        viewRange = 0;
+                var isBlocked = false;
+
+                try {
+                    if (!(loadedRemovedData.removedvids.indexOf(id) == -1)) {
+                        isBlocked = true;
                     }
 
-                    var timeRange: number = 0;
-
-                    if (leastAndGreatestObject["greatestTime"] && leastAndGreatestObject["leastTime"]) {
-                        timeRange = leastAndGreatestObject["greatestTime"] -
-                            leastAndGreatestObject["leastTime"];
-                    }
-
-                    var loadedRemovedData = importconfigfile.get();
-
-                    var isBlocked = false;
-
-                    try {
-                        if (!(loadedRemovedData.removedvids.indexOf(id) == -1)) {
+                    if (optionsObject.channelId) {
+                        if (
+                            !(
+                                loadedRemovedData.removedytchannels.indexOf(
+                                    optionsObject.channelId
+                                ) == -1
+                            )
+                        ) {
                             isBlocked = true;
                         }
-
-                        if (optionsObject.channelId) {
-                            if (
-                                !(
-                                    loadedRemovedData.removedytchannels.indexOf(
-                                        optionsObject.channelId
-                                    ) == -1
-                                )
-                            ) {
-                                isBlocked = true;
-                            }
-                        }
-                    } catch (error) {
-                        console.log(error);
                     }
+                } catch (error) {
+                    console.log(error);
+                }
 
-                    // console.log(bufferinfo);
-                    console.log('chart finished drawing, time to resolve')
+                // console.log(bufferinfo);
+                console.log('chart finished drawing, time to resolve')
 
-                    imageGeneratorFunction({
-                        numberOfRows,
-                        viewRange,
-                        leastAndGreatestObject,
-                        isBlocked,
-                        titletext: "View Chart",
-                        arrayOfStats,
-                        timeRange,
-                        locale: optionsObject.locale,
-                        beginningTime,
-                        cassandratimedone
-                    }).then((bufferinfo) => {
+                imageGeneratorFunction({
+                    numberOfRows,
+                    viewRange,
+                    leastAndGreatestObject,
+                    isBlocked,
+                    titletext: "View Chart",
+                    arrayOfStats,
+                    timeRange,
+                    locale: optionsObject.locale,
+                    beginningTime,
+                    cassandratimedone
+                }).then((bufferinfo) => {
 
-                        resolve(bufferinfo)
-                    })
-                        .catch((errordraw) => {
-                            console.error(errordraw)
-                        })
-
-
-                    console.log('resolved chart')
-
+                    resolve(bufferinfo)
                 })
-                .on("error", function (err) {
-                    // Something went wrong: err is a response error from Cassandra
-                    console.log(err);
-                    logger.discordErrorLogger.error(err, { type: 'chartmakerfail' })
-                    //  process.exit()
-                    reject(err);
-
-                });
-        })
-
-        //end of non worker system
-    }
+                    .catch((errordraw) => {
+                        console.error(errordraw)
+                    })
 
 
+                console.log('resolved chart')
+
+            })
+            .on("error", function (err) {
+                // Something went wrong: err is a response error from Cassandra
+                console.log(err);
+                logger.discordErrorLogger.error(err, { type: 'chartmakerfail' })
+                //  process.exit()
+                reject(err);
+
+            });
+    })
+
+    //end of non worker system
 }
+
+
