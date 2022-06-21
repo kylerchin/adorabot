@@ -119,7 +119,7 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
 
     if (isUrl(ytquery)) {
         if (ytquery.match(/youtube.com\/shorts\//g)) {
-            var precurser = ytquery.replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
+            var precurser = ytquery.replace("?feature=share","").replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
         }
              // Valid url
         if (ytquery.includes("youtu.be/")) {
