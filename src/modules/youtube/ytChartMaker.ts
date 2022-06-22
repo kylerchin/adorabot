@@ -641,7 +641,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
                     canvasHeightRange * percylegend +
                     paddingTop;
 
-                if (countsmally % 100 != 0) {
+                if (true) {
                     if (drawLongLine) {
                         ctxSubYLineLegend.moveTo(paddingLeft - 50, pointy);
                         ctxSubYLineLegend.lineTo(
