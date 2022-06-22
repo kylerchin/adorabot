@@ -543,7 +543,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
                             if (locale === "kr" || locale === "zh-CN" || locale === "zh-TW") {
                                 if (hundredthousandint % 10 === 0) {
-                                    nameOfNumber = `${hundredthousandint / 1.0e3}${lookuplocale({ key: "tenk", locale: locale })}`;
+                                    nameOfNumber = `${hundredthousandint / 1.0e4}${lookuplocale({ key: "tenk", locale: locale })}`;
                                 } else {
                                     nameOfNumber = `${hundredthousandint / 1.0e3}${endingk}`;
                                 }
@@ -653,13 +653,13 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
                             if (countsmally % 1000) {
                                 if (locale === "kr" || locale === "zh-CN" || locale === "zh-TW") {
-                                    if (hundredthousandint % 10 === 0) {
-                                        nameOfNumberSmall  = `${hundredthousandint / 1.0e3}${lookuplocale({ key: "tenk", locale: locale })}`;
+                                    if (countsmally % 10000 === 0) {
+                                        nameOfNumberSmall  = `${countsmally / 1.0e4}${lookuplocale({ key: "tenk", locale: locale })}`;
                                     } else {
-                                        nameOfNumberSmall  = `${hundredthousandint / 1.0e3}${endingk}`;
+                                        nameOfNumberSmall  = `${countsmally / 1.0e3}${endingk}`;
                                     }
                                 } else {
-                                    nameOfNumberSmall  = `${hundredthousandint / 1.0e3}${endingk}`;
+                                    nameOfNumberSmall  = `${countsmally / 1.0e3}${endingk}`;
                                 }
                             }
 
