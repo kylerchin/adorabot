@@ -15,18 +15,23 @@ const commands = [
     "ko": "핑"
   },
   description: "View bot latency."
-},/*
+},
 {
   "name": "lyrics",
+  "name_localizations": {
+    "ko": "가사"
+  },
   "description": "Lookup a song's lyrics",
   "options": [
     {
       "type": 3,
       "name": "song",
+      "name_localizations": "노래",
       "description": "The name of the song, artist, album, and/or a line in a song",
       "required": true
     }
 ]},
+/*
 {
   "name": "ytparty",
   "description": "Start a YouTube watch party in a voice channel"
