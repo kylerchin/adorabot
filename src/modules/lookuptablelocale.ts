@@ -57,6 +57,18 @@ export const lookuptable = {
         "ja": "月",
         "zh-CN": "月",
         "zh-TW": "月"
+    },
+    "k": {
+        "en": "K",
+        "kr": "천",
+        "zh-CN": "千",
+        "zh-TW": "千"
+    },
+    "tenk": {
+        "en": "0k",
+        "kr": "만",
+        "zh-CN": "万",
+        "zh-TW": "萬"
     }
 }
 
@@ -65,7 +77,7 @@ interface lookupoptions {
     key: string;
 }
 
-export function lookuplocale(lookupopt) {
+export function lookuplocale(lookupopt:lookupoptions) {
     if (lookuptable[lookupopt.key]) {
         if (lookupopt.locale === null || lookupopt.locale === undefined  || lookupopt.locale === "") {
             return lookuptable[lookupopt.key]["en"]

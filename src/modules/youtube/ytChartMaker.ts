@@ -51,6 +51,14 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
     var { publishedAt, locale, timeRange, numberOfRows, viewRange, leastAndGreatestObject, isBlocked, titletext, arrayOfStats, beginningTime, cassandratimedone } = optionsForImageGen;
 
+    var endingk = "K"
+    if (locale === "kr") {
+        endingk = lookuplocale({
+            key: "k",
+            locale: locale
+        })
+    }
+
     const canvas = createCanvas(3840, 2160);
     const ctx = canvas.getContext("2d");
     const ctxLegendXLabel = canvas.getContext("2d");
@@ -531,11 +539,17 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
                         var nameOfNumber = "";
                         if (hundredthousandint < 1.0e6) {
-                            var endingk = "K"
-                            if (locale === "kr") {
-                                endingk = "천"
+
+
+                            if (locale === "kr" || locale === "zh-CN" || locale === "zh-TW") {
+                                if (hundredthousandint % 10 === 0) {
+                                    nameOfNumber = `${hundredthousandint / 1.0e3}${lookuplocale({ key: "tenk", locale: locale })}`;
+                                } else {
+                                    nameOfNumber = `${hundredthousandint / 1.0e3}${endingk}`;
+                                }
+                            } else {
+                                nameOfNumber = `${hundredthousandint / 1.0e3}${endingk}`;
                             }
-                            nameOfNumber = `${hundredthousandint / 1.0e3}${endingk}`;
                         } else {
                             nameOfNumber = `${hundredthousandint / 1.0e6}M`;
                         }
@@ -547,6 +561,128 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
                     }
                 }
                 hundredthousandint += 1.0e5;
+            }
+        }
+
+        if (viewRange < 100000) {
+            var yaxissmallinterval = 10000;
+            var longtick = 20000;
+            var shorttick = 100000;
+
+            if (viewRange < 20000) {
+                yaxissmallinterval = 1000;
+                longtick = 5000;
+
+                if (viewRange < 10000) {
+                    yaxissmallinterval = 500;
+                    longtick = 2000;
+
+                    if (viewRange < 5000) {
+                        yaxissmallinterval = 100;
+                        longtick = 500;
+
+
+                        if (viewRange < 2000) {
+                            yaxissmallinterval = 100;
+                            longtick = 100;
+
+                            if (viewRange < 1000) {
+                                yaxissmallinterval = 50;
+                                longtick = 200;
+                                shorttick = 10;
+
+                                if (viewRange < 500) {
+                                    yaxissmallinterval = 20;
+                                    longtick = 100;
+                                    shorttick = 50;
+
+                                    if (viewRange < 200) {
+                                        yaxissmallinterval = 5;
+                                        longtick = 50;
+                                        shorttick = 10;
+
+                                        if (viewRange < 100) {
+                                            yaxissmallinterval = 1;
+                                            longtick = 10;
+                                            shorttick = 5;
+
+                                            if (viewRange < 30) {
+                                                shorttick = 1;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+            }
+
+            var startingsmallinterval = leastAndGreatestObject["leastViews"] - (leastAndGreatestObject["leastViews"] % yaxissmallinterval)
+
+            var countsmally = startingsmallinterval;
+
+            while (countsmally < leastAndGreatestObject["greatestViews"]) {
+
+                var drawLongLine = countsmally % longtick === 0;
+                var labelLine = countsmally % longtick === 0;
+                var drawTickYLine = countsmally % shorttick === 0;
+
+
+
+                var percylegend =
+                    (countsmally -
+                        leastAndGreatestObject["leastViews"]) /
+                    viewRange;
+                var pointy =
+                    canvasHeightRange -
+                    canvasHeightRange * percylegend +
+                    paddingTop;
+
+                if (countsmally % 100 != 0) {
+                    if (drawLongLine) {
+                        ctxSubYLineLegend.moveTo(paddingLeft - 50, pointy);
+                        ctxSubYLineLegend.lineTo(
+                            canvas.width - paddingRight,
+                            pointy);
+                        ctxSubYLineLegend.stroke();
+
+                            var nameOfNumberSmall:any = countsmally;
+
+                            if (countsmally % 1000) {
+                                if (locale === "kr" || locale === "zh-CN" || locale === "zh-TW") {
+                                    if (hundredthousandint % 10 === 0) {
+                                        nameOfNumberSmall  = `${hundredthousandint / 1.0e3}${lookuplocale({ key: "tenk", locale: locale })}`;
+                                    } else {
+                                        nameOfNumberSmall  = `${hundredthousandint / 1.0e3}${endingk}`;
+                                    }
+                                } else {
+                                    nameOfNumberSmall  = `${hundredthousandint / 1.0e3}${endingk}`;
+                                }
+                            }
+
+                        ctxLegendYLabel.fillText(
+                            `${nameOfNumberSmall}`,
+                            30,
+                            pointy
+                        );
+                    } else {
+                        if (drawTickYLine) {
+                            ctxSubYLineLegend.moveTo(paddingLeft - 50, pointy);
+                            ctxSubYLineLegend.lineTo(
+                                paddingLeft + 15, pointy,
+                                pointy);
+                            ctxSubYLineLegend.stroke();
+                        }
+                    }
+                }
+
+
+
+
+                countsmally = countsmally + yaxissmallinterval;
             }
         }
 
