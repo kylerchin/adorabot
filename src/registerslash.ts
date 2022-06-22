@@ -34,9 +34,12 @@ const commands = [
 {
   "name": "mama",
   "description": "View Real-Time Charts for MAMA Awards 2021: Worldwide Fans’ Choice TOP 10"
-},
+},*/
 {
   "name": "billboard",
+  "name_localizations": {
+    "ko": "빌보드"
+  },
   "description": "View latest & historical Billboard Charts",
   "options": [
     {
@@ -52,6 +55,7 @@ const commands = [
     }
   ]
 },
+/*
 {
   "name": "ban",
   "description": "Bans users, only works in server for users with ban perms",
