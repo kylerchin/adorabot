@@ -26,7 +26,7 @@ const commands = [
     {
       "type": 3,
       "name": "song",
-      "name_localizations": "노래",
+      "name_localizations": "검색",
       "description": "The name of the song, artist, album, and/or a line in a song",
       "required": true
     }
