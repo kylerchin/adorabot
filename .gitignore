@@ -132,3 +132,7 @@ app.js
 tomato.mp3logs/json/
 certs/
 putgetbanstimeout.json
+
+# Added by cargo
+
+/target
