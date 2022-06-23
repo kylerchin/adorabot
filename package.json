@@ -52,6 +52,7 @@
     "dd-trace": "^0.32.2",
     "discord-api-types": "^0.31.0",
     "discord-botlist-api": "^2.1.1",
+    "discord-escape": "^1.0.0",
     "discord-pages": "^1.0.2",
     "discord-together": "^1.2.0",
     "discord.js": "^13.8.0",

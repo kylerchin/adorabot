@@ -2897,6 +2897,11 @@
     "request" "^2.88.2"
     "websocket" "^1.0.32"
 
+"discord-escape@^1.0.0":
+  "integrity" "sha512-zSZld2/1fYqcMBpL70IsBJ/5APQ10SaoZxKU2498gBIGMo+8jbF0vqgxsZNF64xV024qrbMMgVY1G7SIeNOPcA=="
+  "resolved" "https://registry.npmjs.org/discord-escape/-/discord-escape-1.0.0.tgz"
+  "version" "1.0.0"
+
 "discord-pages@^1.0.2":
   "integrity" "sha512-QsqT1PzS9yZDVl4M/kf223I/xKYE1Lj4GdkRo27xO5Q+WfAn2njqx9ZGIGDAiwweCDsMsMBUFU2LPEH4V+lf6A=="
   "resolved" "https://registry.npmjs.org/discord-pages/-/discord-pages-1.0.2.tgz"

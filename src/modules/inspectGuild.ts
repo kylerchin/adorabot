@@ -54,7 +54,7 @@ try {
                 return {
                     id: eachGuild.id,
                     memberCount: eachGuild.memberCount,
-                    name: eachGuild.name,
+                    name:  Util.escapeMarkdown(eachGuild.name),
                     canban: eachGuild.me.permissions.has("BAN_MEMBERS")
                 }
             })

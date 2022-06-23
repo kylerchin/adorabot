@@ -3,7 +3,7 @@ var _ = require('lodash');
 var forEach = require("for-each")
 const TimeUuid = require('cassandra-driver').types.TimeUuid;
 import {logger} from './logger'
-import  {Guild, Message} from 'discord.js'
+import  {Guild, Message, escapeMarkdown} from 'discord.js'
 import {cassandraclient} from './cassandraclient'
 import {lookuplocale} from './lookuptablelocale'
 var _ = require('lodash');
