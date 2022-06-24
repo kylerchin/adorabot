@@ -42,5 +42,28 @@ let username = json.get("config").and_then(|value| value.get("cassandra"))
 
     print!("pw {}", password);
 
+    async fn getallurls() -> Result<()> {
+
+ 
+        let session: Session = SessionBuilder::new()
+            .known_node("127.0.0.1:9042")
+            .user(username, password)
+            .build()
+            .await?;
+        
+            if let Some(rows) = session.query("SELECT videoid, added FROM adorastats.trackedytvideosids", &[]).await?.rows {
+                for row in rows.into_typed::<(String,uuid::Uuid)>() {
+                    let (videoid, added) = row?;
+                    println!("videoid, added: {}, {}", videoid, added);
+                }
+            }
+        
+        Ok(())
+        }
+    
+    
+        getallurls();
+    
+
 }
 
