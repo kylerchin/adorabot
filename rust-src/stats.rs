@@ -30,9 +30,10 @@ let file = std::fs::File::open("./config.json")
     .expect("file should open read only");
 let json: serde_json::Value = serde_json::from_reader(file)
     .expect("file should be proper JSON");
-let first_name = json.get("config.cassandra.plainTextUsername")
-    .expect("file should have FirstName key");
+let first_name = json.get("config").and_then(|value| value.get('cassandra'))
+.and_then(|value| value.get("plainTextUsername"));
+    .expect("file should have config.cassandra.plainTextUsername key");
 
-    print!("{}", first_name);
+    print!("{}", username);
 
 }
