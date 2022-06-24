@@ -1,37 +1,38 @@
 
+
 // url of cassandra server
 
-# extern crate scylla;
-# extern crate tokio;
-# use std::error::Error;
-# async fn check_only_compiles() -> Result<(), Box<dyn Error>> {
+extern crate scylla;
+extern crate tokio;
+extern crate serde_json;
+extern crate serde;
+use std::error::Error;
 use scylla::{Session, SessionBuilder};
+use std::io::Read;
+use std::fs::File;
+use serde_json::{Result, Value};
+extern crate uuid;
+
+use crate::scylla::IntoTypedRows;
 
 
-let mut file = File::open("../config.json").unwrap();
-let mut data = String::new();
-file.read_to_string(&mut data).unwrap();
+use uuid::Uuid;
 
-let json = Json::from_str(&data).unwrap();
-
-let username = String::json.find_path(&["cassandra", "plainTextUsername"]);
-
-let password = String::json.find_path(&["cassandra", "plainTextPassword"]);
+use serde::{Deserialize, Serialize};
+// mandatory lines to use json in rust
 
 
-let session: Session = SessionBuilder::new()
-    .known_node("127.0.0.1:9042")
-    .user(username, password)
-    .build()
-    .await?;
+fn main() {
 
-    if let Some(rows) = session.query("SELECT videoid, added FROM adorastats.trackedytvideosids", &[]).await?.rows {
-        for row in rows.into_typed::<(String,uuid::Uuid)>() {
-            let (videoid, added) = row?;
-            println!("videoid, added: {}, {}, {}", videoid, added);
-        }
-    }
 
-# Ok(())
-# }
 
+let file = std::fs::File::open("../config.json")
+    .expect("file should open read only");
+let json: serde_json::Value = serde_json::from_reader(file)
+    .expect("file should be proper JSON");
+let first_name = json.get("config.cassandra.plainTextUsername")
+    .expect("file should have FirstName key");
+
+    print!("{}", first_name);
+
+}
