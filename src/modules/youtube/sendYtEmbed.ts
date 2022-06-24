@@ -58,6 +58,7 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
               ytChart(body.items[0].id,{
                 channelId: body.items[0].snippet.channelId, 
                 locale: message.locale,
+                subtitle: body.items[0].snippet.title,
                 publishedAt: new Date(body.items[0].snippet.publishedAt),
               addOnPoints: [
                 {

@@ -23,6 +23,7 @@ interface optionsInterface {
     addOnPoints?: AddOnPointsEntity[] | null;
     publishedAt?: Date;
     locale?: any;
+    subtitle?:any;
 }
 
 interface AddOnPointsEntity {
@@ -45,11 +46,12 @@ interface imagegeninterface {
     timeRange?: number;
     locale?: any;
     publishedAt?: any;
+    subtitle?: any;
 }
 
 export async function imageGeneratorFunction(optionsForImageGen: imagegeninterface) {
 
-    var { publishedAt, locale, timeRange, numberOfRows, viewRange, leastAndGreatestObject, isBlocked, titletext, arrayOfStats, beginningTime, cassandratimedone } = optionsForImageGen;
+    var { subtitle, publishedAt, locale, timeRange, numberOfRows, viewRange, leastAndGreatestObject, isBlocked, titletext, arrayOfStats, beginningTime, cassandratimedone } = optionsForImageGen;
 
     var endingk = "K"
     if (locale === "kr") {
@@ -183,6 +185,15 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
         // ctx.rotate(0.1)
         ctx.textAlign = "center";
         ctx.fillText(`${titletext}`, x, 200);
+
+        if (subtitle) {
+            ctx.fillStyle = "#dedede";
+            ctx.font = "100px Lexend Deca";
+            // ctx.rotate(0.1)
+            ctx.textAlign = "center";
+            ctx.fillText(`${subtitle}`, x, 300);
+        }
+
         // ctx.fillText(``, x, 300)
 
         //var viewRange:number =  leastAndGreatestObject['greatestViews'] -  leastAndGreatestObject['leastViews'];
@@ -1034,6 +1045,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                     timeRange,
                     locale: optionsObject.locale,
                     beginningTime,
+                    subtitle: optionsObject.subtitle,
                     cassandratimedone
                 }).then((bufferinfo) => {
 
