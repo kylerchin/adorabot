@@ -26,7 +26,7 @@ fn main() {
 
 
 
-let file = std::fs::File::open("../config.json")
+let file = std::fs::File::open("./config.json")
     .expect("file should open read only");
 let json: serde_json::Value = serde_json::from_reader(file)
     .expect("file should be proper JSON");
