@@ -37,7 +37,7 @@ let username = json.get("config").and_then(|value| value.get('cassandra'))
     print!("{}", username);
 
     let password = json.get("config").and_then(|value| value.get('cassandra'))
-.and_then(|value| value.get("plainTextPassword"));
+.and_then(|value| value.get("plainTextPassword"))
     .expect("file should have config.cassandra.plainTextPassword key");
 
     print!("{}", password);
