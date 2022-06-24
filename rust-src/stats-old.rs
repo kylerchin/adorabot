@@ -44,7 +44,7 @@ fn main() {
 
     //let json_file_path = Path::new();
 
-    const file: std::result::Result<File, std::io::Error> = File::open("../config.json")::unwrap();
+    const file: std::result::Result<File, std::io::Error> = File::open("./config.json")::unwrap();
     
     //const foo: String = fs::read_to_string("../config.json")?.parse()?;
 
