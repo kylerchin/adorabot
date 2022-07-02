@@ -667,10 +667,15 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
                                     if (countsmally % 10000 === 0) {
                                         nameOfNumberSmall  = `${countsmally / 1.0e4}${lookuplocale({ key: "tenk", locale: locale })}`;
                                     } else {
+                                        if (countsmally > 999) {
+                                            
                                         nameOfNumberSmall  = `${countsmally / 1.0e3}${endingk}`;
+                                            }
                                     }
                                 } else {
+                                    if (countsmally > 999) {
                                     nameOfNumberSmall  = `${countsmally / 1.0e3}${endingk}`;
+                                        }
                                 }
                             }
 
