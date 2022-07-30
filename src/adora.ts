@@ -1,3 +1,4 @@
+require('newrelic');
 import editJsonFile = require("edit-json-file");
 var startupTime = Date.now()
 var recievedFirstMessageState:boolean = false;
