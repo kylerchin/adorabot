@@ -20,9 +20,31 @@ interface processInteractionType {
 }
 
 export async function processInteraction(args: processInteractionType) {
+ //log only if new relic log api exists
   try {
+    const interaction = args.interaction;
+    try {
+      if (config.newreliclogapi) {
+        fetch("https://log-api.newrelic.com/log/v1?Api-Key=" + config.newreliclogapi, {
+          method: 'POST',
+          body: JSON.stringify({
+            "service": "adorabot",
+            "interaction": interaction,
+            "user": interaction.author.id
+          })
+      
+        })
+  .then((response) => {
+    // Do something with response
+  })
+  .catch(function (err) {
+    console.log("Unable to fetch -", err);
+  });
+      }
+    } catch (error) {
 
-    const interaction = args.interaction
+    }
+
     if (interaction.isCommand) {
 
       const expr = interaction.commandName;

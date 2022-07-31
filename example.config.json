@@ -10,6 +10,7 @@
 			"plainTextUsername": "cassandra",
 			"plainTextPassword": "cassandra"
 		},
+		"newreliclogapi": "aaaaaaa",
 		"datadogapi": "dfafdasdffafasfsfafasfsfafasfsfd",
 		"spplaycountlibrespotapi": "https://api.t4ils.dev",
 		"discordbotlisttoken": "DiscordBotList Token",

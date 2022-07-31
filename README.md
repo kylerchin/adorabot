@@ -1,4 +1,3 @@
-
 # Adora Bot
 
 Adora bot is a general purpose bot aimed at Kpop Discord Servers.
@@ -114,3 +113,7 @@ You need to install font dependencies for a lot of the canvas stuff to work, oth
 [https://github.com/Automattic/node-canvas]()
 
 Install the dependencies!!!! On ubuntu, run `sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev`
+
+### Configuration Options
+
+I like to run my software with New Relic, however you probably don't want to run it, then leave the config option called "newreliclogapi" blank and run with `pm2 start ecosystem.config.js` and not the config file i made.
