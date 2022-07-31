@@ -1,4 +1,4 @@
-require('newrelic');
+
 import {cassandraclient} from './modules/cassandraclient'
 import {logger} from './modules/logger'
 const TimeUuid = require('cassandra-driver').types.TimeUuid;

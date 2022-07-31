@@ -1,4 +1,4 @@
-require('newrelic');
+
 const { config } = require('./../config.json');
 
 // Add this to the VERY top of the first file loaded in your app
