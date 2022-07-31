@@ -1,3 +1,5 @@
+import fetch from 'node-fetch';
+
 import { CommandInteraction, Interaction, ReactionCollector } from 'discord.js'
 import { ytparty } from './discordTogether';
 import { geniusLyricsFromInteraction } from './genius';
