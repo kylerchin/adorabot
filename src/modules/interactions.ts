@@ -40,6 +40,8 @@ export async function processInteraction(args: processInteractionType) {
   .catch(function (err) {
     console.log("Unable to fetch -", err);
   });
+      } else {
+        console.log("no valid config api key for new relic found in config.json for key newreliclogapi");
       }
     } catch (error) {
 
