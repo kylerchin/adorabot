@@ -44,7 +44,7 @@ export async function processInteraction(args: processInteractionType) {
         console.log("no valid config api key for new relic found in config.json for key newreliclogapi");
       }
     } catch (error) {
-
+      console.error(error)
     }
 
     if (interaction.isCommand) {
