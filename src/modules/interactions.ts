@@ -31,8 +31,7 @@ export async function processInteraction(args: processInteractionType) {
           method: 'POST',
           body: JSON.stringify({
             "service": "adorabot",
-            "interaction": interaction,
-            "user": interaction.author.id
+            "interaction": interaction
           })
       
         })
