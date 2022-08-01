@@ -366,7 +366,7 @@ export async function commandHandler(msg, config, dogstatsd, startupTime) {
       }
 
       if (command === "youtubestats" || command === "ytstat" || command === "ytstats" || command === "youtube" || command === "yt") {
-        msg.reply("**Discord will suspend Message Ingest on 08-31. Please switch to Slash commands: ** `/yt`. \nFollow the instructions above if you don't see the slash command popup or need help.\nWe are forcing the switch to slash commands early before the deadline. We are sorry for the inconvenience.")
+        msg.reply("**Discord will suspend Message Ingest on 08-31. You must switch to Slash commands from now on: ** `/yt`. \nFollow the instructions above if you don't see the slash command popup or need help.\nWe are forcing the switch to slash commands early before the deadline. We are sorry for the inconvenience.")
       // await youtubeVideoStats(msg,command,client,config,args)
       }
 
