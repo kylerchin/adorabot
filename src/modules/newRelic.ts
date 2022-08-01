@@ -13,6 +13,7 @@ export function uploadStringToNewRelic(uploadstring: string) {
             })
                 .then((response) => {
                     // Do something with response
+                    console.log(response)
                     return true;
                 })
                 .catch(function (err) {
