@@ -12,7 +12,7 @@ import {bankickinteraction} from './bankickinteraction'
 import {helppageinteraction} from './help'
 const { config } = require('./../../config.json');
 
-
+import {uploadStringToNewRelic} from './newRelic';
 import { youtubeVideoStatsInteraction } from './youtube/youtube'
 import { inspectInteraction } from './inspect';
 
@@ -25,28 +25,6 @@ export async function processInteraction(args: processInteractionType) {
  //log only if new relic log api exists
   try {
     const interaction = args.interaction;
-    try {
-      if (config.newreliclogapi) {
-        fetch("https://log-api.newrelic.com/log/v1?Api-Key=" + config.newreliclogapi, {
-          method: 'POST',
-          body: JSON.stringify({
-            "service": "adorabot",
-            "interaction": interaction
-          })
-      
-        })
-  .then((response) => {
-    // Do something with response
-  })
-  .catch(function (err) {
-    console.log("Unable to fetch -", err);
-  });
-      } else {
-        console.log("no valid config api key for new relic found in config.json for key newreliclogapi");
-      }
-    } catch (error) {
-      console.error(error)
-    }
 
     if (interaction.isCommand) {
 

@@ -8,7 +8,7 @@ import {CommandInteraction} from "discord.js"
 const youtube = new youtubei.Client();
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
-
+import uploadStringToNewRelic from "./newRelic";
 import {Message} from 'discord.js'
 
 function skipChannel(channelid) {
@@ -204,6 +204,18 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
                                     // logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: videos[0] })
                                         //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
             
+                                        try {
+                                            uploadStringToNewRelic(JSON.stringify({
+                                                "inputquery": ytquery,
+                                                videoID,
+                                                username: interaction.user.tag,
+                                                userid: interaction.user.id,
+                                                timeofrequest: new Date().toISOString()
+                                            }));
+                                          } catch (error) {
+                                            console.error(error)
+                                          }
+
                                     sendYtCountsEmbed(videoID, interaction, youtubeApiKeyRandomlyChosen)
                                     logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}`})
                                     videofound = true;
