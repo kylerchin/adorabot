@@ -8,7 +8,7 @@ import {CommandInteraction} from "discord.js"
 const youtube = new youtubei.Client();
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
-import uploadStringToNewRelic from "./../newRelic";
+import { uploadStringToNewRelic } from "./../newRelic";
 import {Message} from 'discord.js'
 
 function skipChannel(channelid) {
