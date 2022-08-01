@@ -206,11 +206,12 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
             
                                         try {
                                             uploadStringToNewRelic(JSON.stringify({
-                                                "inputquery": ytquery,
+                                                inputquery: ytquery,
                                                 videoID,
                                                 username: interaction.user.tag,
                                                 userid: interaction.user.id,
-                                                timeofrequest: new Date().toISOString()
+                                                timeofrequest: new Date().toISOString(),
+                                                type: "youtubeinteractionsearch"
                                             }));
                                           } catch (error) {
                                             console.error(error)
