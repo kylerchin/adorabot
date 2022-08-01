@@ -369,8 +369,12 @@ export async function commandHandler(msg, config, dogstatsd, startupTime) {
        
        await youtubeVideoStats(msg,command,client,config,args);
 
+       const commandRegex = new RegExp(`${command}`,"i")
+
+       const searchYtString = msg.content.replace(/a!/i, "").trim().replace(commandRegex, "").trim()
+
        setTimeout(() => {
-        msg.reply(`**Discord will suspend Message Ingest on 08-31. You must switch to Slash commands from now on: ** \`/yt${args[0] ? `search-or-url: ${args[0]}`: ""}\`. \n We are sorry for the inconvenience.`);
+        msg.reply(`**Discord will suspend Message Ingest on 08-31. You must switch to Slash commands from now on: ** \`/yt${args[0] ? `search-or-url: ${searchYtString}`: ""}\`. \n We are sorry for the inconvenience.`);
        }, 1000)
       }
 
