@@ -108,8 +108,9 @@ async function moderationCassandra() {
 
 client.on("debug",async (info) => {
 try {
+  console.log(info);
   const logDebug = await logger.discordDebugLoggerNoConsole.debug({clientEvent: "debug", debugInfo: info, type: "clientdebug"});
-  console.log(info)
+//  console.log(info)
   tracer.inject(span,'log',logDebug)
 
   // in the future... restrict to 1 shard
@@ -129,7 +130,11 @@ try {
   console.error(hell)
 }
 })
+
+client.on("error"), (error) => {console.error(error)})
+
 client.on("warn",async (info) => {
+  console.log(info)
   const logWarn = await logger.discordWarnLogger.warn({clientEvent: "warn", warnInfo: info, type: "clientWarn"});
   tracer.inject(span,'log',logWarn)
 })
