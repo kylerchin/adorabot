@@ -854,16 +854,6 @@
     "slash" "3.0.0"
     "source-map" "^0.7.3"
 
-"@swc/core-linux-x64-gnu@1.2.163":
-  "integrity" "sha512-69OjEhbxYaMVIhly2hrgDwiOG0MdPQJ3BU5lD/kStvNMnGS/bCNgVYnnsjJgJKfpvJBLtUd/t7QrdwZvrY+pSw=="
-  "resolved" "https://registry.npmjs.org/@swc/core-linux-x64-gnu/-/core-linux-x64-gnu-1.2.163.tgz"
-  "version" "1.2.163"
-
-"@swc/core-linux-x64-musl@1.2.163":
-  "integrity" "sha512-I2pvui8SaNE74vO1YHIJj7/R6IuR8qXfW5YNJ9NV2yR5G6Po2vPR/kMpJgd4rrt6gg16+FGw+XDpMue8+TGLcw=="
-  "resolved" "https://registry.npmjs.org/@swc/core-linux-x64-musl/-/core-linux-x64-musl-1.2.163.tgz"
-  "version" "1.2.163"
-
 "@swc/core@^1.2.61", "@swc/core@^1.2.66", "@swc/core@>=1.2.50":
   "integrity" "sha512-8/ytlOhXSomPjfgOFgto6xnYR+UAj0eHJEIu2NbdHgpFjrDFti6C9XeW0zB6zheCq0fShP0RbE9qXlgYKoSZ8w=="
   "resolved" "https://registry.npmjs.org/@swc/core/-/core-1.2.163.tgz"
