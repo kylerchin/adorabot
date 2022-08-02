@@ -152,7 +152,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
     ctx.fillStyle = "#282828";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    if (numberOfRows === 0 || viewRange < 3 || isBlocked || (leastAndGreatestObject["leastTime"] == null)) {
+    if (numberOfRows === 0 || viewRange < 3 || isBlocked || (leastAndGreatestObject["leastTime"] === null)) {
         // Write "Not Enough Data"
         ctx.fillStyle = "#ffffff";
         ctx.font = "200px Lexend Deca";
