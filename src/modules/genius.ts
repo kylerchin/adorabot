@@ -198,34 +198,43 @@ export async function geniusShowOtherSongs(response,requesterid,isInteractionOrM
 };
 
     export async function geniusLyricsFromInteraction(interaction) {
-        var arrayOfMessagesSentForLyrics:Array<any> = [];
-        var lyricsRequester = interaction.user.id;
+        try {
+            var arrayOfMessagesSentForLyrics:Array<any> = [];
+            var lyricsRequester = interaction.user.id;
+    
+            var geniusQuery = interaction.options.get('song').value
+    
+            var searchingForQueryMessage;
 
-        var geniusQuery = interaction.options.get('song').value
-
-        var searchingForQueryMessage;
-
-        interaction.reply(`Searching for: \`${geniusQuery}\` :mag_right:`).then((searchingQueryAlert) => { searchingForQueryMessage = searchingQueryAlert})
-
-        var arrayOfMessageObjectsResponse = await geniusRetrieveArrayOfMessageObjects(geniusQuery)
-
-        if (arrayOfMessageObjectsResponse[0] === 'success') {
-            await asyncForEach(arrayOfMessageObjectsResponse[1], async (embed) => {
-                var messageObject = await interaction.channel.send({embeds: [embed]})
-                arrayOfMessagesSentForLyrics.push(messageObject)
-            })
-
-            await reactionsInitialSet(arrayOfMessagesSentForLyrics, lyricsRequester,searchingForQueryMessage,arrayOfMessageObjectsResponse[2],'interaction',interaction)
-        }
-        if (arrayOfMessageObjectsResponse[0] === 'error') {
-            if(arrayOfMessageObjectsResponse[1] === '500') {
-                interaction.followUp('Something went wrong! Try again in a bit? Ooop-')
-            }
-            if(arrayOfMessageObjectsResponse[1] === '404') {
-                interaction.followUp("I couldn't find anything, try modifying your search")
-            }
-        }
+            if (geniusQuery) {
+                interaction.reply(`Searching for: \`${geniusQuery}\` :mag_right:`).then((searchingQueryAlert) => { searchingForQueryMessage = searchingQueryAlert})
+    
+                var arrayOfMessageObjectsResponse = await geniusRetrieveArrayOfMessageObjects(geniusQuery)
         
+                if (arrayOfMessageObjectsResponse[0] === 'success') {
+                    await asyncForEach(arrayOfMessageObjectsResponse[1], async (embed) => {
+                        var messageObject = await interaction.channel.send({embeds: [embed]})
+                        arrayOfMessagesSentForLyrics.push(messageObject)
+                    })
+        
+                    await reactionsInitialSet(arrayOfMessagesSentForLyrics, lyricsRequester,searchingForQueryMessage,arrayOfMessageObjectsResponse[2],'interaction',interaction)
+                }
+                if (arrayOfMessageObjectsResponse[0] === 'error') {
+                    if(arrayOfMessageObjectsResponse[1] === '500') {
+                        interaction.followUp('Something went wrong! Try again in a bit? Ooop-')
+                    }
+                    if(arrayOfMessageObjectsResponse[1] === '404') {
+                        interaction.followUp("I couldn't find anything, try modifying your search")
+                    }
+                }
+            }
+    
+           
+            
+        }
+      catch (err) {
+        console.error(err)
+      }
     }
 
 async function reactionsInitialSet(arrayOfMessagesSentForLyrics,lyricsRequester, searchingForQueryMessage, response, isInteractionOrMessage,initialRequestObject) {

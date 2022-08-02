@@ -26,6 +26,14 @@ export async function processInteraction(args: processInteractionType) {
   try {
     const interaction = args.interaction;
 
+    if (interaction.isButton()) {
+      console.log(`${interaction.id} is button`);
+
+      if (interaction.isRepliable()) {
+        console.log(`${interaction.id} is button & repliable`);
+      }
+    }
+
     if (interaction.isCommand) {
 
       const expr = interaction.commandName;
