@@ -131,7 +131,7 @@ try {
 }
 })
 
-client.on("error"), (error) => {console.error(error)})
+client.on("error", (error) => {console.error(error)})
 
 client.on("warn",async (info) => {
   console.log(info)
