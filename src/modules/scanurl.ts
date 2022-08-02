@@ -128,10 +128,10 @@ export async function processmalwarediscordmessage(message) {
      
                 if (joinFacts.length > 0) {
                     var arrayOfSetsOfLinksInit = joinFacts
-                    .filter((eachLink) => eachLink != null)
+                    .filter((eachLink) => eachLink !== null)
                     .filter((eachLink) => eachLink != undefined)
                     .filter((eachLink) => typeof eachLink === 'string')
-                    .map(link => suffixPostfixExpressions(canonicalize(link))).filter((eachLink) => eachLink != null)
+                    .map(link => suffixPostfixExpressions(canonicalize(link))).filter((eachLink) => eachLink !== null)
    
                     arrayOfSetsOfLinksInit.forEach((eachSet) => {
                         eachSet.forEach((possibleLink) =>{
