@@ -1,0 +1,7 @@
+version: '1.0.1'
+services:
+   adora:
+      image:
+         ubuntu:latest
+      command: git clone https://github.com/kylerchin/adorabot
+      command: cd adorabot && npm run install
