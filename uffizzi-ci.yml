@@ -1,7 +1,9 @@
-version: '1.0.1'
-services:
-   adora:
-      image:
-         ubuntu:latest
-      command: git clone https://github.com/kylerchin/adorabot
-      command: cd adorabot && npm run install
+ervices:
+  app:
+    build:
+      context: https://github.com/kylerchin/adorabot
+      dockerfile: Dockerfile
+    deploy:
+      resources:
+        limits:
+          memory: 1G
