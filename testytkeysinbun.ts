@@ -1,7 +1,8 @@
 
-import {config} from './config.json';
+
 import axios from 'axios';
 
+const  {config} = require('./config.json');
   
 
        
