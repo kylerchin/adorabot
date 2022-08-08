@@ -220,7 +220,7 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
                                     sendYtCountsEmbed({
                                         videoid: videoID, 
                                         message: interaction, 
-                                        key: youtubeApiKeyRandomlyChosen,
+                                        apikey: youtubeApiKeyRandomlyChosen,
                                         type: "interaction"
                                     });
 
@@ -231,7 +231,7 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
                                     sendYtCountsEmbed({
                                         videoid: videoID, 
                                         message: interaction, 
-                                        key: youtubeApiKeyRandomlyChosen,
+                                        apikey: youtubeApiKeyRandomlyChosen,
                                         type: "interaction"
                                     });
                                        }  
@@ -345,7 +345,7 @@ export async function youtubeVideoStats(message:Message, command, client, config
                                         sendYtCountsEmbed({
                                             videoid: videoID, 
                                             message: message, 
-                                            key: youtubeApiKeyRandomlyChosen,
+                                            apikey: youtubeApiKeyRandomlyChosen,
                                             type: "message"
                                         });
                                     logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}`})
