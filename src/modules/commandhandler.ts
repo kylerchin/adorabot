@@ -14,6 +14,7 @@ import {youtubeChannelStats, youtubeVideoStats} from "./youtube/youtube"
 import {sendVoteLinks,showListOfVotersTimes,showTopVoters} from "./vote"
 import {helpDirectory, helpDirectoryTest} from "./help"
 import {manuallyAddVote} from './adminvotes'
+import axios from 'axios'
 const wiktionary = require('wiktionary')
 const isUrl = require("is-url");
 const scrapeyoutube = require('scrape-youtube').default;
@@ -89,6 +90,64 @@ export async function commandHandler(msg, config, dogstatsd, startupTime) {
       }
       if (command === "ping") {
        await ping(msg,client);
+      }
+
+
+      if (command === "testytkeys") {
+
+       if (isAuthorizedAdmin(msg.author.id)) {
+        console.log("testytkeys");
+
+        var statuses = {}
+
+        config.youtubeApiKeysDaemon.forEach((key, keyIndex) => {
+
+          statuses[keyIndex] = "Loading...";
+
+        });
+
+        msg.channel.send(Object.entries(statuses).map(([key, value]) => `${key}: ${value}`).join('\n'));
+
+        config.youtubeApiKeysDaemon.forEach(async (key, keyIndex) => {
+    
+          const pathForYtRequest = "https://youtube.googleapis.com/youtube/v3/videos?part=statistics&id=hr-325mclek&key=" + key;
+
+          await axios.get(pathForYtRequest)
+          .then(async (response:any) => {
+
+           const body = JSON.parse(response.data);
+
+           if (body.items) {
+              if (body.items[0].statistics) {
+                statuses[keyIndex] = "Success";
+                
+            console.log(body);
+              } else {
+                statuses[keyIndex] = "No stats";
+                
+            console.log(body);
+              }
+           } else {
+            
+            statuses[keyIndex] = "No items found";
+            console.log(body);
+
+           }
+            
+          }).catch((error:any) => {
+              
+          statuses[keyIndex] = "Failed! Catch axios";
+          });
+
+          
+          msg.channel.send(Object.entries(statuses).map(([key, value]) => `${key}: ${value}`).join('\n'));
+
+
+        });
+
+       }
+       
+
       }
 
       if (command === "igprofile") {

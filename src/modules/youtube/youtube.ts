@@ -133,7 +133,7 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
     var ytquery = interaction.options.getString('search-or-url');
 
     if (isUrl(ytquery)) {
-      videoID = convertUrlToVideoId(ytquery)
+      videoID = convertUrlToVideoId(ytquery);
         
 
        
