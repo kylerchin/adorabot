@@ -217,12 +217,23 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
                                             console.error(error)
                                           }
 
-                                    sendYtCountsEmbed(videoID, interaction, youtubeApiKeyRandomlyChosen);
+                                    sendYtCountsEmbed({
+                                        videoid: videoID, 
+                                        message: interaction, 
+                                        key: youtubeApiKeyRandomlyChosen,
+                                        type: "interaction"
+                                    });
 
                                     //if the software broke the first time, do it again
                                     setTimeout(() => {
                                        if (interaction.replied === false) {
-                                        sendYtCountsEmbed(videoID, interaction, youtubeApiKeyRandomlyChosen);
+                                       
+                                    sendYtCountsEmbed({
+                                        videoid: videoID, 
+                                        message: interaction, 
+                                        key: youtubeApiKeyRandomlyChosen,
+                                        type: "interaction"
+                                    });
                                        }  
                                     }, 4000);
                                     logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}`})
@@ -331,7 +342,12 @@ export async function youtubeVideoStats(message:Message, command, client, config
                                     // logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: videos[0] })
                                         //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
             
-                                    sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
+                                        sendYtCountsEmbed({
+                                            videoid: videoID, 
+                                            message: message, 
+                                            key: youtubeApiKeyRandomlyChosen,
+                                            type: "message"
+                                        });
                                     logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}`})
                                     videofound = true;
                                     }

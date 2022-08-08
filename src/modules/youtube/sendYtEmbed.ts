@@ -21,11 +21,22 @@ import {replyorfollowup} from './../replyorfollowup'
   
     // Class method which prints the 
     // user called in another file 
-export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.CommandInteraction,apikey) { 
+
+    interface sendYtCountsEmbedOptions {
+      videoid: string;
+      message: Discord.Message|Discord.CommandInteraction;
+      apikey:string;
+      type: string;
+    }
+
+export async function sendYtCountsEmbed(options:sendYtCountsEmbedOptions) { 
+
+  const {videoid, message, apikey, type} = options;
+
   tracer.trace('ytEmbedMaker', () => {
   try {
 
-        const pathForYtRequest = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet,statistics,status,liveStreamingDetails&id=" + id + "&key=" + apikey
+        const pathForYtRequest = "https://youtube.googleapis.com/youtube/v3/videos?part=snippet,statistics,status,liveStreamingDetails&id=" + videoid + "&key=" + apikey
 
         var youtubeclient = requestjson.createClient('https://youtube.googleapis.com/');
       
@@ -185,33 +196,45 @@ export async function sendYtCountsEmbed(id,message:Discord.Message|Discord.Comma
                       }
                   }
               
-              await replyorfollowup(
-                contentOfMessageReply
-                ).then(async (repliedMessage) => {
-                await addVideoToTrackList(body.items[0].id,body.items[0].snippet.title)
-  
-                var loggerBody = {type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, 
-                titleOfVideo: body.items[0].snippet.title
-              }
-                
-                if(repliedMessage.guild) {
-                  loggerBody["guildName"] = repliedMessage.guild.name,
-                  loggerBody["guildId"] = repliedMessage.guild.id
-                }
-  
-                await logger.discordInfoLogger.info(loggerBody)
-              }).catch(
-                async (sendMessageerror) => {
-                  
-                  try {
-                    console.error(sendMessageerror)
-                    await logger.discordWarnLogger({type: "sendYoutubeEmbedFailed"}, sendMessageerror)
-                  } catch (errorBIG) {
-                    console.error(errorBIG)
+                  var keepsending:boolean = true;
+
+                  if (type === "interaction") {
+                    if (message.replied === true) {
+                      keepsending = false;
+                    }
                   }
-                  
-                }
-              )
+
+                  if (keepsending) {
+                    await replyorfollowup(
+                      contentOfMessageReply
+                      ).then(async (repliedMessage) => {
+                      await addVideoToTrackList(body.items[0].id,body.items[0].snippet.title)
+        
+                      var loggerBody = {type: "adoraResponse", "typeOfCommand": "youTubeStats", repliedMessage: repliedMessage, 
+                      titleOfVideo: body.items[0].snippet.title
+                    }
+                      
+                      if(repliedMessage.guild) {
+                        loggerBody["guildName"] = repliedMessage.guild.name,
+                        loggerBody["guildId"] = repliedMessage.guild.id
+                      }
+        
+                      await logger.discordInfoLogger.info(loggerBody)
+                    }).catch(
+                      async (sendMessageerror) => {
+                        
+                        try {
+                          console.error(sendMessageerror)
+                          await logger.discordWarnLogger({type: "sendYoutubeEmbedFailed"}, sendMessageerror)
+                        } catch (errorBIG) {
+                          console.error(errorBIG)
+                        }
+                        
+                      }
+                    )
+          }
+
+            
               
   
               var loadedRemovedData = importconfigfile.get()
