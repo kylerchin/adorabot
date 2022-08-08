@@ -21,12 +21,7 @@ const  {config} = require('./config.json');
     
                 const pathForYtRequest = "https://youtube.googleapis.com/youtube/v3/videos?part=statistics&id=hr-325mclek&key=" + key;
       
-                await axios.get( {
-                    url: pathForYtRequest,
-
-                    // `method` is the request method to be used when making the request
-                    method: 'get'
-                })
+                await axios.get(pathForYtRequest)
                 .then(async (response:any) => {
       
                     console.log(response.data)
