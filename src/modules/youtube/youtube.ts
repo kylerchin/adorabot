@@ -217,7 +217,14 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
                                             console.error(error)
                                           }
 
-                                    sendYtCountsEmbed(videoID, interaction, youtubeApiKeyRandomlyChosen)
+                                    sendYtCountsEmbed(videoID, interaction, youtubeApiKeyRandomlyChosen);
+
+                                    //if the software broke the first time, do it again
+                                    setTimeout(() => {
+                                       if (interaction.replied === false) {
+                                        sendYtCountsEmbed(videoID, interaction, youtubeApiKeyRandomlyChosen);
+                                       }  
+                                    }, 4000);
                                     logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}`})
                                     videofound = true;
                                     }
