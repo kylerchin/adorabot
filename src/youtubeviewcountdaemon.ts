@@ -74,7 +74,8 @@ export async function fetchVideo(pathForYtRequest) {
 
             uploadStringToNewRelic(JSON.stringify({
                 type: "ytfetcherror",
-                body: body
+                body: body,
+                keyused: pathForYtRequest
             }));
         }
 
@@ -83,7 +84,8 @@ export async function fetchVideo(pathForYtRequest) {
 
             uploadStringToNewRelic(JSON.stringify({
                 type: "ytfetcherror",
-                err: err
+                err: err,
+                keyused: pathForYtRequest
             }));
         }
 
