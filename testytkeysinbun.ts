@@ -21,7 +21,12 @@ const  {config} = require('./config.json');
     
                 const pathForYtRequest = "https://youtube.googleapis.com/youtube/v3/videos?part=statistics&id=hr-325mclek&key=" + key;
       
-                await axios.get(pathForYtRequest)
+                await axios.get( {
+                    url: pathForYtRequest,
+
+                    // `method` is the request method to be used when making the request
+                    method: 'get'
+                })
                 .then(async (response:any) => {
       
                  const body = JSON.parse(response.data);
