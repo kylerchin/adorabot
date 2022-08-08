@@ -106,7 +106,7 @@ export async function commandHandler(msg, config, dogstatsd, startupTime) {
 
         });
 
-        msg.channel.send(Object.entries(statuses).map(([key, value]) => `${key}: ${value}`).join('\n'));
+      var editthismsg = await msg.channel.send(Object.entries(statuses).map(([key, value]) => `${key}: ${value}`).join('\n'));
 
         config.youtubeApiKeysDaemon.forEach(async (key, keyIndex) => {
     
@@ -140,7 +140,7 @@ export async function commandHandler(msg, config, dogstatsd, startupTime) {
           });
 
           
-          msg.channel.send(Object.entries(statuses).map(([key, value]) => `${key}: ${value}`).join('\n'));
+          editthismsg.edit(Object.entries(statuses).map(([key, value]) => `${key}: ${value}`).join('\n'));
 
 
         });
