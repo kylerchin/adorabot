@@ -29,7 +29,7 @@ const  {config} = require('./config.json');
                 })
                 .then(async (response:any) => {
       
-                 const body = JSON.parse(response.data);
+                 const body = response.data;
       
                  if (body.items) {
                     if (body.items[0].statistics) {
