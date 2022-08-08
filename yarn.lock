@@ -819,6 +819,12 @@
   version "1.2.163"
   resolved "https://registry.yarnpkg.com/@swc/core-linux-arm64-musl/-/core-linux-arm64-musl-1.2.163.tgz#5e27fda67092944c57dcb1202552b25076859897"
 
+<<<<<<< HEAD
+"@swc/core@^1.2.61", "@swc/core@^1.2.66", "@swc/core@>=1.2.50":
+  "integrity" "sha512-8/ytlOhXSomPjfgOFgto6xnYR+UAj0eHJEIu2NbdHgpFjrDFti6C9XeW0zB6zheCq0fShP0RbE9qXlgYKoSZ8w=="
+  "resolved" "https://registry.npmjs.org/@swc/core/-/core-1.2.163.tgz"
+  "version" "1.2.163"
+=======
 "@swc/core-linux-x64-gnu@1.2.163":
   version "1.2.163"
   resolved "https://registry.npmjs.org/@swc/core-linux-x64-gnu/-/core-linux-x64-gnu-1.2.163.tgz"
@@ -842,6 +848,7 @@
 "@swc/core@^1.2.61":
   version "1.2.163"
   resolved "https://registry.npmjs.org/@swc/core/-/core-1.2.163.tgz"
+>>>>>>> 5298f5435d795c93440c9a1dbf763c4716ad56e4
   optionalDependencies:
     "@swc/core-android-arm-eabi" "1.2.163"
     "@swc/core-android-arm64" "1.2.163"

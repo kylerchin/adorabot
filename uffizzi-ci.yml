@@ -1,0 +1,9 @@
+ervices:
+  app:
+    build:
+      context: https://github.com/kylerchin/adorabot
+      dockerfile: Dockerfile
+    deploy:
+      resources:
+        limits:
+          memory: 1G
