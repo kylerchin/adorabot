@@ -39,6 +39,8 @@ export async function fetchVideo(pathForYtRequest) {
 
 //        console.log(body)
 
+        var success = false;
+
         if (!err) {
             
         const timeOfRequest = new Date();
@@ -49,6 +51,8 @@ export async function fetchVideo(pathForYtRequest) {
                 const videostats = body.items[0].statistics;
                 
                 if (videostats.viewCount) {
+                    success = true;
+
                     dogstatsd.increment('adorastats.fetchedvideosuccess');
                     await  addStatsToYtVideo({
                         videoid: body.items[0].id,
@@ -57,11 +61,18 @@ export async function fetchVideo(pathForYtRequest) {
                         dislikes: videostats.likeCount,
                         comments: videostats.commentCount
                     })
-                }
+                } 
             }
             
       
+        } 
+
+        if (success === false) {
+            console.log(body)
         }
+
+        } else {
+            console.error(err);
         }
 
     });
