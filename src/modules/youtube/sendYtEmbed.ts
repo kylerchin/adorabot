@@ -287,7 +287,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
             )
 
             if (message.channel) {
-              message.channel.send(JSON.stringify(body)).catch((error) => {
+              message.channel.send("```json\n" + JSON.stringify(body, null, 2) + "```").catch((error) => {
                 console.log(error)
               })
             }
