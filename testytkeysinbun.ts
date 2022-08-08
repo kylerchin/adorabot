@@ -29,6 +29,8 @@ const  {config} = require('./config.json');
                 })
                 .then(async (response:any) => {
       
+                    console.log(response.data)
+
                  const body = response.data;
       
                  if (body.items) {
