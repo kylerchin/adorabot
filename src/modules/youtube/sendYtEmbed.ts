@@ -282,9 +282,16 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
             replyorfollowup(
               {
                 messageorinteraction: message,
-                content: "Something went wrong! Try again?\nError: `No items sent back from YouTube API`"
+                content: "Something went wrong! Try again?\nError: `No items sent back from YouTube API for video id " +  videoid + "`"
               }
             )
+
+            if (message.channel) {
+              message.channel.send(JSON.stringify(body)).catch((error) => {
+                console.log(error)
+              })
+            }
+           
           }
 
         } else {

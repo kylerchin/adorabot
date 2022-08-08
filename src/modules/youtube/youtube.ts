@@ -226,7 +226,7 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
 
                                     //if the software broke the first time, do it again
                                     setTimeout(() => {
-                                       if (interaction.replied === false) {
+                                       if (false) {
                                        
                                     sendYtCountsEmbed({
                                         videoid: videoID, 
