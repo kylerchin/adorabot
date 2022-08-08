@@ -74,7 +74,9 @@ export async function fetchVideo(pathForYtRequest) {
         } 
 
         if (success === false) {
-            console.log(body)
+            console.log(body);
+
+            ogstatsd.increment('adorastats.nostats');
 
             uploadStringToNewRelic(JSON.stringify({
                 type: "ytfetcherror",
@@ -85,6 +87,8 @@ export async function fetchVideo(pathForYtRequest) {
 
         } else {
             console.error(err);
+
+            dogstatsd.increment('adorastats.noresponseaxios');
 
             uploadStringToNewRelic(JSON.stringify({
                 type: "ytfetcherror",
