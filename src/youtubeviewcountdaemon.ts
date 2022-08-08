@@ -8,6 +8,8 @@ const requestjson = require('request-json');
 import {simpleHash} from './modules/simplehash'
 import {dogstatsd} from './modules/dogstats';
 
+import { uploadStringToNewRelic } from './modules/newRelic';
+
 const youtube = new Client();
 
 const axios = require('axios');
@@ -69,10 +71,20 @@ export async function fetchVideo(pathForYtRequest) {
 
         if (success === false) {
             console.log(body)
+
+            uploadStringToNewRelic(JSON.stringify({
+                type: "ytfetcherror",
+                body: body
+            }));
         }
 
         } else {
             console.error(err);
+
+            uploadStringToNewRelic(JSON.stringify({
+                type: "ytfetcherror",
+                err: err
+            }));
         }
 
     });
