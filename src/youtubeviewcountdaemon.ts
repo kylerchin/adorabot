@@ -76,7 +76,7 @@ export async function fetchVideo(pathForYtRequest) {
         if (success === false) {
             console.log(body);
 
-            ogstatsd.increment('adorastats.nostats');
+            dogstatsd.increment('adorastats.nostats');
 
             uploadStringToNewRelic(JSON.stringify({
                 type: "ytfetcherror",
