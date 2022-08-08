@@ -30,17 +30,17 @@ const  {config} = require('./config.json');
       
                  if (body.items) {
                     if (body.items[0].statistics) {
-                      statuses[category + keyIndex] = "Success";
+                //      statuses[category + keyIndex] = "Success";
                       
                   //console.log(body);
                     } else {
-                      statuses[category+ keyIndex] = "No stats";
+               //       statuses[category+ keyIndex] = "No stats";
                       
                   //console.log(body);
                     }
                  } else {
                   
-                  statuses[category + keyIndex] = "No items found";
+              //    statuses[category + keyIndex] = "No items found";
                  // console.log(body);
       
                  }
@@ -49,7 +49,7 @@ const  {config} = require('./config.json');
 
                     console.log(error);
                     
-                statuses[category + keyIndex] = "Failed! Catch axios";
+             //   statuses[category + keyIndex] = "Failed! Catch axios";
 
                 console.log('broken key is', list[keyIndex])
       
@@ -57,7 +57,7 @@ const  {config} = require('./config.json');
                 });
       
                 
-                console.log(statuses);
+            //    console.log(statuses);
       
               });
       
