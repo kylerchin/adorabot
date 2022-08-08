@@ -180,6 +180,13 @@ export async function fetchStatsForAll(inputObj:fetchAllInterface) {
 
     cassandraclient.execute(queryFetchAllTrackedIds)
         .then((result) => { 
+
+            try {
+                dogstatsd.gauge("adorastats.rowsfromtrackinglist", result.rows.length);
+            } catch (datadogfailed) {
+                console.error(datadogfailed);
+            }
+
             console.log('recieved all tracked yt videos')
             result.rows.forEach(async (row) => {
               //  console.log(row)
