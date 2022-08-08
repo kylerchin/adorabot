@@ -18,6 +18,10 @@ var authconfigfile = editJsonFile(`${__dirname}/../config.json`);
 const Long = require('cassandra-driver').types.Long;
 var youtubeclient = requestjson.createClient('https://youtube.googleapis.com/');
 
+function randomIntFromInterval(min, max) { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
 export async function fetchVideo(pathForYtRequest) {
   var startingTime = Date.now()
 
@@ -194,6 +198,7 @@ export async function addStatsToYtVideo(statParams: statInterface) {
 interface fetchAllInterface {
     runAll: boolean;
     currentSegment?: Number;
+    stagger?: boolean;
 }
 
 export async function fetchStatsForAll(inputObj:fetchAllInterface) {
@@ -272,8 +277,15 @@ export async function fetchStatsForAll(inputObj:fetchAllInterface) {
     
                             const pathForYtRequest = firstPartOfPath + row.videoid + "&key=" + theRandomApiKey
     
-                            
-                            fetchVideo(pathForYtRequest);
+                            if (inputObj.stagger === true) {
+
+                                setTimeout(() => {
+                                    fetchVideo(pathForYtRequest);
+                                }, randomIntFromInterval(1, 100000));
+                            } else {
+                                fetchVideo(pathForYtRequest);
+                            }
+                           
                            
                         }
     
