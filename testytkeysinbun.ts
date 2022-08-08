@@ -50,6 +50,8 @@ const  {config} = require('./config.json');
                     console.log(error);
                     
                 statuses[category + keyIndex] = "Failed! Catch axios";
+
+                console.log('broken key is', list[keyIndex])
       
            
                 });
