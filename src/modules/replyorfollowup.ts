@@ -10,7 +10,11 @@ export function replyorfollowup(options: replyOrFollowUpInterface) {
         if (messageorinteraction) {
             
         if (typeof messageorinteraction.commandName != "undefined") {
-            return messageorinteraction.followUp(content)
+            if (messageorinteraction.deferred) {
+                return messageorinteraction.followUp(content)
+            } else {
+                return messageorinteraction.reply(content)
+            }
     } else {
        return messageorinteraction.reply(content)
     }
