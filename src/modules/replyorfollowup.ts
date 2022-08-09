@@ -6,9 +6,14 @@ interface replyOrFollowUpInterface {
 export function replyorfollowup(options: replyOrFollowUpInterface) {
     var {messageorinteraction, content} = options;
 
-    if (typeof messageorinteraction.commandName != "undefined") {
+    try {
+        if (typeof messageorinteraction.commandName != "undefined") {
             return messageorinteraction.followUp(content)
     } else {
        return messageorinteraction.reply(content)
+    }
+    } catch (error) {
+        console.error(error);
+        return false;
     }
 }
