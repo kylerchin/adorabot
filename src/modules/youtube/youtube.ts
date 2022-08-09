@@ -134,10 +134,14 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
 
     if (isUrl(ytquery)) {
       videoID = convertUrlToVideoId(ytquery);
-        
 
-       
-        sendYtCountsEmbed(videoID, interaction, youtubeApiKeyRandomlyChosen)
+        sendYtCountsEmbed({
+            videoid: videoID, 
+            message: interaction, 
+            apikey: youtubeApiKeyRandomlyChosen,
+            type: "interaction"
+        });
+
     } else {
         // Invalid url
 
@@ -171,10 +175,22 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
             switch (searchYtString)
                 {
                     case "the view":          
-                         sendYtCountsEmbed("v202rmUuBis", interaction, youtubeApiKeyRandomlyChosen)
+                         sendYtCountsEmbed({
+                            videoid: "v202rmUuBis", 
+                            message: interaction, 
+                            apikey: youtubeApiKeyRandomlyChosen,
+                            type: "interaction"
+                        });
+                         
                         break;
                     case "life goes on": case "life goes on mv": 
-                        sendYtCountsEmbed("-5q5mZbe3V8", interaction, youtubeApiKeyRandomlyChosen)
+                       
+                        sendYtCountsEmbed({
+                            videoid: "-5q5mZbe3V8", 
+                            message: interaction, 
+                            apikey: youtubeApiKeyRandomlyChosen,
+                            type: "interaction"
+                        });
                     break;
                 case "help":
                         youtubeHelpMessageReply(interaction)
@@ -274,7 +290,12 @@ export async function youtubeVideoStats(message:Message, command, client, config
     var videoID = "dQw4w9WgXcQ"
     if (isUrl(args[0])) {
         videoID = videoID = convertUrlToVideoId(args[0])
-        sendYtCountsEmbed(videoID, message, youtubeApiKeyRandomlyChosen)
+        sendYtCountsEmbed({
+            videoid: videoID,
+            message: message,
+            apikey: youtubeApiKeyRandomlyChosen,
+            type: "message"
+        })
     } else {
         // Invalid url
 
@@ -308,11 +329,21 @@ export async function youtubeVideoStats(message:Message, command, client, config
 
             switch (searchYtString)
                 {
-                    case "the view":          
-                         sendYtCountsEmbed("v202rmUuBis", message, youtubeApiKeyRandomlyChosen)
+                    case "the view": 
+                         sendYtCountsEmbed({
+                            videoid: "v202rmUuBis", 
+                            message: message, 
+                            apikey: youtubeApiKeyRandomlyChosen,
+                            type: "message"
+                        });
                         break;
                     case "life goes on": case "life goes on mv": 
-                        sendYtCountsEmbed("-5q5mZbe3V8", message, youtubeApiKeyRandomlyChosen)
+                        sendYtCountsEmbed({
+                            videoid: "-5q5mZbe3V8", 
+                            message: message, 
+                            apikey: youtubeApiKeyRandomlyChosen,
+                            type: "message"
+                        });
                     break;
                 case "help":
                         youtubeHelpMessageReply(message)
