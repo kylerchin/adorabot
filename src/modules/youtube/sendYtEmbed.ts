@@ -242,7 +242,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                     }
 
                   }
-                )
+                ) 
               }
 
 
