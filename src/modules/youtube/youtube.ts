@@ -132,7 +132,7 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
 
     var videoID = "dQw4w9WgXcQ"
 
-    var ytquery = interaction.options.getString('search-or-url');
+    var ytquery = interaction.options.getString('search-or-url').trim();
 
     if (isUrl(ytquery)) {
       videoID = convertUrlToVideoId(ytquery);
@@ -291,7 +291,7 @@ export async function youtubeVideoStats(message:Message, command, client, config
 
     var videoID = "dQw4w9WgXcQ"
     if (isUrl(args[0])) {
-        videoID = videoID = convertUrlToVideoId(args[0])
+        videoID = videoID = convertUrlToVideoId(args[0].trim())
         sendYtCountsEmbed({
             videoid: videoID,
             message: message,
