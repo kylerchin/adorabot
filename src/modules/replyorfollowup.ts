@@ -1,6 +1,9 @@
+import {uploadStringToNewRelic} from './newRelic';
+
 interface replyOrFollowUpInterface {
     messageorinteraction: any,
-    content: any
+    content: any,
+    tryagaininfiveseconds?: boolean
 }
 
 export function replyorfollowup(options: replyOrFollowUpInterface) {
@@ -22,6 +25,9 @@ export function replyorfollowup(options: replyOrFollowUpInterface) {
 
     } catch (error) {
         console.error(error);
+
+        uploadStringToNewRelic(JSON.stringify(error));
+
         return false;
     }
 }
