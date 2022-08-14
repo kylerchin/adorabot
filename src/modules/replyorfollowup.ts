@@ -26,7 +26,7 @@ export function replyorfollowup(options: replyOrFollowUpInterface) {
     } catch (error) {
         console.error(error);
 
-        uploadStringToNewRelic(JSON.stringify(error));
+        uploadStringToNewRelic(JSON.stringify({...error, type: "replyorfollowuperror"}));
 
         return false;
     }
