@@ -149,7 +149,7 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
 
         console.log("invalid url")
 
-        const searchYtString = ytquery.trim()
+        const searchYtString = ytquery.trim();
 
         if (searchYtString.length === 0) {
             await youtubeHelpMessageReply(interaction)
@@ -244,15 +244,15 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
 
                                     //if the software broke the first time, do it again
                                     setTimeout(() => {
-                                       if (false) {
+                                        if (interaction.replied === true) {   
                                        
-                                    sendYtCountsEmbed({
-                                        videoid: videoID, 
-                                        message: interaction, 
-                                        apikey: youtubeApiKeyRandomlyChosen,
-                                        type: "interaction"
-                                    });
-                                       }  
+                                            sendYtCountsEmbed({
+                                                videoid: videoID, 
+                                                message: interaction, 
+                                                apikey: youtubeApiKeyRandomlyChosen,
+                                                type: "interaction"
+                                            });
+                                }
                                     }, 4000);
                                     logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}`})
                                     videofound = true;
