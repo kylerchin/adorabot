@@ -215,7 +215,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                 }
               }
 
-              if (interactionSentYetCache.get(message.replied) != undefined) {
+              if (interactionSentYetCache.get(message.id) != undefined) {
 
                 keepsending = false;
 
