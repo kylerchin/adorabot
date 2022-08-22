@@ -4,44 +4,45 @@ import { sendYtCountsEmbed } from "./sendYtEmbed";
 import { logger } from "../logger";
 const getQueryParam = require('get-query-param')
 import * as youtubei from "youtubei";
-import {CommandInteraction} from "discord.js"
+import { CommandInteraction } from "discord.js"
 const youtube = new youtubei.Client();
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 import { uploadStringToNewRelic } from "./../newRelic";
-import {Message} from 'discord.js'
+import { Message } from 'discord.js'
+import interactionSentYetCache from './cacheInteractionSentYet';
 
 function skipChannel(channelid) {
     try {
-    var loadedRemovedData = importconfigfile.get()
+        var loadedRemovedData = importconfigfile.get()
 
-    if (loadedRemovedData.removedytchannels.indexOf(channelid) == -1
-    && loadedRemovedData.skippedytchannels.indexOf(channelid) == -1
-    ) {
-               return false
-            } else {
-                return true;
-            }
+        if (loadedRemovedData.removedytchannels.indexOf(channelid) == -1
+            && loadedRemovedData.skippedytchannels.indexOf(channelid) == -1
+        ) {
+            return false
+        } else {
+            return true;
         }
-        catch (error) {
-            return false;
-        }
+    }
+    catch (error) {
+        return false;
+    }
 }
 
 function skipVideo(videoid) {
     try {
-    var loadedRemovedData = importconfigfile.get()
+        var loadedRemovedData = importconfigfile.get()
 
-    if (loadedRemovedData.skippedvids.indexOf(videoid) == -1
-    ) {
-               return false
-            } else {
-                return true;
-            }
+        if (loadedRemovedData.skippedvids.indexOf(videoid) == -1
+        ) {
+            return false
+        } else {
+            return true;
         }
-        catch (error) {
-            return false;
-        }
+    }
+    catch (error) {
+        return false;
+    }
 }
 
 export async function youtubeHelpMessageReply(message) {
@@ -51,14 +52,14 @@ export async function youtubeHelpMessageReply(message) {
         "Youtube `a!yt https://youtube.com/watch?v=FFmdTU4Cpr8`\n" +
         "YouTu.be `a!youtube https://youtu.be/FFmdTU4Cpr8`\n" +
         "Youtube Music `a!youtube https://music.youtube.com/watch?v=FFmdTU4Cpr8`\n" +
-        "YouTube shorts `a!yt  https://www.youtube.com/shorts/gzhHC1nOrm8`" + 
+        "YouTube shorts `a!yt  https://www.youtube.com/shorts/gzhHC1nOrm8`" +
         "\n\nLooking to watch videos together? use `a!ytparty`")
 }
 
 //fetch youtube videos
 
-export async function youtubeChannelStats(message:Message, command, client, config, args) {
-   // const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
+export async function youtubeChannelStats(message: Message, command, client, config, args) {
+    // const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
 
     console.log("searching for yt channel")
 
@@ -98,33 +99,33 @@ export async function youtubeChannelStats(message:Message, command, client, conf
             message.reply("No channels found with that name! Please modify your search and try again.")
         }
 
-       
+
     });
 
-    
+
 }
 
 function convertUrlToVideoId(ytquery) {
-var precurser = ytquery.trim();
+    var precurser = ytquery.trim();
 
     if (ytquery.match(/youtube.com\/shorts\//g)) {
         console.log('match')
-        precurser = ytquery.replace("?feature=share","").replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
+        precurser = ytquery.replace("?feature=share", "").replace(/youtube.com\/shorts\//g, "youtube.com/watch?v=")
     } else {
-             // Valid url
-    if (ytquery.includes("youtu.be/")) {
-        precurser = ytquery.replace("youtu.be/", "www.youtube.com/watch?v=").trim();
-    } else {
-        precurser = ytquery.trim()
-    }
+        // Valid url
+        if (ytquery.includes("youtu.be/")) {
+            precurser = ytquery.replace("youtu.be/", "www.youtube.com/watch?v=").trim();
+        } else {
+            precurser = ytquery.trim()
+        }
     }
     return getQueryParam('v', precurser);
 }
 
-export async function youtubeVideoStatsInteraction(interaction: any, config:any) {
+export async function youtubeVideoStatsInteraction(interaction: any, config: any) {
 
-        // Defer to send an ephemeral reply later
-        interaction.deferReply()
+    // Defer to send an ephemeral reply later
+    interaction.deferReply()
         .then(console.log)
         .catch(console.error);
 
@@ -135,11 +136,11 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
     var ytquery = interaction.options.getString('search-or-url').trim();
 
     if (isUrl(ytquery)) {
-      videoID = convertUrlToVideoId(ytquery);
+        videoID = convertUrlToVideoId(ytquery);
 
         sendYtCountsEmbed({
-            videoid: videoID, 
-            message: interaction, 
+            videoid: videoID,
+            message: interaction,
             apikey: youtubeApiKeyRandomlyChosen,
             type: "interaction"
         });
@@ -174,98 +175,96 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
 
             //console.log(r)
 
-            switch (searchYtString)
-                {
-                    case "the view":          
-                         sendYtCountsEmbed({
-                            videoid: "v202rmUuBis", 
-                            message: interaction, 
-                            apikey: youtubeApiKeyRandomlyChosen,
-                            type: "interaction"
-                        });
-                         
-                        break;
-                    case "life goes on": case "life goes on mv": 
-                       
-                        sendYtCountsEmbed({
-                            videoid: "-5q5mZbe3V8", 
-                            message: interaction, 
-                            apikey: youtubeApiKeyRandomlyChosen,
-                            type: "interaction"
-                        });
+            switch (searchYtString) {
+                case "the view":
+                    sendYtCountsEmbed({
+                        videoid: "v202rmUuBis",
+                        message: interaction,
+                        apikey: youtubeApiKeyRandomlyChosen,
+                        type: "interaction"
+                    });
+
+                    break;
+                case "life goes on": case "life goes on mv":
+
+                    sendYtCountsEmbed({
+                        videoid: "-5q5mZbe3V8",
+                        message: interaction,
+                        apikey: youtubeApiKeyRandomlyChosen,
+                        type: "interaction"
+                    });
                     break;
                 case "help":
-                        youtubeHelpMessageReply(interaction)
+                    youtubeHelpMessageReply(interaction)
                     break;
-                    
-                    default:
-                     
-                                                // console.time("youtubei")
-                            const videos = await youtube.search(searchYtString, {
-                                type: "video", // video | playlist | channel | all
-                            });
 
-                        // console.timeEnd("youtubei")
+                default:
 
-                            if (videos.length <= 0) {
-                                interaction.reply("I couldn't find any videos matching that term!")
-                                logger.discordInfoLogger.info({type: "searchYoutubeVideoTermNothingFound",query: searchYtString})
-                            } else {
+                    // console.time("youtubei")
+                    const videos = await youtube.search(searchYtString, {
+                        type: "video", // video | playlist | channel | all
+                    });
 
-                                var videofound = false;
-                            videos.forEach((video,videoIndex) => {
-                                if (videofound === false) {
-                                    if (skipChannel(video.channel.id) || skipVideo(video.id)) {
-                                        //skip channel
-                                    } else {
-                                        videoID = videos[videoIndex].id
+                    // console.timeEnd("youtubei")
+
+                    if (videos.length <= 0) {
+                        interaction.reply("I couldn't find any videos matching that term!")
+                        logger.discordInfoLogger.info({ type: "searchYoutubeVideoTermNothingFound", query: searchYtString })
+                    } else {
+
+                        var videofound = false;
+                        videos.forEach((video, videoIndex) => {
+                            if (videofound === false) {
+                                if (skipChannel(video.channel.id) || skipVideo(video.id)) {
+                                    //skip channel
+                                } else {
+                                    videoID = videos[videoIndex].id
                                     // logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: videos[0] })
-                                        //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
-            
-                                        try {
-                                            uploadStringToNewRelic(JSON.stringify({
-                                                inputquery: ytquery,
-                                                videoID,
-                                                username: interaction.user.tag,
-                                                userid: interaction.user.id,
-                                                timeofrequest: new Date().toISOString(),
-                                                type: "youtubeinteractionsearch"
-                                            }));
-                                          } catch (error) {
-                                            console.error(error)
-                                          }
+                                    //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
+
+                                    try {
+                                        uploadStringToNewRelic(JSON.stringify({
+                                            inputquery: ytquery,
+                                            videoID,
+                                            username: interaction.user.tag,
+                                            userid: interaction.user.id,
+                                            timeofrequest: new Date().toISOString(),
+                                            type: "youtubeinteractionsearch"
+                                        }));
+                                    } catch (error) {
+                                        console.error(error)
+                                    }
 
                                     sendYtCountsEmbed({
-                                        videoid: videoID, 
-                                        message: interaction, 
+                                        videoid: videoID,
+                                        message: interaction,
                                         apikey: youtubeApiKeyRandomlyChosen,
                                         type: "interaction"
                                     });
 
                                     //if the software broke the first time, do it again
                                     setTimeout(() => {
-                                        if (interaction.replied === false) {   
-                                       
+                                        if (interactionSentYetCache.get(interaction.id) === undefined) {
                                             sendYtCountsEmbed({
-                                                videoid: videoID, 
-                                                message: interaction, 
+                                                videoid: videoID,
+                                                message: interaction,
                                                 apikey: youtubeApiKeyRandomlyChosen,
                                                 type: "interaction"
                                             });
-                                }
+                                        }
                                     }, 4000);
-                                    logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}`})
+                                    logger.discordInfoLogger.info(videos[0].title, { type: "searchYoutubeVideoTermAndResponse", query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}` })
                                     videofound = true;
-                                    }
                                 }
-                            });
-                                                 }
-                            
-                            
-                        break;
-                }
+                            }
+                        });
+                    }
 
-           
+
+                    break;
+            }
+
+
             /*await scrapeyoutube.search(searchYtString).then(results => {
                
                 // Unless you specify a type, it will only return 'video' results
@@ -286,7 +285,7 @@ export async function youtubeVideoStatsInteraction(interaction: any, config:any)
     }
 }
 
-export async function youtubeVideoStats(message:Message, command, client, config, args) {
+export async function youtubeVideoStats(message: Message, command, client, config, args) {
     const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
 
     var videoID = "dQw4w9WgXcQ"
@@ -302,7 +301,7 @@ export async function youtubeVideoStats(message:Message, command, client, config
         // Invalid url
 
         console.log("invalid url")
-        const commandRegex = new RegExp(`${command}`,"i")
+        const commandRegex = new RegExp(`${command}`, "i")
 
         const searchYtString = message.content.replace(/a!/i, "").trim().replace(commandRegex, "").trim()
 
@@ -329,70 +328,69 @@ export async function youtubeVideoStats(message:Message, command, client, config
 
             //console.log(r)
 
-            switch (searchYtString)
-                {
-                    case "the view": 
-                         sendYtCountsEmbed({
-                            videoid: "v202rmUuBis", 
-                            message: message, 
-                            apikey: youtubeApiKeyRandomlyChosen,
-                            type: "message"
-                        });
-                        break;
-                    case "life goes on": case "life goes on mv": 
-                        sendYtCountsEmbed({
-                            videoid: "-5q5mZbe3V8", 
-                            message: message, 
-                            apikey: youtubeApiKeyRandomlyChosen,
-                            type: "message"
-                        });
+            switch (searchYtString) {
+                case "the view":
+                    sendYtCountsEmbed({
+                        videoid: "v202rmUuBis",
+                        message: message,
+                        apikey: youtubeApiKeyRandomlyChosen,
+                        type: "message"
+                    });
+                    break;
+                case "life goes on": case "life goes on mv":
+                    sendYtCountsEmbed({
+                        videoid: "-5q5mZbe3V8",
+                        message: message,
+                        apikey: youtubeApiKeyRandomlyChosen,
+                        type: "message"
+                    });
                     break;
                 case "help":
-                        youtubeHelpMessageReply(message)
+                    youtubeHelpMessageReply(message)
                     break;
-                    
-                    default:
-                     
-                                                // console.time("youtubei")
-                            const videos = await youtube.search(searchYtString, {
-                                type: "video", // video | playlist | channel | all
-                            });
 
-                        // console.timeEnd("youtubei")
+                default:
 
-                            if (videos.length <= 0) {
-                                message.reply("I couldn't find any videos matching that term!")
-                                logger.discordInfoLogger.info({type: "searchYoutubeVideoTermNothingFound",query: searchYtString})
-                            } else {
+                    // console.time("youtubei")
+                    const videos = await youtube.search(searchYtString, {
+                        type: "video", // video | playlist | channel | all
+                    });
 
-                                var videofound = false;
-                            videos.forEach((video,videoIndex) => {
-                                if (videofound === false) {
-                                    if (skipChannel(video.channel.id) || skipVideo(video.id)) {
-                                        //skip channel
-                                    } else {
-                                        videoID = videos[videoIndex].id
+                    // console.timeEnd("youtubei")
+
+                    if (videos.length <= 0) {
+                        message.reply("I couldn't find any videos matching that term!")
+                        logger.discordInfoLogger.info({ type: "searchYoutubeVideoTermNothingFound", query: searchYtString })
+                    } else {
+
+                        var videofound = false;
+                        videos.forEach((video, videoIndex) => {
+                            if (videofound === false) {
+                                if (skipChannel(video.channel.id) || skipVideo(video.id)) {
+                                    //skip channel
+                                } else {
+                                    videoID = videos[videoIndex].id
                                     // logger.discordDebugLogger.debug({ type: "searchStringForYouTube", firstResult: videos[0] })
-                                        //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
-            
-                                        sendYtCountsEmbed({
-                                            videoid: videoID, 
-                                            message: message, 
-                                            apikey: youtubeApiKeyRandomlyChosen,
-                                            type: "message"
-                                        });
-                                    logger.discordInfoLogger.info(videos[0].title,{type: "searchYoutubeVideoTermAndResponse",query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}`})
-                                    videofound = true;
-                                    }
-                                }
-                            });
-                                                 }
-                            
-                            
-                        break;
-                }
+                                    //logger.discordDebugLogger.debug({ type: "searchStringForYouTubevideoId", videoID: videoID });
 
-           
+                                    sendYtCountsEmbed({
+                                        videoid: videoID,
+                                        message: message,
+                                        apikey: youtubeApiKeyRandomlyChosen,
+                                        type: "message"
+                                    });
+                                    logger.discordInfoLogger.info(videos[0].title, { type: "searchYoutubeVideoTermAndResponse", query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}` })
+                                    videofound = true;
+                                }
+                            }
+                        });
+                    }
+
+
+                    break;
+            }
+
+
             /*await scrapeyoutube.search(searchYtString).then(results => {
                
                 // Unless you specify a type, it will only return 'video' results

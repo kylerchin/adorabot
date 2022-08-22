@@ -5,6 +5,7 @@ import { dogstatsd } from "./../dogstats";
 import { ytChart } from './ytChartMaker'
 const ytScraper = require("yt-scraper")
 import * as Discord from "discord.js"
+import { interactionSentYetCache } from "./cacheInteractionSentYet";
 import { addStatsToYtVideo, addVideoToTrackList } from './../../youtubeviewcountdaemon'
 import { Util } from "discord.js";
 const editJsonFile = require("edit-json-file");
@@ -214,7 +215,16 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                 }
               }
 
+              if (interactionSentYetCache.get(message.replied) != undefined) {
+
+                keepsending = false;
+
+              }
+
               if (keepsending) {
+
+                interactionSentYetCache.set(message.id, true)
+
                 await replyorfollowup(
                   contentOfMessageReply
                 ).then(async (repliedMessage) => {
