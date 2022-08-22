@@ -145,6 +145,17 @@ export async function youtubeVideoStatsInteraction(interaction: any, config: any
             type: "interaction"
         });
 
+        setTimeout(() => {
+            if (interactionSentYetCache.get(interaction.id) === undefined) {
+                sendYtCountsEmbed({
+                    videoid: videoID,
+                    message: interaction,
+                    apikey: youtubeApiKeyRandomlyChosen,
+                    type: "interaction"
+                });
+            }
+        }, 5000);
+
     } else {
         // Invalid url
 
@@ -252,7 +263,7 @@ export async function youtubeVideoStatsInteraction(interaction: any, config: any
                                                 type: "interaction"
                                             });
                                         }
-                                    }, 4000);
+                                    }, 5000);
                                     logger.discordInfoLogger.info(videos[0].title, { type: "searchYoutubeVideoTermAndResponse", query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}` })
                                     videofound = true;
                                 }
