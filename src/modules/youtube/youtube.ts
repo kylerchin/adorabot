@@ -10,7 +10,7 @@ const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 import { uploadStringToNewRelic } from "./../newRelic";
 import { Message } from 'discord.js'
-import interactionSentYetCache from './cacheInteractionSentYet';
+import { interactionSentYetCache } from './cacheInteractionSentYet';
 
 function skipChannel(channelid) {
     try {
