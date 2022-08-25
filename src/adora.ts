@@ -22,7 +22,6 @@ var client = new Discord.Client(
       "GUILD_WEBHOOKS",
       "GUILD_INVITES",
       "GUILD_VOICE_STATES",
-      "GUILD_MESSAGES",
       "GUILD_MESSAGE_REACTIONS",
       "GUILD_MESSAGE_TYPING",
       "DIRECT_MESSAGES",
