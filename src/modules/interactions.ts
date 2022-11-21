@@ -67,8 +67,8 @@ export async function processInteraction(args: processInteractionType) {
         case 'help':
           await helppageinteraction(interaction)
         case 'mama':
-          // await mamaAwards2021Interaction(interaction) 
-          await interaction.reply('The 2021 Mama Awards Votes have ended. Come back next year!')
+           await mamaAwards2021Interaction(interaction) 
+          //await interaction.reply('The 2021 Mama Awards Votes have ended. Come back next year!')
           break;
         default:
         // console.log(`Sorry, we are out of ${expr}.`);
