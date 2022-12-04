@@ -541,7 +541,11 @@ export async function processAllModerationCommands(message, command, args, confi
                         removedMessageAttachmentURLsFromContent = removedMessageAttachmentURLsFromContent.replaceAll(attach.url, "")
                     })
                     //transforms the user id list into a list to be banned
+                    var matchsequencetoban = removedMessageAttachmentURLsFromContent.match(/(?<!\d)\d{18}(?!\d)/g);
+                    if (matchsequencetoban) {
+                        
                     var arrayOfUserIdsToBan = uniq(removedMessageAttachmentURLsFromContent.match(/(?<!\d)\d{18}(?!\d)/g));
+                    }
 
                     var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*adoraban(\ )*)/g, '').trim().replace(emptylinesregex, "")
                     //apply the bans to the database
