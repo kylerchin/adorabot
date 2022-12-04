@@ -366,7 +366,8 @@ function decideWhichGeniusNumberToUse(response) {
 
 export async function geniusLyrics(message:Message,args, client) {
 
-     var geniusQuery = message.content.trim().replace("a! genius","").replace("a!genius","").replace("a!lyrics","").replace("a! lyrics","").replace("a! lyric","").replace("a!lyric","").trim()
+   try {
+    var geniusQuery = message.content.trim().replace("a! genius","").replace("a!genius","").replace("a!lyrics","").replace("a! lyrics","").replace("a! lyric","").replace("a!lyric","").trim()
 
     if(geniusQuery.length === 0) {
         message.reply("Command: `a!lyrics <search>`")
@@ -464,4 +465,7 @@ export async function geniusLyrics(message:Message,args, client) {
 
     
 
+    } catch (errorgenius) {
+        console.error(errorgenius)
+    }
 }
