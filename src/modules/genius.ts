@@ -21,43 +21,48 @@ import { config } from './../../config.json';
 });
 
 export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
-        //stores resulting data into a variable
+    try {
+                //stores resulting data into a variable
         
         
           
-        let { data } = await axios.get(geniusSongUrl);
+                let { data } = await axios.get(geniusSongUrl);
         
-        //Cherio inerpretation of HTML contents
-        const $ = cio.load(data);
-        //find lyrics inside div element, trim off whitespace
-        //let lyrics = $('div[class="lyrics"]').text().trim();
-
-			var lyrics = ''
-
-            $('[class^=Lyrics__Container]').each((i, elem) => {
-				if($(elem).text().length !== 0) {
-                    let snippet = decode($(elem).html()
-                    .replace(/<br><br>/g, 'AdorabotTwoLine00x00')
-                    .replace(/<br>/g, 'AdorabotOneLine00x00')
-                    .replace(/\*/g, '\\*')
-                    .replace(/<\/? *i[^>]*>/g, '*')
-                    .replace(/<\/b><b>/g,"")
-                    .replace(/<\/?b*>/g, '**')
-                    .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '')
-                    .replace(/AdorabotTwoLine00x00/g, '\n\n')
-                    .replace(/AdorabotOneLine00x00/g, '\n')
-                   // .replace(/\n\n\n/g, '\n')
-                    .replace(/\n\n\n/g, '\n'));
-                 //   console.log($(elem).html() + " => " + snippet)
-				//	lyrics = lyrics + $('[data-scrolltrigger-pin]').html(snippet).trim();
-                    lyrics += snippet + "\n\n";
-				}
-    	})
-
-	
-    	
-		if (!lyrics) {return null};
-		return lyrics.trim();
+                //Cherio inerpretation of HTML contents
+                const $ = cio.load(data);
+                //find lyrics inside div element, trim off whitespace
+                //let lyrics = $('div[class="lyrics"]').text().trim();
+        
+                    var lyrics = ''
+        
+                    $('[class^=Lyrics__Container]').each((i, elem) => {
+                        if($(elem).text().length !== 0) {
+                            let snippet = decode($(elem).html()
+                            .replace(/<br><br>/g, 'AdorabotTwoLine00x00')
+                            .replace(/<br>/g, 'AdorabotOneLine00x00')
+                            .replace(/\*/g, '\\*')
+                            .replace(/<\/? *i[^>]*>/g, '*')
+                            .replace(/<\/b><b>/g,"")
+                            .replace(/<\/?b*>/g, '**')
+                            .replace(/<(?!\s*br\s*\/?)[^>]+>/gi, '')
+                            .replace(/AdorabotTwoLine00x00/g, '\n\n')
+                            .replace(/AdorabotOneLine00x00/g, '\n')
+                           // .replace(/\n\n\n/g, '\n')
+                            .replace(/\n\n\n/g, '\n'));
+                         //   console.log($(elem).html() + " => " + snippet)
+                        //	lyrics = lyrics + $('[data-scrolltrigger-pin]').html(snippet).trim();
+                            lyrics += snippet + "\n\n";
+                        }
+                })
+        
+            
+                
+                if (!lyrics) {return null};
+                return lyrics.trim();
+        
+    } catch (bruhsdflj) {
+        console.error(bruhsdflj)
+    }
 
     
 }
