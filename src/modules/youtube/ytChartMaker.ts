@@ -265,7 +265,11 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
             var countMonth = initMonth;
             var countYear = initYear;
 
+            console.log('inside first if statement')
+
             while ((countMonth <= lastMonth) || countYear <= lastYear) {
+
+                console.log('each round of month', countMonth, lastMonth, "and year", countYear, lastYear)
 
                 var averagePointForThisMonth = new Date(
                     Date.UTC(
