@@ -8,7 +8,7 @@ import { lookuplocale } from './../lookuptablelocale';
 const TimeUuid = require("cassandra-driver").types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require("canvas");
 const editJsonFile = require("edit-json-file");
-var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
+var importconfigfile = editJsonFile(`./../../../removedytvids.json`);
 registerFont(
     path.resolve(__dirname, "../../LexendDecaMedium.ttf")
     , {
