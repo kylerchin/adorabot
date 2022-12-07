@@ -68,60 +68,65 @@ export async function geniusSongUrlHTMLExtract(geniusSongUrl) {
 }
 
 export async function geniusShowOtherSongs(response,requesterid,isInteractionOrMessage,initialRequestObject) {
-    logger.discordInfoLogger.info("type of response.data.response.hits is " + typeof response.data.response.hits)
-    var embedsArrayUngroomed = response.data.response.hits.map((hit) => {
-        //const colorForSong = hexCodeToColorNumber(hit.result.song_art_primary_color)
-
-        return {
-            "title": hit.result.title,
-            "url": hit.result.url,
-            "author": {
-                "name" : hit.result.primary_artist.name.substring(0, 255),
-                "icon_url": hit.result.primary_artist.image_url
-            },
-            "thumbnail": {
-                "url": hit.result.song_art_image_url
+    try {
+        logger.discordInfoLogger.info("type of response.data.response.hits is " + typeof response.data.response.hits)
+        var embedsArrayUngroomed = response.data.response.hits.map((hit) => {
+            //const colorForSong = hexCodeToColorNumber(hit.result.song_art_primary_color)
+    
+            return {
+                "title": hit.result.title,
+                "url": hit.result.url,
+                "author": {
+                    "name" : hit.result.primary_artist.name.substring(0, 255),
+                    "icon_url": hit.result.primary_artist.image_url
+                },
+                "thumbnail": {
+                    "url": hit.result.song_art_image_url
+                }
             }
+        })
+    
+        var groupedEmbeds = _.chunk(embedsArrayUngroomed, 10);
+        
+        var messageOfOtherSongs
+    
+        var otherSongsResponseObject = {"embeds": groupedEmbeds[0], "content": "run `a!lyrics <song name>` to fetch the correct one! If that fails, try `a!lyrics <artist name> <song name>`"}
+    
+        if(isInteractionOrMessage === 'message') {
+             messageOfOtherSongs = await initialRequestObject.reply(otherSongsResponseObject)
+    
         }
-    })
-
-    var groupedEmbeds = _.chunk(embedsArrayUngroomed, 10);
     
-    var messageOfOtherSongs
-
-    var otherSongsResponseObject = {"embeds": groupedEmbeds[0], "content": "run `a!lyrics <song name>` to fetch the correct one! If that fails, try `a!lyrics <artist name> <song name>`"}
-
-    if(isInteractionOrMessage === 'message') {
-         messageOfOtherSongs = await initialRequestObject.reply(otherSongsResponseObject)
-
+        if(isInteractionOrMessage === 'interaction') {
+            messageOfOtherSongs = await initialRequestObject.followUp(otherSongsResponseObject)
+    
+       }
+    
+        
+       // Create a reaction collector
+                    //reaction.emoji.name === '🗑' && user.id === lyricsRequester
+         const deleteFilter = (reaction, user) => user.id === requesterid && reaction.emoji.name === "🗑" && user.id !== initialRequestObject.client;
+    
+                    const deleteCollector = messageOfOtherSongs.createReactionCollector({filter: deleteFilter});
+    
+                    deleteCollector.on('collect', async (r) => {
+                        console.log("YUH DELETE THIS")
+                        //const reaction = collected.first()
+    
+                        messageOfOtherSongs.delete().catch()
+                        
+                        logger.discordInfoLogger.info(r);
+                        
+                        logger.discordInfoLogger.info(`Collected ${r.emoji.name}`)});
+                    deleteCollector.on('end', collected => logger.discordInfoLogger.info(`Collected ${collected.size} items`));
+                    
+                    messageOfOtherSongs.react("🗑").then((reaction) => {
+                        //lastMessageToListenTo.react('❓')
+                    })
+    } catch (error) {
+        console.error(error)
     }
-
-    if(isInteractionOrMessage === 'interaction') {
-        messageOfOtherSongs = await initialRequestObject.followUp(otherSongsResponseObject)
-
-   }
-
     
-   // Create a reaction collector
-                //reaction.emoji.name === '🗑' && user.id === lyricsRequester
-     const deleteFilter = (reaction, user) => user.id === requesterid && reaction.emoji.name === "🗑" && user.id !== initialRequestObject.client;
-
-                const deleteCollector = messageOfOtherSongs.createReactionCollector({filter: deleteFilter});
-
-                deleteCollector.on('collect', async (r) => {
-                    console.log("YUH DELETE THIS")
-                    //const reaction = collected.first()
-
-                    messageOfOtherSongs.delete().catch()
-                    
-                    logger.discordInfoLogger.info(r);
-                    
-                    logger.discordInfoLogger.info(`Collected ${r.emoji.name}`)});
-                deleteCollector.on('end', collected => logger.discordInfoLogger.info(`Collected ${collected.size} items`));
-                
-                messageOfOtherSongs.react("🗑").then((reaction) => {
-                    //lastMessageToListenTo.react('❓')
-                })
     }
 
     export async function geniusRetrieveArrayOfMessageObjects(geniusQuery) {
@@ -334,34 +339,40 @@ async function decideWhichGeniusUrlToUse(response) {
 }
 
 function decideWhichGeniusNumberToUse(response) {
-
+try {
+    
     //not the http response.... the genius response
-        var hitNumberCounter:number = 0;
-        var hitNumberToUse:number = 0;
-        var numberOfMaxHits = response.hits.length        
+    var hitNumberCounter:number = 0;
+    var hitNumberToUse:number = 0;
+    var numberOfMaxHits = response.hits.length        
 
-        while ((hitNumberCounter < numberOfMaxHits)) {
-            var workingOnThisResult = response.hits[hitNumberCounter].result;
-            console.log(workingOnThisResult)
-            if (isBadGeniusUrl(workingOnThisResult.url) || isBadGeniusArtistUrl(workingOnThisResult.primary_artist.url)) {
-                //do nothing, skip to the next hit
-                console.log('skip genius hit', hitNumberCounter)
+    while ((hitNumberCounter < numberOfMaxHits)) {
+        var workingOnThisResult = response.hits[hitNumberCounter].result;
+        console.log(workingOnThisResult)
+        if (isBadGeniusUrl(workingOnThisResult.url) || isBadGeniusArtistUrl(workingOnThisResult.primary_artist.url)) {
+            //do nothing, skip to the next hit
+            console.log('skip genius hit', hitNumberCounter)
 
-                if (hitNumberCounter = numberOfMaxHits - 1) {
-                    //this entry is the last
-                    return 0;
-                }
-            } else {
-                hitNumberToUse = hitNumberCounter;
-                console.log('use this genius hit', hitNumberCounter)
-                break;
+            if (hitNumberCounter = numberOfMaxHits - 1) {
+                //this entry is the last
+                return 0;
             }
-            hitNumberCounter = hitNumberCounter + 1;
+        } else {
+            hitNumberToUse = hitNumberCounter;
+            console.log('use this genius hit', hitNumberCounter)
+            break;
         }
+        hitNumberCounter = hitNumberCounter + 1;
+    }
 
-        console.log('hitNumberToUse',  hitNumberToUse)
- 
-        return hitNumberToUse;
+    console.log('hitNumberToUse',  hitNumberToUse)
+
+    return hitNumberToUse;
+} catch (
+    error
+) {
+    console.error(error)
+}
 }
 
 export async function geniusLyrics(message:Message,args, client) {
@@ -455,7 +466,7 @@ export async function geniusLyrics(message:Message,args, client) {
     })
     .catch(function (error) {
     // handle error
-    console.log(error);
+    console.error(error);
     })
     .then(function () {
     // always executed
