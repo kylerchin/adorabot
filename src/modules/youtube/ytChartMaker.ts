@@ -249,8 +249,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
         var monthsAdded = []
 
-
-
+        console.log('define fonts done');
 
         if (timeRange >= 40 * 60 * 24 * 1000 * 20) {
 
@@ -308,10 +307,10 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
         }
 
-
+        console.log('first round of time ranges done');
         while (timeLegend < leastAndGreatestObject["greatestTime"]) {
 
-            //console.log("draw legend")
+            console.log("draw legend")
             var percxlegend =
                 (timeLegend - leastAndGreatestObject["leastTime"]) / timeRange;
             var pointx = canvasWidthRange * percxlegend + paddingLeft;
@@ -364,6 +363,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
             timeLegend += 60 * 60 * 24 * 1000;
             numberOfDaysDone += 1;
         }
+
+        console.log('second round of time ranges');
 
         //under 5 days
         var hourDerivative = 60 * 60 * 1000;
@@ -466,7 +467,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
             var yAxisDrawMillions =
                 (Math.floor(leastAndGreatestObject["leastViews"] / 1.0e6) + 1) *
                 1.0e6;
-            //console.log('yaxisdraw', yAxisDrawMillions)
+            console.log('yaxisdraw', yAxisDrawMillions)
 
             while (
                 yAxisDrawMillions < leastAndGreatestObject["greatestViews"]
