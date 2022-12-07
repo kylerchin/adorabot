@@ -267,7 +267,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
             console.log('inside first if statement')
 
-            while ((countMonth <= lastMonth) || countYear <= lastYear) {
+            while ((countMonth <= lastMonth) && countYear <= lastYear) {
 
                 console.log('each round of month', countMonth, lastMonth, "and year", countYear, lastYear)
 
