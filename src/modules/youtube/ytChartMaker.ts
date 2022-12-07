@@ -765,6 +765,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
         drawLineFromPercentageArray(connectingline);
 
+        console.log('done drawing percentage array')
+
         var arrayStatsLength = arrayOfStats.length;
 
         const offsetCalcBottom = (views) => {
@@ -897,8 +899,9 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
         );
         ctxlegend.stroke();
 
-        ctxlegend.closePath()
-            ;
+        ctxlegend.closePath();
+
+            console.log('done draw function');
 
     }
 
