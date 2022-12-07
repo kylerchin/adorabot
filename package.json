@@ -93,7 +93,7 @@
     "password-generator": "^2.3.2",
     "puppeteer-instagram": "^0.0.1",
     "qr-scanner": "^1.2.0",
-    "qs": "^6.5.2",
+    "qs": "^6.10.3",
     "random-mobile": "^1.0.2",
     "randomstring": "^1.1.5",
     "remove-accents": "^0.4.2",
