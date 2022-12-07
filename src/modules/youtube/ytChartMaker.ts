@@ -51,6 +51,8 @@ interface imagegeninterface {
 
 export async function imageGeneratorFunction(optionsForImageGen: imagegeninterface) {
 
+    console.log('imagegeneratorfunction triggered')
+
     var { subtitle, publishedAt, locale, timeRange, numberOfRows, viewRange, leastAndGreatestObject, isBlocked, titletext, arrayOfStats, beginningTime, cassandratimedone } = optionsForImageGen;
 
     var endingk = "K"
@@ -60,6 +62,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
             locale: locale
         })
     }
+
+        console.log('attemting to create canvas')
 
     const canvas = createCanvas(3840, 2160);
     const ctx = canvas.getContext("2d");
@@ -84,6 +88,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
     const twopi = Math.PI * 2;
 
+
+        console.log('done making canvas')
 
     function drawCoordinates(x, y) {
         //  var ctx = canvas.getContext("2d");
@@ -151,6 +157,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
     // Stream ended, there aren't any more rows
     ctx.fillStyle = "#282828";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    console.log('before checkpoint if not enough rows')
 
     if (numberOfRows === 0 || viewRange < 3 || isBlocked || (leastAndGreatestObject["leastTime"] === null)) {
         // Write "Not Enough Data"
@@ -909,6 +917,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
         }
     }
 
+    console.log('done drawing')
+
     return bufferinfo;
 }
 
@@ -1034,7 +1044,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                         }
                     }
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 }
 
                 // console.log(bufferinfo);
@@ -1053,7 +1063,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                     subtitle: optionsObject.subtitle,
                     cassandratimedone
                 }).then((bufferinfo) => {
-
+                    console.log('return buffer info completed')
                     resolve(bufferinfo)
                 })
                     .catch((errordraw) => {
@@ -1066,7 +1076,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
             })
             .on("error", function (err) {
                 // Something went wrong: err is a response error from Cassandra
-                console.log(err);
+                console.error(err);
                 logger.discordErrorLogger.error(err, { type: 'chartmakerfail' })
                 //  process.exit()
                 reject(err);
