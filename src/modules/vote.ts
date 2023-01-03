@@ -133,7 +133,7 @@ await logger.discordInfoLogger.info("found author in req", {type: "debugvote"});
      console.log(leaderboard)
 
      if(_.size(leaderboard) === 0) {
-         voteArgs.message.reply("No one has voted yet! Try voting with `a!vote`")
+         voteArgs.interaction.reply("No one has voted yet! Try voting with `a!vote`")
      } else {
          console.log("presorted")
          console.log(leaderboard)
