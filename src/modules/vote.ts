@@ -59,6 +59,9 @@ export async function showListOfVotersTimes(voteArgs:showTopVotersArgs) {
 
 export async function  showTopVotersInteraction(voteArgs: showTopVotersArgsInteraction) {
   try {
+
+    console.log('showTopVotersInteraction called')
+
     var leaderboard = {}
 
     var totalStats = {
