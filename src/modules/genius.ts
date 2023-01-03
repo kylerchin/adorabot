@@ -212,7 +212,7 @@ export async function geniusShowOtherSongs(response,requesterid,isInteractionOrM
             var arrayOfMessagesSentForLyrics:Array<any> = [];
             var lyricsRequester = interaction.user.id;
     
-            var geniusQuery = interaction.options.get('song').value
+            var geniusQuery = interaction.options.get('search').value
     
             var searchingForQueryMessage;
 
