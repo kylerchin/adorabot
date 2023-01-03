@@ -83,7 +83,7 @@ export async function  showTopVotersInteraction(voteArgs: showTopVotersArgsInter
 
     var lastVoteTimeForReqUserTopgg = 0
     var lastVoteTimeForReqUserDbl = 0
-    var authorid = voteArgs.interaction.author.id;
+    var authorid = voteArgs.interaction.user.id;
 
     const result = await cassandraclient.execute(query, params, { prepare: true });
 
