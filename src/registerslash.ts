@@ -25,8 +25,10 @@ const commands = [
   "options": [
     {
       "type": 3,
-      "name": "song",
-      "name_localizations": "검색",
+      "name": "search",
+      "name_localizations": {
+        "ko": "검색"
+      },
       "description": "The name of the song, artist, album, and/or a line in a song",
       "required": true
     }
@@ -179,6 +181,14 @@ const commands = [
 {
   "name": "help",
   "description": "List of commands on Adora bot",
+},
+{
+  "name": "vote",
+  "description": "Vote for Adora bot!",
+},
+{
+  "name": "votes",
+  "description": "View your place on the voting leaderboard!",
 },
 {
   "name": "invite",
