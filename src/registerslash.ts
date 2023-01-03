@@ -9,6 +9,7 @@ const interaction = new DiscordInteractions({
 });
 
 const commands = [
+  /*
   {
   name: "ping",
   "name_localizations": {
@@ -33,7 +34,7 @@ const commands = [
       "required": true
     }
 ]},
-/*
+
 {
   "name": "ytparty",
   "description": "Start a YouTube watch party in a voice channel"
@@ -42,6 +43,7 @@ const commands = [
   "name": "mama",
   "description": "View Real-Time Charts for MAMA Awards 2021: Worldwide Fans’ Choice TOP 10"
 },*/
+/*
 {
   "name": "billboard",
   "name_localizations": {
@@ -62,6 +64,7 @@ const commands = [
     }
   ]
 },
+*/
 /*
 {
   "name": "ban",
@@ -155,6 +158,7 @@ const commands = [
     },
   ]
 }*/
+/*
 {
   "name": "yt",
   "name_localizations": {
@@ -177,23 +181,26 @@ const commands = [
         "ko": "유튜브 동영상의 검색어 또는 링크"
       }
     }
-]},
+]},*/
+/*
 {
   "name": "help",
   "description": "List of commands on Adora bot",
-},
+},*/
+/*
 {
   "name": "vote",
   "description": "Vote for Adora bot!",
-},
+},*/
 {
   "name": "votes",
   "description": "View your place on the voting leaderboard!",
 },
+/*
 {
   "name": "invite",
   "description": "Invite Adora bot to your own server + Link to Adora support server",
-},
+},*/
 ];
 
 
