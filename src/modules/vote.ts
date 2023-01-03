@@ -115,6 +115,8 @@ await logger.discordInfoLogger.info("found author in req", {type: "debugvote"});
 
     var firstDateOfMonthUTC = new Date(Date.UTC(new Date().getUTCFullYear(),new Date().getUTCMonth()));
 
+    console.log('first date of month utc line executed')
+
     if (row.voteservice === 'topgg' && row.time.getDate() > firstDateOfMonthUTC) {
         totalStats['topggmtd'] += 1;
     }
@@ -135,7 +137,9 @@ await logger.discordInfoLogger.info("found author in req", {type: "debugvote"});
 
      // emitted when all rows have been retrieved and read
 
-     console.log(leaderboard)
+     console.log(leaderboard);
+
+     
 
      if(_.size(leaderboard) === 0) {
          voteArgs.interaction.reply("No one has voted yet! Try voting with `a!vote`")
