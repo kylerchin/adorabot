@@ -15,6 +15,7 @@ const { config } = require('./../../config.json');
 import {uploadStringToNewRelic} from './newRelic';
 import { youtubeVideoStatsInteraction } from './youtube/youtube'
 import { inspectInteraction } from './inspect';
+import { sendVoteLinks } from './vote';
 
 interface processInteractionType {
   interaction: any;
@@ -66,6 +67,14 @@ export async function processInteraction(args: processInteractionType) {
           await inspectInteraction(interaction)
         case 'help':
           await helppageinteraction(interaction)
+        case 'vote':
+          sendVoteLinks(interaction);
+          case 'votes':
+            showTopVotersInteraction({
+              interaction,
+              client: args.interaction.client,
+            
+            });
         case 'mama':
            await mamaAwards2021Interaction(interaction) 
           //await interaction.reply('The 2021 Mama Awards Votes have ended. Come back next year!')
