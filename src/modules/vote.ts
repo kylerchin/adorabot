@@ -58,6 +58,7 @@ export async function showListOfVotersTimes(voteArgs:showTopVotersArgs) {
 }
 
 export async function  showTopVotersInteraction(voteArgs: showTopVotersArgsInteraction) {
+  try {
     var leaderboard = {}
 
     var totalStats = {
@@ -355,6 +356,9 @@ await logger.discordInfoLogger.info("found author in req", {type: "debugvote"});
          //voteArgs.message.channel.send(pages)
          
      }
+  } catch (interactionerrorvote) {
+    console.error(interactionerrorvote);
+  }
 }
 
 export async function showTopVoters(voteArgs:showTopVotersArgs) {
