@@ -71,11 +71,11 @@ export async function processInteraction(args: processInteractionType) {
         case 'vote':
           sendVoteLinks(interaction);
         case 'votes':
-            showTopVotersInteraction({
+          showTopVotersInteraction({
               interaction,
               client: args.interaction.client
-            });
-            break;
+          });
+          break;
         case 'mama':
            //await mamaAwards2021Interaction(interaction) 
           await interaction.reply('The 2022 Mama Awards Votes have ended. Come back next year!')
