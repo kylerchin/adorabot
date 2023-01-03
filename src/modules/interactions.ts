@@ -55,7 +55,7 @@ export async function processInteraction(args: processInteractionType) {
           //await geniusLyricsFromInteraction(interaction)
           await ytparty({ message: interaction, client: args.interaction.client })
         case 'billboard':
-          await billboardinteraction(interaction, args.interaction.client)
+         // await billboardinteraction(interaction, args.interaction.client)
         case 'ban':
           bankickinteraction(interaction)
         case 'autoban':
