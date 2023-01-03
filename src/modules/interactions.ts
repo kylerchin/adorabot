@@ -10,6 +10,7 @@ import { billboardinteraction } from './billboard'
 import {interactionautoban} from './interactionautoban'
 import {bankickinteraction} from './bankickinteraction'
 import {helppageinteraction} from './help'
+import { showTopVotersInteraction} from './vote'
 const { config } = require('./../../config.json');
 
 import {uploadStringToNewRelic} from './newRelic';

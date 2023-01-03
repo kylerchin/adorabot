@@ -152,7 +152,7 @@ export async function geniusShowOtherSongs(response,requesterid,isInteractionOrM
          else {
             //found something
             var songLyricsHTML;
-             songLyricsHTML = await decideWhichGeniusUrlToUse(response);
+             songLyricsHTML = await decideWhichGeniusUrlToUse(response.data.response);
             
             console.log(songLyricsHTML)
 
