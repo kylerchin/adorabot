@@ -344,6 +344,9 @@ try {
     //not the http response.... the genius response
     var hitNumberCounter:number = 0;
     var hitNumberToUse:number = 0;
+    
+        console.log('response inside genius number to use', response)
+    
     var numberOfMaxHits = response.hits.length        
 
     while ((hitNumberCounter < numberOfMaxHits)) {
