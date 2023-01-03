@@ -90,6 +90,8 @@ export async function  showTopVotersInteraction(voteArgs: showTopVotersArgsInter
 
     const result = await cassandraclient.execute(query, params, { prepare: true });
 
+    console.log('cassandra query is done')
+
     for await (const row of result) {
     console.log(row.userid);
 
