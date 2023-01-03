@@ -52,12 +52,14 @@ export async function commandHandler(msg, config, dogstatsd, startupTime) {
   if (msg.content.toLowerCase().startsWith(config.prefix) || msg.content.toLowerCase().startsWith("a!")) {
     
     //warn users about discord ending message services
+   if (!isAuthorizedAdmin(msg.author.id)) {
     msg.reply("Discord will be disabling bots reading messages starting August 31, 2022.\n" + 
     "Users of Adora should switch to Adora's Slash Commands.\n"+
     "If Slash Commands aren't showing up in your server, you'll need to give Adora permissions again.\n" +
     "Click this link to give Adora slash permissions in your server. https://discord.com/oauth2/authorize?client_id=737046643974733845&scope=bot%20applications.commands&permissions=2151017550\n" + 
     "Run /help for a list of commands and /invite for our support server."
     );
+   }
 
 
     if (!msg.author.bot) {
