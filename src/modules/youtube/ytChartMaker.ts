@@ -8,7 +8,7 @@ import { lookuplocale } from './../lookuptablelocale';
 const TimeUuid = require("cassandra-driver").types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require("canvas");
 const editJsonFile = require("edit-json-file");
-var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
+var importconfigfile = editJsonFile(`./../../../removedytvids.json`);
 registerFont(
     path.resolve(__dirname, "../../LexendDecaMedium.ttf")
     , {
@@ -51,6 +51,8 @@ interface imagegeninterface {
 
 export async function imageGeneratorFunction(optionsForImageGen: imagegeninterface) {
 
+    console.log('imagegeneratorfunction triggered')
+
     var { subtitle, publishedAt, locale, timeRange, numberOfRows, viewRange, leastAndGreatestObject, isBlocked, titletext, arrayOfStats, beginningTime, cassandratimedone } = optionsForImageGen;
 
     var endingk = "K"
@@ -60,6 +62,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
             locale: locale
         })
     }
+
+        console.log('attemting to create canvas')
 
     const canvas = createCanvas(3840, 2160);
     const ctx = canvas.getContext("2d");
@@ -84,6 +88,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
     const twopi = Math.PI * 2;
 
+
+        console.log('done making canvas')
 
     function drawCoordinates(x, y) {
         //  var ctx = canvas.getContext("2d");
@@ -151,6 +157,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
     // Stream ended, there aren't any more rows
     ctx.fillStyle = "#282828";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    console.log('before checkpoint if not enough rows')
 
     if (numberOfRows === 0 || viewRange < 3 || isBlocked || (leastAndGreatestObject["leastTime"] === null)) {
         // Write "Not Enough Data"
@@ -241,8 +249,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
         var monthsAdded = []
 
-
-
+        console.log('define fonts done');
 
         if (timeRange >= 40 * 60 * 24 * 1000 * 20) {
 
@@ -258,7 +265,11 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
             var countMonth = initMonth;
             var countYear = initYear;
 
-            while ((countMonth <= lastMonth) || countYear <= lastYear) {
+            console.log('inside first if statement')
+
+            while ((countMonth <= lastMonth) && countYear <= lastYear) {
+
+                console.log('each round of month', countMonth, lastMonth, "and year", countYear, lastYear)
 
                 var averagePointForThisMonth = new Date(
                     Date.UTC(
@@ -300,10 +311,10 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
         }
 
-
+        console.log('first round of time ranges done');
         while (timeLegend < leastAndGreatestObject["greatestTime"]) {
 
-            //console.log("draw legend")
+            console.log("draw legend")
             var percxlegend =
                 (timeLegend - leastAndGreatestObject["leastTime"]) / timeRange;
             var pointx = canvasWidthRange * percxlegend + paddingLeft;
@@ -356,6 +367,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
             timeLegend += 60 * 60 * 24 * 1000;
             numberOfDaysDone += 1;
         }
+
+        console.log('second round of time ranges');
 
         //under 5 days
         var hourDerivative = 60 * 60 * 1000;
@@ -458,7 +471,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
             var yAxisDrawMillions =
                 (Math.floor(leastAndGreatestObject["leastViews"] / 1.0e6) + 1) *
                 1.0e6;
-            //console.log('yaxisdraw', yAxisDrawMillions)
+            console.log('yaxisdraw', yAxisDrawMillions)
 
             while (
                 yAxisDrawMillions < leastAndGreatestObject["greatestViews"]
@@ -757,6 +770,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
         drawLineFromPercentageArray(connectingline);
 
+        console.log('done drawing percentage array')
+
         var arrayStatsLength = arrayOfStats.length;
 
         const offsetCalcBottom = (views) => {
@@ -889,8 +904,9 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
         );
         ctxlegend.stroke();
 
-        ctxlegend.closePath()
-            ;
+        ctxlegend.closePath();
+
+            console.log('done draw function');
 
     }
 
@@ -908,6 +924,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
             dogstatsd.histogram('adorabot.ytchart.chartdrawtimecassandrahist', cassandratimedone - beginningTime);
         }
     }
+
+    console.log('done drawing')
 
     return bufferinfo;
 }
@@ -1034,7 +1052,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                         }
                     }
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 }
 
                 // console.log(bufferinfo);
@@ -1053,7 +1071,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
                     subtitle: optionsObject.subtitle,
                     cassandratimedone
                 }).then((bufferinfo) => {
-
+                    console.log('return buffer info completed')
                     resolve(bufferinfo)
                 })
                     .catch((errordraw) => {
@@ -1066,7 +1084,7 @@ export async function ytChart(id, optionsObject: optionsInterface) {
             })
             .on("error", function (err) {
                 // Something went wrong: err is a response error from Cassandra
-                console.log(err);
+                console.error(err);
                 logger.discordErrorLogger.error(err, { type: 'chartmakerfail' })
                 //  process.exit()
                 reject(err);

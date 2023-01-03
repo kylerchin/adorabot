@@ -110,7 +110,8 @@ interface unbanSubArgsInterface {
 }
 
 export async function unBanOnAllAdoraSubbedServers(unbanSubArgs: unbanSubArgsInterface) {
-    //for every server subscribed
+   try {
+     //for every server subscribed
     //fetch the ban list for the server
 
     //fetch the ban database
@@ -172,6 +173,9 @@ export async function unBanOnAllAdoraSubbedServers(unbanSubArgs: unbanSubArgsInt
 
         //now all bans have been completed
     });
+   } catch (errorthingone) {
+    console.error(errorthingone)
+   }
 }
 
 export async function isAuthorizedAdmin(userid) {
@@ -235,7 +239,9 @@ export async function banGuildMember(message, command, args) {
             //transforms the user id list into a list to be banned
             var arrayOfUserIdsToBan = roleMentionsRemoved.match(/(?<!\d)\d{18}(?!\d)/g);
             //remove any duplicates from the array
-            arrayOfUserIdsToBan = uniq(arrayOfUserIdsToBan)
+
+            if (arrayOfUserIdsToBan) {
+                arrayOfUserIdsToBan = uniq(arrayOfUserIdsToBan)
             console.log(arrayOfUserIdsToBan)
 
             if (arrayOfUserIdsToBan.length === 0) {
@@ -269,6 +275,11 @@ export async function banGuildMember(message, command, args) {
                     })
                 });
             }
+            } else {
+                message.reply("The correct format is `a!ban (Mentions/UserIDs) [reason]")
+            }
+
+            
 
         } else {
             message.reply("You do not have permission to ban users in this guild.")
@@ -541,6 +552,9 @@ export async function processAllModerationCommands(message, command, args, confi
                         removedMessageAttachmentURLsFromContent = removedMessageAttachmentURLsFromContent.replaceAll(attach.url, "")
                     })
                     //transforms the user id list into a list to be banned
+                    var matchsequencetoban = removedMessageAttachmentURLsFromContent.match(/(?<!\d)\d{18}(?!\d)/g);
+                    if (matchsequencetoban) {
+                        
                     var arrayOfUserIdsToBan = uniq(removedMessageAttachmentURLsFromContent.match(/(?<!\d)\d{18}(?!\d)/g));
 
                     var reasonForBanRegister = roleMentionsRemoved.replace(/(<@!?(\d+)>(,|\.|\ )*)/g, '').replace(/(?<!\d)\d{18}(?!\d)/g, '').replace(/(a!(\ )*adoraban(\ )*)/g, '').trim().replace(emptylinesregex, "")
@@ -610,6 +624,11 @@ export async function processAllModerationCommands(message, command, args, confi
 
                             message.channel.send(messageToSendToChannelForConfirmation)
                         });
+                    } else {
+                        message.channel.send('an error occured')
+                    }
+
+                    
                 } else {
                     message.reply(":closed_lock_with_key:  You don't have permission to do that! :closed_lock_with_key: ")
                 }
