@@ -155,17 +155,12 @@ app.all('/topgg', webhook.listener(async (vote) => {
 export function keepAlive() {
     // Listen both http & https ports
 const httpServer = http.createServer(app);
-const httpsServer = https.createServer({
-  key: fs.readFileSync(`${__dirname}/../certs/live/api.adora.yk3music.com/privkey.pem`),
-  cert: fs.readFileSync(`${__dirname}/../certs/live/api.adora.yk3music.com/fullchain.pem`),
-  ca:  fs.readFileSync(`${__dirname}/../certs/live/api.adora.yk3music.com/chain.pem`)
-}, app);
 
 /*httpServer.listen(2999, () => {
     console.log('HTTP Server running on port 80');
 });*/
 
-httpsServer.listen(3000, () => {
-    console.log('HTTPS Server running on port 3000');
+httpServer.listen(7357, () => {
+    console.log('HTTPS Server running on port 7357');
 });
 }
