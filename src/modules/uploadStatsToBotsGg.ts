@@ -17,9 +17,9 @@ export async function updateDatadogCount(client,config) {
 if (config.uploadStats) {
   tracer.trace('updateDatadogCount', () => {
 
-    var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban"
-          var parametersForSubscribedServers = [true]
-          var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
+    const queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban"
+    const parametersForSubscribedServers = [true]
+    const lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
   
     if(true) {
       const promises = [
