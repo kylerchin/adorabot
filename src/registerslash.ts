@@ -192,9 +192,14 @@ const commands = [
   "name": "vote",
   "description": "Vote for Adora bot!",
 },*/
+/*
 {
   "name": "votes",
   "description": "View your place on the voting leaderboard!",
+},*/
+{
+  "name": "stats",
+  "description": "Adora Bot Statistics and Info",
 },
 /*
 {

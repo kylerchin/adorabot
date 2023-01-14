@@ -4,6 +4,7 @@ import { CommandInteraction, Interaction, ReactionCollector } from 'discord.js'
 import { ytparty } from './discordTogether';
 import { geniusLyricsFromInteraction } from './genius';
 import { logger, tracer, span } from './logger'
+import {botstatsinteraction} from './botstatsinteraction'
 import { ping, pingInteraction } from './ping'
 import { mamaAwards2021Interaction } from './get2021mamavoteinfo'
 import { billboardinteraction } from './billboard'
@@ -66,6 +67,9 @@ export async function processInteraction(args: processInteractionType) {
           break;
         case 'autoban':
           await interactionautoban(interaction)
+          break;
+        case 'stats': 
+          await botstatsinteraction(interaction);
           break;
         case 'unban':
           bankickinteraction(interaction)
