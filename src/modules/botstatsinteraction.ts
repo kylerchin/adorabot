@@ -3,6 +3,8 @@ import { CommandInteraction, Interaction, ReactionCollector } from 'discord.js';
 import {cassandraclient} from './cassandraclient'
 
 export function botstatsinteraction(interaction: CommandInteraction) {
+    
+    if (performance.now() > 100000) {
     //await howManyUsersInBanDatabase(cassandraclient)
 
     const queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban WHERE subscribed= ? ALLOW FILTERING;"
@@ -93,4 +95,8 @@ export function botstatsinteraction(interaction: CommandInteraction) {
         }).catch((error) => {
             console.error(error)
         })
+}
+else {
+    interaction.reply("sorry! I just booted up and can't perform this command close to boot! Please wait 100 seconds and try again.")
+}
 }
