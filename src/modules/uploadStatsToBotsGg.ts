@@ -13,9 +13,8 @@ import {dogstatsd} from './dogstats'
 const { config } = require('./../../config.json');
   
 export async function updateDatadogCount(client,config) {
-  
-if (config.uploadStats) {
-  tracer.trace('updateDatadogCount', () => {
+
+
 
     const queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban"
     const parametersForSubscribedServers = [true]
@@ -48,8 +47,7 @@ if (config.uploadStats) {
     })
   
   }
-    })
-}
+    
 
 }
 
@@ -57,7 +55,7 @@ export async function updateDiscordBotsGG(client,config) {
 
   tracer.trace('updateDiscordBotsGG', () => {
   
-  if(config.uploadStats) {
+  if(true) {
     const promises = [
       client.shard.fetchClientValues('guilds.cache.size'),
       client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0))
@@ -143,7 +141,7 @@ await Promise.allSettled([
 }
 
 export async function updateDiscordBotsGGRateLimited(client,config) {
-  if (config.uploadStats) {
+  if (true) {
     //has the system recently uploaded stats to discord bots gg
     if (rateLimitsInShard.has("discordbotsgg")) {
     } else {
@@ -161,7 +159,7 @@ export async function updateDiscordBotsGGRateLimited(client,config) {
 
 
 export async function updateDatadogCountRateLimited(client,config) {
-  if (config.uploadStats) {
+  if (true) {
   //has the system recently fetched the database
   if (rateLimitsInShard.has("datadogcount")) {
   } else {

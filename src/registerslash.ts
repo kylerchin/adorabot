@@ -187,20 +187,24 @@ const commands = [
   "name": "help",
   "description": "List of commands on Adora bot",
 },*/
-/*
+
 {
   "name": "vote",
+  "name_localizations": {
+    "ko": "투표"
+  },
   "description": "Vote for Adora bot!",
-},*/
+},
 /*
 {
   "name": "votes",
   "description": "View your place on the voting leaderboard!",
 },*/
+/*
 {
   "name": "stats",
   "description": "Adora Bot Statistics and Info",
-},
+},*/
 /*
 {
   "name": "invite",
