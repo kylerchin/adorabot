@@ -14,5 +14,12 @@ module.exports = {
        name: 'stats',
        script: './dist/runstatsdaemon.js',
        interpreter_args: "-r ./newrelic.js"
-    }]
+    },
+    {
+      name: 'vote',
+      script: './dist/runserver.js',
+      interpreter_args: "-r ./newrelic.js"
+    }
+  ]
+
   }

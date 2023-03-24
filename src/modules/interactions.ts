@@ -4,17 +4,20 @@ import { CommandInteraction, Interaction, ReactionCollector } from 'discord.js'
 import { ytparty } from './discordTogether';
 import { geniusLyricsFromInteraction } from './genius';
 import { logger, tracer, span } from './logger'
+import {botstatsinteraction} from './botstatsinteraction'
 import { ping, pingInteraction } from './ping'
 import { mamaAwards2021Interaction } from './get2021mamavoteinfo'
 import { billboardinteraction } from './billboard'
 import {interactionautoban} from './interactionautoban'
 import {bankickinteraction} from './bankickinteraction'
 import {helppageinteraction} from './help'
+import { showTopVotersInteraction} from './vote'
 const { config } = require('./../../config.json');
 
 import {uploadStringToNewRelic} from './newRelic';
 import { youtubeVideoStatsInteraction } from './youtube/youtube'
 import { inspectInteraction } from './inspect';
+import { sendVoteLinks } from './vote';
 
 interface processInteractionType {
   interaction: any;
@@ -45,30 +48,53 @@ export async function processInteraction(args: processInteractionType) {
           interaction.reply("Here's the invite link! It's an honor to help you :) \n" + 
         "https://discord.com/oauth2/authorize?client_id=737046643974733845&scope=bot%20applications.commands&permissions=2151017550"+
         "\nHere's our support server for announcements and questions! Subscribe to the announcements channel for updates. https://discord.gg/3h6dpyzHk7\nRemember to run `/help` for the list of commands!")
+          break;
         case 'lyrics':
           await geniusLyricsFromInteraction(interaction)
+          break;
         case 'yt':
           await youtubeVideoStatsInteraction(interaction, config)
+          break;
         case 'ytparty':
           //await geniusLyricsFromInteraction(interaction)
           await ytparty({ message: interaction, client: args.interaction.client })
+          break;
         case 'billboard':
-          await billboardinteraction(interaction, args.interaction.client)
+         // await billboardinteraction(interaction, args.interaction.client)
+         break;
         case 'ban':
           bankickinteraction(interaction)
+          break;
         case 'autoban':
           await interactionautoban(interaction)
+          break;
+        case 'stats': 
+          await botstatsinteraction(interaction);
+          break;
         case 'unban':
           bankickinteraction(interaction)
+          break;
         case 'kick':
           bankickinteraction(interaction)
+          
+          break;
         case 'inspect':
-          await inspectInteraction(interaction)
+          await inspectInteraction(interaction);
+          break;
         case 'help':
-          await helppageinteraction(interaction)
+          await helppageinteraction(interaction);
+          break;
+        case 'vote':
+          sendVoteLinks(interaction);
+        case 'votes':
+          showTopVotersInteraction({
+              interaction,
+              client: args.interaction.client
+          });
+          break;
         case 'mama':
-          // await mamaAwards2021Interaction(interaction) 
-          await interaction.reply('The 2021 Mama Awards Votes have ended. Come back next year!')
+           //await mamaAwards2021Interaction(interaction) 
+          await interaction.reply('The 2022 Mama Awards Votes have ended. Come back next year!')
           break;
         default:
         // console.log(`Sorry, we are out of ${expr}.`);

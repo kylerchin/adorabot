@@ -52,12 +52,14 @@ export async function commandHandler(msg, config, dogstatsd, startupTime) {
   if (msg.content.toLowerCase().startsWith(config.prefix) || msg.content.toLowerCase().startsWith("a!")) {
     
     //warn users about discord ending message services
+   if (!isAuthorizedAdmin(msg.author.id)) {
     msg.reply("Discord will be disabling bots reading messages starting August 31, 2022.\n" + 
     "Users of Adora should switch to Adora's Slash Commands.\n"+
     "If Slash Commands aren't showing up in your server, you'll need to give Adora permissions again.\n" +
     "Click this link to give Adora slash permissions in your server. https://discord.com/oauth2/authorize?client_id=737046643974733845&scope=bot%20applications.commands&permissions=2151017550\n" + 
     "Run /help for a list of commands and /invite for our support server."
     );
+   }
 
 
     if (!msg.author.bot) {
@@ -222,92 +224,92 @@ export async function commandHandler(msg, config, dogstatsd, startupTime) {
 
       if (command === 'botstats') {
 
-        //await howManyUsersInBanDatabase(cassandraclient)
+      //await howManyUsersInBanDatabase(cassandraclient)
 
-        var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban WHERE subscribed= ? ALLOW FILTERING;"
-        var parametersForSubscribedServers = [true]
-        var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
-        var lookuphowmanyphishinglinks = "SELECT COUNT(*) FROM adoramoderation.badlinks;"
-        var lookuphowmanyytvidstracked = "SELECT COUNT(*) FROM adorastats.trackedytvideosids;"
-        var lookuphowmanyytvidsstats = "SELECT * FROM adorastats.statpoints;"
-        //return numberofrowsindatabase;
+      var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban WHERE subscribed= ? ALLOW FILTERING;"
+      var parametersForSubscribedServers = [true]
+      var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
+      var lookuphowmanyphishinglinks = "SELECT COUNT(*) FROM adoramoderation.badlinks;"
+      var lookuphowmanyytvidstracked = "SELECT COUNT(*) FROM adorastats.trackedytvideosids;"
+      var lookuphowmanyytvidsstats = "SELECT * FROM adorastats.statpoints;"
+      //return numberofrowsindatabase;
 
-        const promises = [
-          client.shard.fetchClientValues('guilds.cache.size'),
-          client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)),
-          cassandraclient.execute(queryNumberOfSubscribedServers, parametersForSubscribedServers),
-          cassandraclient.execute(lookuphowmanybannedusersquery),
-          cassandraclient.execute(lookuphowmanyphishinglinks),
-          cassandraclient.execute(lookuphowmanyytvidstracked),
-          cassandraclient.execute(lookuphowmanyytvidsstats)
-        ];
+      const promises = [
+        client.shard.fetchClientValues('guilds.cache.size'),
+        client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0)),
+        cassandraclient.execute(queryNumberOfSubscribedServers, parametersForSubscribedServers),
+        cassandraclient.execute(lookuphowmanybannedusersquery),
+        cassandraclient.execute(lookuphowmanyphishinglinks),
+        cassandraclient.execute(lookuphowmanyytvidstracked),
+        cassandraclient.execute(lookuphowmanyytvidsstats)
+      ];
 
-        return Promise.all(promises)
-          .then(results => {
-            console.log(results[6])
+      return Promise.all(promises)
+        .then(results => {
+          console.log(results[6])
 
-            const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
-            const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
-            var returnSubscribedServersCount = results[2];
-            var subscribedServerCount = returnSubscribedServersCount.rows[0].count.low
-            var returnBanDatabaseAmount = results[3];
-            var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
-            var numberofrowsphishing = results[4].rows[0].count.low
-            var numberofrowsytvids = results[5].rows[0].count.low
-            var numberofrowsytstats = results[6].rows[0].amount
-            var bob = `Bot Statistics`
-            return msg.channel.send({embeds: [{description: bob,"fields": [
-              {
-                "name": "Servers",
-                "value": `${totalGuilds}`
-              },
-              {
-                "name": "Members",
-                "value": `${totalMembers}`
-              },
-              {
-                "name": "Shards",
-                "value": `${client.shard.count}`
-              },
-              {
-                "name": "Bans in Database",
-                "value": `${numberofrowsindatabase}`,
-                "inline": true
-              },
-              {
-                "name": "Servers Subscribed to Autoban",
-                "value": `${subscribedServerCount}`,
-                "inline": true
-              },
-              {
-                "name": "Phishing links blocked",
-                "value": `${numberofrowsphishing}`
-              }
-            ]},
+          const totalGuilds = results[0].reduce((prev, guildCount) => prev + guildCount, 0);
+          const totalMembers = results[1].reduce((prev, memberCount) => prev + memberCount, 0);
+          var returnSubscribedServersCount = results[2];
+          var subscribedServerCount = returnSubscribedServersCount.rows[0].count.low
+          var returnBanDatabaseAmount = results[3];
+          var numberofrowsindatabase = returnBanDatabaseAmount.rows[0].count.low
+          var numberofrowsphishing = results[4].rows[0].count.low
+          var numberofrowsytvids = results[5].rows[0].count.low
+          var numberofrowsytstats = results[6].rows[0].amount
+          var bob = `Bot Statistics`
+          return msg.channel.send({embeds: [{description: bob,"fields": [
             {
-              "fields": [
-                {
-                  "name": "Tracked YouTube Videos",
-                  "value": `${numberofrowsytvids}`,
-                  "inline": true
-                },
-                {
-                  "name": "Video Statistic Points",
-                  "value": `${numberofrowsytstats}`,
-                  "inline": true
-                }
-              ]
-            }]
-          })
-          .catch(console.error);
+              "name": "Servers",
+              "value": `${totalGuilds}`
+            },
+            {
+              "name": "Members",
+              "value": `${totalMembers}`
+            },
+            {
+              "name": "Shards",
+              "value": `${client.shard.count}`
+            },
+            {
+              "name": "Bans in Database",
+              "value": `${numberofrowsindatabase}`,
+              "inline": true
+            },
+            {
+              "name": "Servers Subscribed to Autoban",
+              "value": `${subscribedServerCount}`,
+              "inline": true
+            },
+            {
+              "name": "Phishing links blocked",
+              "value": `${numberofrowsphishing}`
+            }
+          ]},
+          {
+            "fields": [
+              {
+                "name": "Tracked YouTube Videos",
+                "value": `${numberofrowsytvids}`,
+                "inline": true
+              },
+              {
+                "name": "Video Statistic Points",
+                "value": `${numberofrowsytstats}`,
+                "inline": true
+              }
+            ]
+          }]
+        })
+        .catch(console.error);
 
 
 
 
 
-      }).catch((error) => {
-        console.error(error)
-      })
+    }).catch((error) => {
+      console.error(error)
+    })
     
     }
 

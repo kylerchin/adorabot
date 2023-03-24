@@ -112,12 +112,16 @@ try {
 //  console.log(info)
   tracer.inject(span,'log',logDebug)
 
+  try {
+    updateDatadogCountRateLimited(client,config)
+  } catch (statserror) {
+    console.error(statserror)
+  }
+
   // in the future... restrict to 1 shard
   try {
     if ( recievedFirstMessageState) {
-
      voteReminderRuntime(cassandraclient,client)
-   
   }
 }
    catch(error) {

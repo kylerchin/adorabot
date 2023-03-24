@@ -91,7 +91,7 @@ export async function crossUsageMamaFinals(messageOrInteraction:any) {
 
   var config:any = {
     method: 'get',
-    url: 'https://mama.mwave.me/en/api/rankingDetailData.json?sectionID=3',
+    url: 'pollOptions',
     headers: { 
       'Cookie': 'org.springframework.mobile.device.site.CookieSitePreferenceRepository.SITE_PREFERENCE=NORMAL; JSESSIONID=5445A4CAD399008D9AE8BEEA8CAA8270; SCOUTER=x3qrab1aj39ikj'
     }
@@ -99,18 +99,18 @@ export async function crossUsageMamaFinals(messageOrInteraction:any) {
 
   axios(config)
   .then(async(mamaresp) => {
-    var descriptionToSendArray = mamaresp.data.rankList.map(eachItem => {
+    var descriptionToSendArray = mamaresp.data.pollOptions.map(eachItem => {
       var medal = ""
-      if (eachItem.RANK_NUM === 1) {
+      if (eachItem.no === 1) {
         medal = ":first_place:"
       } 
-      if (eachItem.RANK_NUM === 2) {
+      if (eachItem.no === 2) {
         medal = ":second_place:"
       } 
-      if (eachItem.RANK_NUM === 3) {
+      if (eachItem.no === 3) {
         medal = ":third_place:"
       } 
-      return `#${eachItem.RANK_NUM}|\`${eachItem.CANDIDATE_VOTE_PERCENT}% ${eachItem.CANDIDATE_VOTE_SUM.toLocaleString('en-US')}\` ${eachItem.ARTIST_NAME_ENG} ${medal}`
+      return `#${eachItem.no}|\`${eachItem.votePercentage}%\` ${eachItem.name_en} ${medal}`
     })
 
     

@@ -8,18 +8,17 @@ import {cassandraclient} from './cassandraclient'
 
 import {dogstatsd} from './dogstats'
 
-
+const {performance} = require('perf_hooks');
 
 const { config } = require('./../../config.json');
   
 export async function updateDatadogCount(client,config) {
-  
-if (config.uploadStats) {
-  tracer.trace('updateDatadogCount', () => {
 
-    var queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban"
-          var parametersForSubscribedServers = [true]
-          var lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
+  if (performance.now() > 100000) {
+    
+    const queryNumberOfSubscribedServers = "SELECT COUNT(*) FROM adoramoderation.guildssubscribedtoautoban"
+    const parametersForSubscribedServers = [true]
+    const lookuphowmanybannedusersquery = "SELECT COUNT(*) FROM adoramoderation.banneduserlist;"
   
     if(true) {
       const promises = [
@@ -48,8 +47,9 @@ if (config.uploadStats) {
     })
   
   }
-    })
-}
+  }
+
+    
 
 }
 
@@ -57,7 +57,7 @@ export async function updateDiscordBotsGG(client,config) {
 
   tracer.trace('updateDiscordBotsGG', () => {
   
-  if(config.uploadStats) {
+    if (performance.now() > 100000) {
     const promises = [
       client.shard.fetchClientValues('guilds.cache.size'),
       client.shard.broadcastEval(client => client.guilds.cache.reduce((prev, guild) => prev + guild.memberCount, 0))
@@ -143,7 +143,7 @@ await Promise.allSettled([
 }
 
 export async function updateDiscordBotsGGRateLimited(client,config) {
-  if (config.uploadStats) {
+  if (performance.now() > 100000) {
     //has the system recently uploaded stats to discord bots gg
     if (rateLimitsInShard.has("discordbotsgg")) {
     } else {
@@ -161,7 +161,7 @@ export async function updateDiscordBotsGGRateLimited(client,config) {
 
 
 export async function updateDatadogCountRateLimited(client,config) {
-  if (config.uploadStats) {
+  if (performance.now() > 100000) {
   //has the system recently fetched the database
   if (rateLimitsInShard.has("datadogcount")) {
   } else {

@@ -152,7 +152,7 @@ export async function geniusShowOtherSongs(response,requesterid,isInteractionOrM
          else {
             //found something
             var songLyricsHTML;
-             songLyricsHTML = await decideWhichGeniusUrlToUse(response);
+             songLyricsHTML = await decideWhichGeniusUrlToUse(response.data.response);
             
             console.log(songLyricsHTML)
 
@@ -212,7 +212,7 @@ export async function geniusShowOtherSongs(response,requesterid,isInteractionOrM
             var arrayOfMessagesSentForLyrics:Array<any> = [];
             var lyricsRequester = interaction.user.id;
     
-            var geniusQuery = interaction.options.get('song').value
+            var geniusQuery = interaction.options.get('search').value
     
             var searchingForQueryMessage;
 
@@ -344,6 +344,9 @@ try {
     //not the http response.... the genius response
     var hitNumberCounter:number = 0;
     var hitNumberToUse:number = 0;
+    
+        console.log('response inside genius number to use', response)
+    
     var numberOfMaxHits = response.hits.length        
 
     while ((hitNumberCounter < numberOfMaxHits)) {
