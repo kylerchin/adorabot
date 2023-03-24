@@ -238,19 +238,23 @@ lastVoteTimeForReqUserDbl, {type: "debugvote"});
 
         //format next time to vote
         if (lastVoteTimeForReqUserTopgg < Date.now() - twelvehours) {
-            voteAskString += "\nTop.gg: Now! :white_check_mark:\nhttps://top.gg/bot/737046643974733845/vote"
+            voteAskString += "\nTop.gg: Now! :white_check_mark:"
         } else {
             var nextVoteUnixTopgg = Math.round((lastVoteTimeForReqUserTopgg + twelvehours) / 1000)
             voteAskString += `\nTop.gg: <t:${nextVoteUnixTopgg}:R>\n <t:${nextVoteUnixTopgg}:d> <t:${nextVoteUnixTopgg}:T>`
         }
 
+        voteAskString += "\nhttps://top.gg/bot/737046643974733845/vote"
+
          //format next time to vote
          if (lastVoteTimeForReqUserDbl < Date.now() - twelvehours) {
-            voteAskString += "\nDBL: Now! :white_check_mark:\nhttps://discordbotlist.com/bots/adora-ahelp/upvote"
+            voteAskString += "\nDBL: Now! :white_check_mark:"
         } else {
             var nextVoteUnixDbl = Math.round((lastVoteTimeForReqUserDbl + twelvehours) / 1000)
             voteAskString += `\nDBL: <t:${nextVoteUnixDbl}:R>\n <t:${nextVoteUnixDbl}:d> <t:${nextVoteUnixDbl}:T>`
         }
+
+        voteAskString += "\nhttps://discordbotlist.com/bots/adora-ahelp/upvote"
 
         const pageEmbedArray = await pages.map((page,pageindex) => {
 
