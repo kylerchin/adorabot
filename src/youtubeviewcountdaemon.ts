@@ -10,13 +10,17 @@ import {dogstatsd} from './modules/dogstats';
 
 import { uploadStringToNewRelic } from './modules/newRelic';
 
+
+const loadedRemovedData = importconfigfile.get()
+const loadedAuthData = authconfigfile.get()
+
 const youtube = new Client();
 
 const axios = require('axios');
-var importconfigfile = editJsonFile(`${__dirname}/../removedytvids.json`);
-var authconfigfile = editJsonFile(`${__dirname}/../config.json`);
+const importconfigfile = editJsonFile(`${__dirname}/../removedytvids.json`);
+const authconfigfile = editJsonFile(`${__dirname}/../config.json`);
 const Long = require('cassandra-driver').types.Long;
-var youtubeclient = requestjson.createClient('https://youtube.googleapis.com/');
+const youtubeclient = requestjson.createClient('https://youtube.googleapis.com/');
 
 function randomIntFromInterval(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
@@ -26,7 +30,6 @@ export async function fetchVideo(pathForYtRequest) {
   var startingTime = Date.now()
 
   dogstatsd.increment('adorastats.attemptfetch');
-
     youtubeclient.get(pathForYtRequest, async function(err, res, body) {
 
         var timeItTook = Date.now() - startingTime;
@@ -69,8 +72,6 @@ export async function fetchVideo(pathForYtRequest) {
                     })
                 } 
             }
-            
-      
         } 
 
         if (success === false) {
@@ -150,7 +151,7 @@ export async function addVideoToTrackList(videoid,name) {
 }
 
 export function longOrEmpty(number) {
-    return ((number === null || number === undefined || number === NaN) ? undefined : Long.fromNumber(number))
+    return ((number === null || number === undefined || Number.isNaN(number)) ? undefined : Long.fromNumber(number))
 }
 
 interface statInterface {
@@ -181,6 +182,7 @@ export async function addStatsToYtVideo(statParams: statInterface) {
         longOrEmpty(statParams.likes),
         longOrEmpty(statParams.dislikes),
         commentsLong]
+
     await cassandraclient.execute(query, params, {prepare: true})
     .then(async result => {
         await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
@@ -206,9 +208,6 @@ interface fetchAllInterface {
 }
 
 export async function fetchStatsForAll(inputObj:fetchAllInterface) {
-
-    var loadedRemovedData = importconfigfile.get()
-    var loadedAuthData = authconfigfile.get()
 
     var queryFetchAllTrackedIds = "SELECT * FROM adorastats.trackedytvideosids"
 
@@ -292,58 +291,6 @@ export async function fetchStatsForAll(inputObj:fetchAllInterface) {
                            
                            
                         }
-    
-                        var fullUrlOfVideo = `https://www.youtube.com/watch?v=${row.videoid}`
-    
-    
-                        try {
-    
-                      
-                            if (false) {
-                                let { data } = await axios.get(fullUrlOfVideo);
-    
-                                //logger.discordInfoLogger.info(data, {type: 'youtubeHtmlRespond'})
-                               // var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="[^"]">/g)[0],10)
-                               var viewCount = parseInt(data.match(/<meta itemprop="interactionCount" content="([^">]*)">/g)[0].replace(/<meta itemprop="interactionCount" content="/g,"").replace(/">/,""),10)
-                        
-                               var likedisliketooltipMatches = data.match(/"tooltip":"(\d||,)+ \/ (\d||,)+"/g)
-                        
-                               //delete the webpage since we dont need it anymore
-                               data = null;
-                        
-                               console.log('likeddisliketooltipmatches', likedisliketooltipMatches)
-                        
-                               if (likedisliketooltipMatches && (likedisliketooltipMatches !== null)) {
-                                var likedisliketooltip = likedisliketooltipMatches[0].replace(/"tooltip": ?"/g,"").replace(/"/g,"")
-                        
-                                var likeanddislikearray = likedisliketooltip.split("/");
-                         
-                                console.log('splittedArray', likeanddislikearray)
-                         
-                                console.log("likeCountAttempt",likeanddislikearray[0])
-                                var likeCount = parseInt(likeanddislikearray[0].trim().replace(/,/g,""),10)
-                         
-                                var dislikeCount = parseInt(likeanddislikearray[1].trim().replace(/,/g,""),10)
-                         
-                                 console.log(viewCount)
-                                 console.log("likeCount",likeCount)
-                                 console.log("dislikeCount",dislikeCount)
-                                             await  addStatsToYtVideo({
-                                                 videoid: row.videoid,
-                                                 views: viewCount,
-                                                 likes: likeCount,
-                                                 dislikes: dislikeCount,
-                                                 comments: undefined
-                                             })
-                               }
-                        
-                             
-                            }
-           
-                       
-                    } catch (erroraxios) {
-                        console.log(erroraxios)
-                    }
                 } 
                 }
                
