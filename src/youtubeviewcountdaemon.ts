@@ -10,17 +10,14 @@ import {dogstatsd} from './modules/dogstats';
 
 import { uploadStringToNewRelic } from './modules/newRelic';
 
+const axios = require('axios');
+const importconfigfile = editJsonFile(`${__dirname}/../removedytvids.json`);
+const authconfigfile = editJsonFile(`${__dirname}/../config.json`);
 
 const loadedRemovedData = importconfigfile.get()
 const loadedAuthData = authconfigfile.get()
 
-const youtube = new Client();
-
-const axios = require('axios');
-const importconfigfile = editJsonFile(`${__dirname}/../removedytvids.json`);
-const authconfigfile = editJsonFile(`${__dirname}/../config.json`);
 const Long = require('cassandra-driver').types.Long;
-const youtubeclient = requestjson.createClient('https://youtube.googleapis.com/');
 
 function randomIntFromInterval(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
@@ -30,7 +27,7 @@ export async function fetchVideo(pathForYtRequest) {
   var startingTime = Date.now()
 
   dogstatsd.increment('adorastats.attemptfetch');
-    youtubeclient.get(pathForYtRequest, async function(err, res, body) {
+    axios.get(pathForYtRequest, async function(err, res, body) {
 
         var timeItTook = Date.now() - startingTime;
 
