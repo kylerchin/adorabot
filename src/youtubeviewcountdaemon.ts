@@ -10,7 +10,6 @@ import {dogstatsd} from './modules/dogstats';
 
 import { uploadStringToNewRelic } from './modules/newRelic';
 
-const axios = require('axios');
 const importconfigfile = editJsonFile(`${__dirname}/../removedytvids.json`);
 const authconfigfile = editJsonFile(`${__dirname}/../config.json`);
 
@@ -27,7 +26,11 @@ export async function fetchVideo(pathForYtRequest) {
   var startingTime = Date.now()
 
   dogstatsd.increment('adorastats.attemptfetch');
-    axios.get(pathForYtRequest, async function(err, res, body) {
+    fetch(pathForYtRequest)
+    .then((response) => response.json())
+    .then(async(body) => {
+
+       
 
         var timeItTook = Date.now() - startingTime;
 
@@ -47,7 +50,7 @@ export async function fetchVideo(pathForYtRequest) {
 
         var success = false;
 
-        if (!err) {
+       
             
         const timeOfRequest = new Date();
 
@@ -83,18 +86,19 @@ export async function fetchVideo(pathForYtRequest) {
             }));
         }
 
-        } else {
-            console.error(err);
+       
 
-            dogstatsd.increment('adorastats.noresponseaxios');
+    })
+    .catch((err) => {
+        console.error(err);
 
-            uploadStringToNewRelic(JSON.stringify({
-                type: "ytfetcherror",
-                err: err,
-                keyused: pathForYtRequest
-            }));
-        }
+        dogstatsd.increment('adorastats.noresponseaxios');
 
+        uploadStringToNewRelic(JSON.stringify({
+            type: "ytfetcherror",
+            err: err,
+            keyused: pathForYtRequest
+        }));
     });
 }
 
