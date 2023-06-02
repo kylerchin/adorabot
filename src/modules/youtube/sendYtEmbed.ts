@@ -77,31 +77,50 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
 
               var promiseresults: any = await Promise.allSettled([
                 axios.get(pathForChannelOfVideoRequest),
-                new Promise((resolve, reject) => {
-                  const worker = new Worker(
-                    path.resolve(__dirname, './ytWorkerWrapper.js')
-                    , {
-                      workerData: {
-                        id: body.items[0].id,
-                        optionsObject: {
-                          channelId: body.items[0].snippet.channelId,
-                          locale: message.locale,
-                          subtitle: body.items[0].snippet.title,
-                          publishedAt: new Date(body.items[0].snippet.publishedAt),
-                          addOnPoints: [
-                            {
-                              time: Date.now(),
-                              views: videostats.viewCount
-                            }
-                          ]
-                        }
-
-                      }
-                    });
-                  worker.on('message', resolve);
-                  worker.on('error', reject);
+                ytChart(body.items[0].id, {
+                  channelId: body.items[0].snippet.channelId,
+                  locale: message.locale,
+                  subtitle: body.items[0].snippet.title,
+                  publishedAt: new Date(body.items[0].snippet.publishedAt),
+                  addOnPoints: [
+                    {
+                      time: Date.now(),
+                      views: videostats.viewCount
+                    }
+                  ]
                 })
               ]);
+
+              try {
+                await Promise.all([
+                  new Promise((resolve, reject) => {
+                    const worker = new Worker(
+                      path.resolve(__dirname, './ytWorkerWrapper.js')
+                      , {
+                        workerData: {
+                          id: body.items[0].id,
+                          optionsObject: {
+                            channelId: body.items[0].snippet.channelId,
+                            locale: message.locale,
+                            subtitle: body.items[0].snippet.title,
+                            publishedAt: new Date(body.items[0].snippet.publishedAt),
+                            addOnPoints: [
+                              {
+                                time: Date.now(),
+                                views: videostats.viewCount
+                              }
+                            ]
+                          }
+
+                        }
+                      });
+                    worker.on('message', resolve);
+                    worker.on('error', reject);
+                  })
+                ])
+              } error(err) {
+                console.error(err)
+              }
 
               console.log('promise over')
               console.log(promiseresults)
