@@ -9,11 +9,27 @@ const TimeUuid = require("cassandra-driver").types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require("canvas");
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`./../../../removedytvids.json`);
-registerFont(
+/*registerFont(
     path.resolve(__dirname, "../../LexendDecaMedium.ttf")
     , {
         family: "Lexend Deca",
-    });
+    });*/
+
+registerFont(
+    path.resolve(__dirname, "../../AtkinsonHyper.ttf"),
+    {
+        family: "Atkinson Hyperlegible",
+    }
+);
+
+registerFont(
+    path.resolve(__dirname, "../../NotoSansKR-Regular.otf"),
+    {
+        family: "Noto Sans KR",
+    }
+);
+
+
 
 var arrayOfMonthsEnglishShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
@@ -23,7 +39,7 @@ interface optionsInterface {
     addOnPoints?: AddOnPointsEntity[] | null;
     publishedAt?: Date;
     locale?: any;
-    subtitle?:any;
+    subtitle?: any;
 }
 
 interface AddOnPointsEntity {
@@ -63,7 +79,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
         })
     }
 
-        console.log('attemting to create canvas')
+    console.log('attemting to create canvas')
 
     const canvas = createCanvas(3840, 2160);
     const ctx = canvas.getContext("2d");
@@ -89,7 +105,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
     const twopi = Math.PI * 2;
 
 
-        console.log('done making canvas')
+    console.log('done making canvas')
 
     function drawCoordinates(x, y) {
         //  var ctx = canvas.getContext("2d");
@@ -163,7 +179,8 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
     if (numberOfRows === 0 || viewRange < 3 || isBlocked || (leastAndGreatestObject["leastTime"] === null)) {
         // Write "Not Enough Data"
         ctx.fillStyle = "#ffffff";
-        ctx.font = "200px Lexend Deca";
+        //ctx.font = "200px Lexend Deca";
+        ctx.font = '200px "Atkinson Hyperlegible", 200px "Noto Sans KR", sans-serif'
         // ctx.rotate(0.1)
         ctx.textAlign = "center";
         ctx.fillText(
@@ -589,59 +606,56 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
         }
 
         if (viewRange < 100000) {
-            var yaxissmallinterval = 10000;
-            var longtick = 20000;
-            var shorttick = 100000;
+            let yaxissmallinterval = 10000;
+            let longtick = 20000;
+            let shorttick = 100000;
 
             if (viewRange < 20000) {
                 yaxissmallinterval = 1000;
                 longtick = 5000;
+            }
 
-                if (viewRange < 10000) {
-                    yaxissmallinterval = 500;
-                    longtick = 2000;
+            if (viewRange < 10000) {
+                yaxissmallinterval = 500;
+                longtick = 2000;
+            }
 
-                    if (viewRange < 5000) {
-                        yaxissmallinterval = 100;
-                        longtick = 500;
+            if (viewRange < 5000) {
+                yaxissmallinterval = 100;
+                longtick = 500;
+            }
 
+            if (viewRange < 2000) {
+                yaxissmallinterval = 100;
+                longtick = 100;
+            }
 
-                        if (viewRange < 2000) {
-                            yaxissmallinterval = 100;
-                            longtick = 100;
+            if (viewRange < 1000) {
+                yaxissmallinterval = 50;
+                longtick = 200;
+                shorttick = 10;
+            }
 
-                            if (viewRange < 1000) {
-                                yaxissmallinterval = 50;
-                                longtick = 200;
-                                shorttick = 10;
+            if (viewRange < 500) {
+                yaxissmallinterval = 20;
+                longtick = 100;
+                shorttick = 50;
+            }
 
-                                if (viewRange < 500) {
-                                    yaxissmallinterval = 20;
-                                    longtick = 100;
-                                    shorttick = 50;
+            if (viewRange < 200) {
+                yaxissmallinterval = 5;
+                longtick = 50;
+                shorttick = 10;
+            }
 
-                                    if (viewRange < 200) {
-                                        yaxissmallinterval = 5;
-                                        longtick = 50;
-                                        shorttick = 10;
+            if (viewRange < 100) {
+                yaxissmallinterval = 1;
+                longtick = 10;
+                shorttick = 5;
+            }
 
-                                        if (viewRange < 100) {
-                                            yaxissmallinterval = 1;
-                                            longtick = 10;
-                                            shorttick = 5;
-
-                                            if (viewRange < 30) {
-                                                shorttick = 1;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-
-                }
+            if (viewRange < 30) {
+                shorttick = 1;
             }
 
             var startingsmallinterval = leastAndGreatestObject["leastViews"] - (leastAndGreatestObject["leastViews"] % yaxissmallinterval)
@@ -673,24 +687,24 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
                             pointy);
                         ctxSubYLineLegend.stroke();
 
-                            var nameOfNumberSmall:any = countsmally;
+                        var nameOfNumberSmall: any = countsmally;
 
-                            if (countsmally % 1000) {
-                                if (locale === "kr" || locale === "zh-CN" || locale === "zh-TW") {
-                                    if (countsmally % 10000 === 0) {
-                                        nameOfNumberSmall  = `${countsmally / 1.0e4}${lookuplocale({ key: "tenk", locale: locale })}`;
-                                    } else {
-                                        if (countsmally > 999) {
-                                            
-                                        nameOfNumberSmall  = `${countsmally / 1.0e3}${endingk}`;
-                                            }
-                                    }
+                        if (countsmally % 1000) {
+                            if (locale === "kr" || locale === "zh-CN" || locale === "zh-TW") {
+                                if (countsmally % 10000 === 0) {
+                                    nameOfNumberSmall = `${countsmally / 1.0e4}${lookuplocale({ key: "tenk", locale: locale })}`;
                                 } else {
                                     if (countsmally > 999) {
-                                    nameOfNumberSmall  = `${countsmally / 1.0e3}${endingk}`;
-                                        }
+
+                                        nameOfNumberSmall = `${countsmally / 1.0e3}${endingk}`;
+                                    }
+                                }
+                            } else {
+                                if (countsmally > 999) {
+                                    nameOfNumberSmall = `${countsmally / 1.0e3}${endingk}`;
                                 }
                             }
+                        }
 
                         ctxLegendYLabel.fillText(
                             `${nameOfNumberSmall}`,
@@ -730,43 +744,6 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
         const lengthofstatsprewhiteline = arrayOfStats.length;
 
         const tolerance = 0.2;
-
-        /*
-        let connectinglinefilteredforwhiteline = connectingline.filter((eachDot, eachIndexWhite:number) => {
-            var verdictonkeep = true;
-    
-            if (eachIndexWhite != 0 && eachIndexWhite != lengthofstatsprewhiteline -1) {
-                if (
-                    Math.abs(eachDot.xper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
-                    Math.abs(eachDot.xper - connectingline[eachIndexWhite + 1].xper) < tolerance &&
-                    Math.abs(eachDot.yper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
-                    Math.abs(eachDot.yper - connectingline[eachIndexWhite + 1].xper) < tolerance 
-                ) {
-                    verdictonkeep = false
-            }
-        } else {
-            if (eachIndexWhite === 0 ) {
-                if (
-                Math.abs(eachDot.xper - connectingline[eachIndexWhite + 1].xper) < tolerance &&
-                Math.abs(eachDot.yper - connectingline[eachIndexWhite + 1].xper) < tolerance ) {
-                    verdictonkeep = false;
-                }
-            }
-    
-            if (eachIndexWhite === lengthofstatsprewhiteline -1) {
-                if (
-                Math.abs(eachDot.xper - connectingline[eachIndexWhite - 1].xper) < tolerance &&
-                Math.abs(eachDot.yper - connectingline[eachIndexWhite - 1].xper) < tolerance ) {
-                    verdictonkeep = false;
-                }
-            }
-        }
-        return verdictonkeep;
-    })
-    
-        if (connectinglinefilteredforwhiteline.length >= 2) {
-        drawLineFromPercentageArray(connectinglinefilteredforwhiteline );
-        }*/
 
         drawLineFromPercentageArray(connectingline);
 
@@ -906,7 +883,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
         ctxlegend.closePath();
 
-            console.log('done draw function');
+        console.log('done draw function');
 
     }
 
