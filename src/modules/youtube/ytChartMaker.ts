@@ -1,13 +1,13 @@
-const { Worker } = require('worker_threads')
 import * as path from 'path';
 import { cassandraclient } from "../cassandraclient";
 import { logger, tracer } from "../logger"
 import { dogstatsd } from '../dogstats'
 import { resolve } from 'path';
 import { lookuplocale } from './../lookuptablelocale';
-const TimeUuid = require("cassandra-driver").types.TimeUuid;
-const { createCanvas, registerFont, loadImage } = require("canvas");
-const editJsonFile = require("edit-json-file");
+import { types } from "cassandra-driver";
+const TimeUuid = types.TimeUuid;
+import { createCanvas, registerFont, loadImage } from 'canvas'
+import editJsonFile from 'edit-json-file';
 var importconfigfile = editJsonFile(`./../../../removedytvids.json`);
 registerFont(
     path.resolve(__dirname, "../../LexendDecaMedium.ttf")
@@ -28,10 +28,6 @@ registerFont(
         family: "Noto Sans KR",
     }
 );
-
-
-
-var arrayOfMonthsEnglishShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 interface optionsInterface {
     channelId?: string;
