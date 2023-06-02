@@ -15,6 +15,7 @@ var importconfigfile = editJsonFile(`${__dirname}/../../../removedytvids.json`);
 const axios = require('axios').default;
 import { lookuplocale } from './../lookuptablelocale'
 import { replyorfollowup } from './../replyorfollowup'
+import { Worker } from 'worker_threads'
 
 import { uploadStringToNewRelic } from "./../newRelic";
 // Exporting the class which will be 
