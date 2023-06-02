@@ -189,7 +189,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
             canvas.height / 2 - 100
         );
 
-        ctx.font = "70px Lexend Deca";
+        ctx.font = '70px "Atkinson Hyperlegible", sans-serif';
         const yToDrawSubtitle = canvas.height / 2 + 270;
         if (isBlocked) {
             ctx.fillText(
@@ -206,14 +206,14 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
         }
     } else {
         ctx.fillStyle = "#ffffff";
-        ctx.font = "150px Lexend Deca";
+        ctx.font = '100px "Atkinson Hyperlegible", 200px "Noto Sans KR", sans-serif';
         // ctx.rotate(0.1)
         ctx.textAlign = "center";
         ctx.fillText(`${titletext}`, x, 200);
 
         if (subtitle) {
             ctx.fillStyle = "#dedede";
-            ctx.font = "100px Lexend Deca";
+            ctx.font = '70px "Atkinson Hyperlegible", 200px "Noto Sans KR", sans-serif';
             // ctx.rotate(0.1)
             ctx.textAlign = "center";
             ctx.fillText(`${subtitle}`, x, 300);
