@@ -106,7 +106,7 @@ Keyspace `adorastats`
 
 You need to install font dependencies for a lot of the canvas stuff to work, otherwise, EMPTY UNICODE BOXES!!!!
 
-`sudo apt-get install fonts-arphic-uming fonts-ipafont-mincho ttf-wqy-zenhei ttf-unfonts-core fonts-takao fonts-dejavu ttf-mscorefonts-installer`
+`sudo apt-get install fonts-arphic-uming fonts-ipafont-mincho ttf-wqy-zenhei font-unfonts-core fonts-takao fonts-dejavu ttf-mscorefonts-installer`
 
 ### Canvas Dependencies
 
