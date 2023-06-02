@@ -12,6 +12,7 @@ import { uploadStringToNewRelic } from "./../newRelic";
 import { Message } from 'discord.js'
 import { interactionSentYetCache } from './cacheInteractionSentYet';
 
+import * as path from 'path';
 import { Worker } from 'worker_threads';
 
 function skipChannel(channelid) {

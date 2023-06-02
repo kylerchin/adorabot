@@ -17,6 +17,7 @@ import { lookuplocale } from './../lookuptablelocale'
 import { replyorfollowup } from './../replyorfollowup'
 import { Worker } from 'worker_threads'
 
+import * as path from 'path';
 import { uploadStringToNewRelic } from "./../newRelic";
 // Exporting the class which will be 
 // used in another file 
