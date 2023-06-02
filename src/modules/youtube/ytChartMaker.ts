@@ -9,11 +9,11 @@ const TimeUuid = require("cassandra-driver").types.TimeUuid;
 const { createCanvas, registerFont, loadImage } = require("canvas");
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`./../../../removedytvids.json`);
-/*registerFont(
+registerFont(
     path.resolve(__dirname, "../../LexendDecaMedium.ttf")
     , {
         family: "Lexend Deca",
-    });*/
+    });
 
 registerFont(
     path.resolve(__dirname, "../../AtkinsonHyper.ttf"),
