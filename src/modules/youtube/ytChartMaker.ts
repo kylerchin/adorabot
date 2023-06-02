@@ -7,6 +7,7 @@ import { lookuplocale } from './../lookuptablelocale';
 import { types } from "cassandra-driver";
 const TimeUuid = types.TimeUuid;
 import { createCanvas, registerFont, loadImage } from 'canvas'
+const canvas = require('canvas');
 import editJsonFile from 'edit-json-file';
 var importconfigfile = editJsonFile(`./../../../removedytvids.json`);
 registerFont(

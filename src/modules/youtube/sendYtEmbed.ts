@@ -94,7 +94,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
               ]);
 
               try {
-                await Promise.all([
+                const bruz = await Promise.all([
                   new Promise((resolve, reject) => {
                     const worker = new Worker(
                       path.resolve(__dirname, './ytWorkerWrapper.js')
@@ -120,6 +120,8 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                     worker.on('error', reject);
                   })
                 ])
+
+                console.log('testing workers', bruz)
               } catch (err) {
                 console.error(err)
               }
