@@ -77,17 +77,29 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
 
               var promiseresults: any = await Promise.allSettled([
                 axios.get(pathForChannelOfVideoRequest),
-                ytChart(body.items[0].id, {
-                  channelId: body.items[0].snippet.channelId,
-                  locale: message.locale,
-                  subtitle: body.items[0].snippet.title,
-                  publishedAt: new Date(body.items[0].snippet.publishedAt),
-                  addOnPoints: [
-                    {
-                      time: Date.now(),
-                      views: videostats.viewCount
-                    }
-                  ]
+                new Promise((resolve, reject) => {
+                  const worker = new Worker(
+                    path.resolve(__dirname, './ytWorkerWrapper.js')
+                    , {
+                      workerData: {
+                        id: body.items[0].id,
+                        optionsObject: {
+                          channelId: body.items[0].snippet.channelId,
+                          locale: message.locale,
+                          subtitle: body.items[0].snippet.title,
+                          publishedAt: new Date(body.items[0].snippet.publishedAt),
+                          addOnPoints: [
+                            {
+                              time: Date.now(),
+                              views: videostats.viewCount
+                            }
+                          ]
+                        }
+
+                      }
+                    });
+                  worker.on('message', resolve);
+                  worker.on('error', reject);
                 })
               ]);
 
@@ -252,7 +264,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                     }
 
                   }
-                ) 
+                )
               }
 
 
@@ -292,7 +304,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
             replyorfollowup(
               {
                 messageorinteraction: message,
-                content: "Something went wrong! Try again?\nError: `No items sent back from YouTube API for video id " +  videoid + "`"
+                content: "Something went wrong! Try again?\nError: `No items sent back from YouTube API for video id " + videoid + "`"
               }
             )
 
@@ -305,7 +317,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                 message.channel.send("API KEY: `" + apikey + "`");
               }
             }
-           
+
           }
 
         } else {

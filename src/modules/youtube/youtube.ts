@@ -12,6 +12,8 @@ import { uploadStringToNewRelic } from "./../newRelic";
 import { Message } from 'discord.js'
 import { interactionSentYetCache } from './cacheInteractionSentYet';
 
+import { Worker } from 'worker_threads';
+
 function skipChannel(channelid) {
     try {
         var loadedRemovedData = importconfigfile.get()
@@ -154,8 +156,8 @@ export async function youtubeVideoStatsInteraction(interaction: any, config: any
                         apikey: youtubeApiKeyRandomlyChosen,
                         type: "interaction"
                     });
-            }
-        
+                }
+
             }
         }, 5000);
 
@@ -259,14 +261,14 @@ export async function youtubeVideoStatsInteraction(interaction: any, config: any
                                     //if the software broke the first time, do it again
                                     setTimeout(() => {
                                         if (interaction.id) {
-                                        if (interactionSentYetCache.get(interaction.id) === undefined) {
-                                            sendYtCountsEmbed({
-                                                videoid: videoID,
-                                                message: interaction,
-                                                apikey: youtubeApiKeyRandomlyChosen,
-                                                type: "interaction"
-                                            });
-                                        }
+                                            if (interactionSentYetCache.get(interaction.id) === undefined) {
+                                                sendYtCountsEmbed({
+                                                    videoid: videoID,
+                                                    message: interaction,
+                                                    apikey: youtubeApiKeyRandomlyChosen,
+                                                    type: "interaction"
+                                                });
+                                            }
                                         }
                                     }, 5000);
                                     logger.discordInfoLogger.info(videos[0].title, { type: "searchYoutubeVideoTermAndResponse", query: `${searchYtString}`, response: `${video.title}`, videoid: `${videoID}` })
