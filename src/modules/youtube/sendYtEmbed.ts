@@ -120,7 +120,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                     worker.on('error', reject);
                   })
                 ])
-              } error(err) {
+              } catch (err) {
                 console.error(err)
               }
 
