@@ -310,11 +310,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
                     (averagePointForThisMonth - leastAndGreatestObject["leastTime"]) / timeRange;
                 var pointxmonth = canvasWidthRange * percxmonth + paddingLeft;
 
-                ctxLegendXLabel.fillText(
-                    `${monthCodeToWrite}`,
-                    pointxmonth,
-                    canvas.height - 40
-                );
+               
 
                 if (countMonth === 11) {
                     countMonth = 0;
