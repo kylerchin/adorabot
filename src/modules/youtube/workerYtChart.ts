@@ -324,7 +324,7 @@ cassandraclient
                     (timeLegend - leastAndGreatestObject["leastTime"]) / timeRange; 
                 var pointx = canvasWidthRange * percxlegend + paddingLeft;
 
-                let shouldDrawThisTime = true;
+                var shouldDrawThisTime = true;
 
                 if (timeRange > 90 * 86400_000) {
                     shouldDrawThisTime = false;
@@ -334,7 +334,7 @@ cassandraclient
                     }
                 }
                 
-                if (shouldDrawThisTime) {
+                if (shouldDrawThisTime === true) {
                     ctxSubLegend.beginPath(); 
                 ctxSubLegend.moveTo(pointx, pointytop); 
                 ctxSubLegend.lineTo(pointx, pointybottom); 
