@@ -315,8 +315,8 @@ cassandraclient
  
             var monthsAdded = [] 
  
- 
- 
+                    console.log('timeRange is ',timeRange)
+
             while (timeLegend < leastAndGreatestObject["greatestTime"]) { 
  
                 //console.log("draw legend") 
@@ -416,7 +416,7 @@ cassandraclient
                     modulusForDays = 10; 
                 }
 
-                if (timeRange > 90 *  86400_000) {
+                if (timeRange > 90 * 86400_000) {
                     if ([1,14].includes(new Date(timeLegend).getUTCDate()) === true) {
                         ctxLegendXLabel.fillText( 
                             `${new Date(timeLegend).getUTCDate()}`, 
