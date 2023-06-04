@@ -11,22 +11,24 @@ let fileOfBanTimeouts = editJsonFile(`${__dirname}/../putgetbanstimeout.json`);
 const Discord = require('discord.js');
 const { DiscordTogether } = require('discord-together');
 var elapsedTimeFirstMsg;
+import {GatewayIntentBits } from 'discord.js'
 var client = new Discord.Client(
   { 
     partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
     intents: [
-      "GUILDS",
-      "GUILD_BANS",
-      "GUILD_EMOJIS_AND_STICKERS",
-      "GUILD_INTEGRATIONS",
-      "GUILD_WEBHOOKS",
-      "GUILD_INVITES",
-      "GUILD_VOICE_STATES",
-      "GUILD_MESSAGE_REACTIONS",
-      "GUILD_MESSAGE_TYPING",
-      "DIRECT_MESSAGES",
-      "DIRECT_MESSAGE_REACTIONS",
-      "DIRECT_MESSAGE_TYPING"
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildBans,
+      GatewayIntentBits.GuildEmojisAndStickers,
+      GatewayIntentBits.GuildIntegrations,
+      GatewayIntentBits.GuildWebhooks,
+      GatewayIntentBits.GuildInvites,
+      GatewayIntentBits.GuildVoiceStates,
+      GatewayIntentBits.GuildMessageReactions,
+      GatewayIntentBits.GuildMessageTyping,
+      GatewayIntentBits.GuildDirectMessages,
+      GatewayIntentBits.DirectMessages,
+      GatewayIntentBits.DirectMessageReactions,
+      GatewayIntentBits.DirectMessageTyping
     ],
    waitGuildTimeout: 1000
   });
