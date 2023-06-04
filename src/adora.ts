@@ -52,8 +52,6 @@ import { listChartsDownload } from './modules/billboard';
 import { createDatabase } from './modules/antiPhishingLinks';
 import {voteReminderRuntime} from './modules/votereminder'
 
-
-
 const NodeCache = require( "node-cache" );
 
 client.everyServerRecheckBansOnThisShard = async () => {

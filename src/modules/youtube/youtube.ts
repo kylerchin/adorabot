@@ -9,7 +9,7 @@ const youtube = new youtubei.Client();
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 import { uploadStringToNewRelic } from "./../newRelic";
-import { Message } from 'discord.js'
+import { Message,ButtonInteraction } from 'discord.js'
 import { interactionSentYetCache } from './cacheInteractionSentYet';
 
 import * as path from 'path';
@@ -123,6 +123,33 @@ function convertUrlToVideoId(ytquery) {
         }
     }
     return getQueryParam('v', precurser);
+}
+
+
+export async function youtubeVideoButtonInteraction(interaction: ButtonInteraction, config:any) {
+          // Defer to send an ephemeral reply later
+    interaction.deferReply()
+    .then(console.log)
+    .catch(console.error);
+
+    const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
+
+    const customId = interaction.customId;
+
+    const splitInfo = customId.split("|");
+
+    const userid = splitInfo[1];
+    const videoid = splitInfo[2];
+
+    if (userid === interaction.user.id) {
+        // user is allowed to react to this
+        sendYtCountsEmbed({
+            videoid,
+            message: interaction,
+            apikey: youtubeApiKeyRandomlyChosen,
+            type: "interaction"
+        })
+    }
 }
 
 export async function youtubeVideoStatsInteraction(interaction: any, config: any) {

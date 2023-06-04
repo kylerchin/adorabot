@@ -31,20 +31,13 @@ import {ButtonBuilder, ButtonStyle} from 'discord.js'
 
 interface sendYtCountsEmbedOptions {
   videoid: string;
-  message: Discord.Message | Discord.CommandInteraction;
+  message: Discord.Message | Discord.CommandInteraction | Discord.ButtonInteraction;
   apikey: string;
   type: string;
 }
 
 export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
 
-  try {
-
-  } catch (err) {
-    console.log(err);
-
-
-  }
   const { videoid, message, apikey, type } = options;
 
   tracer.trace('ytEmbedMaker', () => {
