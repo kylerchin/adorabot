@@ -16,7 +16,8 @@ export function replyorfollowup(options: replyOrFollowUpInterface) {
 
             const objectToSend:any = content
             
-        if (typeof messageorinteraction.commandName != "undefined") {
+            //validate that it is an interaction
+        if (typeof messageorinteraction.commandName != "undefined" || typeof messageorinteraction.user != 'undefined') {
             if (messageorinteraction.deferred) {
                 return messageorinteraction.followUp(objectToSend).catch((error) => {
                     messageorinteraction.reply(objectToSend).catch((error) => {console.log(error)})
