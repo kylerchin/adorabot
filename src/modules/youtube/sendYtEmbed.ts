@@ -248,7 +248,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
               const confirm = new Discord.Button({
                 customId: 'repeatytv|' + userid + "|" + body.items[0].id,
                 label: '🔁',
-                style: Discord.ButtonStyle.primary
+                style: 2
               })
 
               contentOfMessageReply.components = [confirm]
