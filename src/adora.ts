@@ -170,11 +170,11 @@ client.on('ready',async () => {
 });
 
 client.on('interactionCreate', async interaction => {
-  tracer.trace('interactionCreate',async () => {
+  //tracer.trace('interactionCreate',async () => {
  // if (!interaction.isCommand()) return;
   await processInteraction({interaction})
   await dogstatsd.increment('adorabot.interactionCreate');
-  });
+ // });
 });
 
 client.on('rateLimit', async rateLimitInfo => {
