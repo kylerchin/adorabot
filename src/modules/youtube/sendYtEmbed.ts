@@ -249,9 +249,11 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                 customId: 'repeatytv|' + userid + "|" + body.items[0].id,
                 label: '🔁',
                 style: 2
-              })
+              });
 
-              contentOfMessageReply.components = [confirm]
+              contentOfMessageReply.content.components = [confirm];
+
+             //contentOfMessageReply.components = [confirm]
 
               var keepsending: boolean = true;
 
