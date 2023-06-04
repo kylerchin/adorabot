@@ -14,7 +14,11 @@ export function replyorfollowup(options: replyOrFollowUpInterface) {
         if (messageorinteraction) {
 
 
-            const objectToSend:any = content
+            const objectToSend:any = {content: content}
+
+            if (options.components) {
+                objectToSend.components = options.components;
+            }
             
         if (typeof messageorinteraction.commandName != "undefined") {
             if (messageorinteraction.deferred) {

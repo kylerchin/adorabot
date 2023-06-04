@@ -251,7 +251,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                 style: 2
               });
 
-              contentOfMessageReply.content.components = [confirm];
+              contentOfMessageReply.components = [confirm];
 
              //contentOfMessageReply.components = [confirm]
 
