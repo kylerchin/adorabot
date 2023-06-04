@@ -128,7 +128,6 @@ export async function createDatabases() {
     .then(async result => {
         await logger.discordDebugLogger.debug({ type: "cassandraclient", result: result })
     }).catch(error => console.error(error));
-
         //add paint the town to the list of default videos
    // await addVideoToTrackList("_EEo-iE5u_A",undefined)
 }

@@ -244,6 +244,21 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                 }
               }
 
+              var userid = ""
+
+              if (message.author) {
+                userid = message.author.id;
+              } else {if (message.user) {
+                userid = message.user.id;
+              }}
+
+              const confirm = new ButtonBuilder()
+              .setCustomId('repeatytv|' + userid + "|" + body.items[0].id)
+              .setLabel('🔁')
+              .setStyle(ButtonStyle.Secondary);
+
+              contentOfMessageReply.components = [confirm]
+
               var keepsending: boolean = true;
 
               if (type === "interaction") {
@@ -262,10 +277,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
 
                 interactionSentYetCache.set(message.id, true)
 
-                const confirm = new ButtonBuilder()
-                .setCustomId('repeat')
-                .setLabel('🔁')
-                .setStyle(ButtonStyle.Secondary);
+
 
                 await replyorfollowup(
                   contentOfMessageReply
