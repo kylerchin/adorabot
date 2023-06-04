@@ -128,9 +128,7 @@ function convertUrlToVideoId(ytquery) {
 
 export async function youtubeVideoButtonInteraction(interaction: ButtonInteraction, config:any) {
           // Defer to send an ephemeral reply later
-    interaction.deferReply()
-    .then(console.log)
-    .catch(console.error);
+ 
 
     const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
 
@@ -155,9 +153,7 @@ export async function youtubeVideoButtonInteraction(interaction: ButtonInteracti
 export async function youtubeVideoStatsInteraction(interaction: any, config: any) {
 
     // Defer to send an ephemeral reply later
-    interaction.deferReply()
-        .then(console.log)
-        .catch(console.error);
+
 
     const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
 
