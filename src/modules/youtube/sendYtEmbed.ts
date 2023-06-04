@@ -161,14 +161,14 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
               var embedYtStats: Discord.MessageEmbedOptions =
               {
                 "url": urlForEmbed,
-                "description": `${"*" + Util.escapeMarkdown(channelBody.items[0].snippet.title) + "*\n" + "https://youtu.be/" + body.items[0].id +
+                "description": `${"*" + Discord.escapeMarkdown(channelBody.items[0].snippet.title) + "*\n" + "https://youtu.be/" + body.items[0].id +
                   `${successimage ? '' : '\nChart Image software crashed, couldn\'t generate. Try again?'}`}`,
                 "color": 16711680,
                 "thumbnail": {
                   "url": body.items[0].snippet.thumbnails.default.url
                 },
                 "author": {
-                  "name": Util.escapeMarkdown(body.items[0].snippet.title),
+                  "name": Discord.escapeMarkdown(body.items[0].snippet.title),
                   "url": "https://youtube.com/watch?v=" + body.items[0].id,
                   "iconURL": channelBody.items[0].snippet.thumbnails.default.url
                 },
