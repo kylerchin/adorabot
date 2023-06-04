@@ -16,7 +16,7 @@ const axios = require('axios').default;
 import { lookuplocale } from './../lookuptablelocale'
 import { replyorfollowup } from './../replyorfollowup'
 import { Worker } from 'worker_threads'
-
+import {ButtonBuilder} from 'discord.js'
 import * as path from 'path';
 import { uploadStringToNewRelic } from "./../newRelic";
 // Exporting the class which will be 
@@ -245,7 +245,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                 userid = message.user.id;
               }}
 
-              const confirm = new Discord.Button({
+              const confirm = new ButtonBuilder({
                 customId: 'repeatytv|' + userid + "|" + body.items[0].id,
                 label: '🔁',
                 style: 2
