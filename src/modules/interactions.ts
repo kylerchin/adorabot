@@ -31,6 +31,8 @@ export async function processInteraction(args: processInteractionType) {
   try {
     const interaction = args.interaction;
 
+    console.log('interaction triggered by ', interaction.username, ' ', interaction.id)
+
     if (interaction.isButton()) {
       console.log(`${interaction.id} is button`);
 
