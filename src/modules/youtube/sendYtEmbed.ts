@@ -27,6 +27,8 @@ import { uploadStringToNewRelic } from "./../newRelic";
 // Class method which prints the 
 // user called in another file 
 
+import {ButtonBuilder, ButtonStyle} from 'discord.js'
+
 interface sendYtCountsEmbedOptions {
   videoid: string;
   message: Discord.Message | Discord.CommandInteraction;
@@ -259,6 +261,11 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
               if (keepsending) {
 
                 interactionSentYetCache.set(message.id, true)
+
+                const confirm = new ButtonBuilder()
+                .setCustomId('repeat')
+                .setLabel('🔁')
+                .setStyle(ButtonStyle.Secondary);
 
                 await replyorfollowup(
                   contentOfMessageReply

@@ -3,7 +3,8 @@ import {uploadStringToNewRelic} from './newRelic';
 interface replyOrFollowUpInterface {
     messageorinteraction: any,
     content: any,
-    tryagaininfiveseconds?: boolean
+    tryagaininfiveseconds?: boolean,
+    components?:any
 }
 
 export function replyorfollowup(options: replyOrFollowUpInterface) {
@@ -11,23 +12,30 @@ export function replyorfollowup(options: replyOrFollowUpInterface) {
 
     try {
         if (messageorinteraction) {
+
+
+            const objectToSend:any = {content}
+
+            if (options.components) {
+                objectToSend.components === options.components;
+            }
             
         if (typeof messageorinteraction.commandName != "undefined") {
             if (messageorinteraction.deferred) {
-                return messageorinteraction.followUp(content).catch((error) => {
-                    messageorinteraction.reply(content).catch((error) => {console.log(error)})
+                return messageorinteraction.followUp(objectToSend).catch((error) => {
+                    messageorinteraction.reply(objectToSend).catch((error) => {console.log(error)})
                     console.error(error);
                     uploadStringToNewRelic(JSON.stringify({...error, type: "replyorfollowuperror"}));
                 })
             } else {
-                return messageorinteraction.reply(content).catch((error) => {
-                    messageorinteraction.followUp(content).catch((error) => {console.log(error)});
+                return messageorinteraction.reply(objectToSend).catch((error) => {
+                    messageorinteraction.followUp(objectToSend).catch((error) => {console.log(error)});
                     console.error(error);
                     uploadStringToNewRelic(JSON.stringify({...error, type: "replyorfollowuperror"}));
                 })
             }
     } else {
-       return messageorinteraction.reply(content)
+       return messageorinteraction.reply(objectToSend)
     }
         }
 
