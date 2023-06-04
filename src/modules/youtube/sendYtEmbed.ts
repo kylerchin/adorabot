@@ -244,13 +244,13 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                 userid = message.user.id;
               }}
 
-              const confirm = new Discord.MessageButton({
+              const confirm = new Discord.ButtonBuilder({
                 customId: 'repeatytv|' + userid + "|" + body.items[0].id,
                 label: '🔁',
                 style: 2
               });
 
-              contentOfMessageReply.content.components = [new Discord.MessageActionRow().addComponents(confirm)];
+              contentOfMessageReply.content.components = [new Discord.ActionRowBuilder().addComponents(confirm)];
 
              //contentOfMessageReply.components = [confirm]
 
