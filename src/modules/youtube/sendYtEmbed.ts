@@ -7,9 +7,8 @@ const ytScraper = require("yt-scraper")
 import * as Discord from "discord.js"
 import { interactionSentYetCache } from "./cacheInteractionSentYet";
 import { addStatsToYtVideo, addVideoToTrackList } from './../../youtubeviewcountdaemon'
-import { Util } from "discord.js";
+import { Util,AttachmentBuilder } from "discord.js";
 const editJsonFile = require("edit-json-file");
-const { MessageAttachment } = require('discord.js');
 //import {Embed} from "discord.js"
 var importconfigfile = editJsonFile(`${__dirname}/../../../removedytvids.json`);
 const axios = require('axios').default;
@@ -150,7 +149,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
 
               var imageChartAttachment;
               if (successimage) {
-                imageChartAttachment = new Discord.MessageAttachment(imageChartBuffer, 'chart.png')
+                imageChartAttachment = new AttachmentBuilder(imageChartBuffer, 'chart.png')
                 // const attachmentChart = new MessageAttachment(imageChartBuffer, 'file.png')
 
                 console.log('imagechartattachment', imageChartAttachment)
