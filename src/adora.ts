@@ -29,7 +29,6 @@ var client = new Discord.Client(
       GatewayIntentBits.GuildVoiceStates,
       GatewayIntentBits.GuildMessageReactions,
       GatewayIntentBits.GuildMessageTyping,
-      GatewayIntentBits.GuildDirectMessages,
       GatewayIntentBits.DirectMessages,
       GatewayIntentBits.DirectMessageReactions,
       GatewayIntentBits.DirectMessageTyping
