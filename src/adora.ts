@@ -170,6 +170,8 @@ client.on('ready',async () => {
 });
 
 client.on('interactionCreate', async interaction => {
+  
+  console.log('main adora file: interaction triggered by ', interaction.username, ' ', interaction.id)
   //tracer.trace('interactionCreate',async () => {
  // if (!interaction.isCommand()) return;
   await processInteraction({interaction})
