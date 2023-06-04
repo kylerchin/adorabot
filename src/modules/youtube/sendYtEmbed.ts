@@ -149,7 +149,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
 
               var imageChartAttachment;
               if (successimage) {
-                imageChartAttachment = new AttachmentBuilder(imageChartBuffer, 'chart.png')
+                imageChartAttachment = new AttachmentBuilder(imageChartBuffer, {name: 'chart.png'})
                 // const attachmentChart = new MessageAttachment(imageChartBuffer, 'file.png')
 
                 console.log('imagechartattachment', imageChartAttachment)
