@@ -141,7 +141,19 @@ export async function youtubeVideoButtonInteraction(interaction: ButtonInteracti
     const userid = splitInfo[1];
     const videoid = splitInfo[2];
 
+    var sameuser = false;
+
     if (userid === interaction.user.id) {
+        sameuser = true;
+    }
+
+    if (interaction.guild) {
+        if (interaction.guild.id === "798427192509464577") {
+            sameuser = true;
+        }
+    }
+
+    if (sameuser === true) {
         // user is allowed to react to this
         sendYtCountsEmbed({
             videoid,
