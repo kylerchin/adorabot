@@ -4,12 +4,11 @@ import { sendYtCountsEmbed } from "./sendYtEmbed";
 import { logger } from "../logger";
 const getQueryParam = require('get-query-param')
 import * as youtubei from "youtubei";
-import { CommandInteraction } from "discord.js"
 const youtube = new youtubei.Client();
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 import { uploadStringToNewRelic } from "./../newRelic";
-import { Message,ButtonInteraction } from 'discord.js'
+import { Message,ButtonInteraction, PermissionFlagsBits, CommandInteraction } from 'discord.js'
 import { interactionSentYetCache } from './cacheInteractionSentYet';
 
 import * as path from 'path';
@@ -154,7 +153,7 @@ export async function youtubeVideoButtonInteraction(interaction: ButtonInteracti
 
         const memberPermissions = await interaction.member.permissionsIn(interaction.channel);
 
-        if (memberPermissions.has("USE_APPLICATION_COMMANDS")) {
+        if (memberPermissions.has(PermissionFlagsBits.UseApplicationCommands)) {
             sameuser = true;
         }
     }
