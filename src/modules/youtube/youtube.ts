@@ -151,6 +151,12 @@ export async function youtubeVideoButtonInteraction(interaction: ButtonInteracti
         if (interaction.guild.id === "798427192509464577") {
             sameuser = true;
         }
+
+        const memberPermissions = await interaction.member.permissionsIn(interaction.channel);
+
+        if (memberPermissions.has("USE_APPLICATION_COMMANDS")) {
+            sameuser = true;
+        }
     }
 
     if (sameuser === true) {
