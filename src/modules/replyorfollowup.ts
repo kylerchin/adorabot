@@ -20,13 +20,13 @@ export function replyorfollowup(options: replyOrFollowUpInterface) {
         if (typeof messageorinteraction.commandName != "undefined" || typeof messageorinteraction.user != 'undefined') {
             if (messageorinteraction.deferred) {
                 return messageorinteraction.followUp(objectToSend).catch((error) => {
-                    messageorinteraction.reply(objectToSend).catch((error) => {console.log(error)})
+                    messageorinteraction.reply(objectToSend).catch((error) => {console.error(error)})
                     console.error(error);
                     uploadStringToNewRelic(JSON.stringify({...error, type: "replyorfollowuperror"}));
                 })
             } else {
                 return messageorinteraction.reply(objectToSend).catch((error) => {
-                    messageorinteraction.followUp(objectToSend).catch((error) => {console.log(error)});
+                    messageorinteraction.followUp(objectToSend).catch((error) => {console.error(error)});
                     console.error(error);
                     uploadStringToNewRelic(JSON.stringify({...error, type: "replyorfollowuperror"}));
                 })
