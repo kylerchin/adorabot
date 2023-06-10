@@ -13,6 +13,7 @@ import { interactionSentYetCache } from './cacheInteractionSentYet';
 
 import * as path from 'path';
 import { Worker } from 'worker_threads';
+import { replyorfollowup } from "../replyorfollowup";
 
 function skipChannel(channelid) {
     try {
@@ -269,7 +270,10 @@ export async function youtubeVideoStatsInteraction(interaction: any, config: any
                     // console.timeEnd("youtubei")
 
                     if (videos.length <= 0) {
-                        interaction.reply("I couldn't find any videos matching that term!")
+                        replyorfollowup({
+                            messageorinteraction: interaction,
+                            content: "I couldn't find any videos matching that term!"
+                        })
                         logger.discordInfoLogger.info({ type: "searchYoutubeVideoTermNothingFound", query: searchYtString })
                     } else {
 
