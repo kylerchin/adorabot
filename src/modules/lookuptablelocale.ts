@@ -30,12 +30,14 @@ export const lookuptable = {
     "views": {
         "ko": "조회수",
         "en": "Views",
-        "zn-CN": "次观看"
+        "zn-CN": "次观看",
+        "ja": "回視聴"
     },
     "likes": {
         "ko": "좋아요",
         "en": "Likes",
-        "zn-CN": "顶一下"
+        "zn-CN": "顶一下",
+        "ja": "いいね！"
     },
     "dislikes": {
         "ko": "싫어요",
@@ -45,11 +47,13 @@ export const lookuptable = {
     "comments": {
         "ko": "댓글",
         "en": "Comments",
-        "zn-CN": "条评论"
+        "zn-CN": "条评论",
+        "ja": "コメント"
     },
     "publishedat": {
     "en": "Published at",        
-    "ko": "발행일"
+    "ko": "발행일",
+    "ja": "発行日"
     },
     "monthchar": {
         "en": "월",
