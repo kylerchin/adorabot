@@ -38,14 +38,16 @@ export const lookuptable = {
         "en": "Views",
         "zh-CN": "次观看",
         "ja": "回視聴",
-        "zh-TW": "次觀看"
+        "zh-TW": "次觀看",
+        "de": "Aufrufe"
     },
     "likes": {
         "ko": "좋아요",
         "en": "Likes",
         "zh-CN": "顶一下",
         "ja": "いいね！",
-        "zh-TW": "頂一下"
+        "zh-TW": "頂一下",
+        "de": "„Mag ich“"
     },
     "dislikes": {
         "ko": "싫어요",
@@ -58,14 +60,16 @@ export const lookuptable = {
         "en": "Comments",
         "zh-CN": "条评论",
         "ja": "コメント",
-        "zh-TW": "條評論"
+        "zh-TW": "條評論",
+        "de": "Kommentare"
     },
     "publishedat": {
     "en": "Published at",        
     "ko": "발행일",
     "ja": "発行日",
     "zh-CN": "出版日期",
-    "zh-TW": "出版日期"
+    "zh-TW": "出版日期",
+    "de": "Veröffentlichungsdatum"
     },
     "monthchar": {
         "en": "월",
