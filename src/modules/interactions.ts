@@ -12,12 +12,14 @@ import {interactionautoban} from './interactionautoban'
 import {bankickinteraction} from './bankickinteraction'
 import {helppageinteraction} from './help'
 import { showTopVotersInteraction} from './vote'
+import {}
 const { config } = require('./../../config.json');
 
 import {uploadStringToNewRelic} from './newRelic';
 import { youtubeVideoStatsInteraction } from './youtube/youtube'
 import { inspectInteraction } from './inspect';
 import { sendVoteLinks } from './vote';
+import { youtubeVideoButtonInteraction } from './youtube/youtube';
 
 interface processInteractionType {
   interaction: any;
@@ -29,15 +31,21 @@ export async function processInteraction(args: processInteractionType) {
   try {
     const interaction = args.interaction;
 
+    console.log('interaction triggered by ', interaction.username, ' ', interaction.id)
+
     if (interaction.isButton()) {
       console.log(`${interaction.id} is button`);
 
       if (interaction.isRepliable()) {
         console.log(`${interaction.id} is button & repliable`);
+
+          if (interaction.customId.startsWith("repeatytv|")) {
+            youtubeVideoButtonInteraction(interaction, config);
+          }
       }
     }
 
-    if (interaction.isCommand) {
+    if (interaction.isCommand()) {
 
       const expr = interaction.commandName;
       switch (expr) {

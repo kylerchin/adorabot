@@ -7,16 +7,15 @@ const ytScraper = require("yt-scraper")
 import * as Discord from "discord.js"
 import { interactionSentYetCache } from "./cacheInteractionSentYet";
 import { addStatsToYtVideo, addVideoToTrackList } from './../../youtubeviewcountdaemon'
-import { Util } from "discord.js";
+import { Util,AttachmentBuilder } from "discord.js";
 const editJsonFile = require("edit-json-file");
-const { MessageAttachment } = require('discord.js');
 //import {Embed} from "discord.js"
 var importconfigfile = editJsonFile(`${__dirname}/../../../removedytvids.json`);
 const axios = require('axios').default;
 import { lookuplocale } from './../lookuptablelocale'
 import { replyorfollowup } from './../replyorfollowup'
 import { Worker } from 'worker_threads'
-
+import {ButtonBuilder} from 'discord.js'
 import * as path from 'path';
 import { uploadStringToNewRelic } from "./../newRelic";
 // Exporting the class which will be 
@@ -27,22 +26,17 @@ import { uploadStringToNewRelic } from "./../newRelic";
 // Class method which prints the 
 // user called in another file 
 
+import {ButtonBuilder, ButtonStyle} from 'discord.js'
+
 interface sendYtCountsEmbedOptions {
   videoid: string;
-  message: Discord.Message | Discord.CommandInteraction;
+  message: Discord.Message | Discord.CommandInteraction | Discord.ButtonInteraction;
   apikey: string;
   type: string;
 }
 
 export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
 
-  try {
-
-  } catch (err) {
-    console.log(err);
-
-
-  }
   const { videoid, message, apikey, type } = options;
 
   tracer.trace('ytEmbedMaker', () => {
@@ -155,7 +149,7 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
 
               var imageChartAttachment;
               if (successimage) {
-                imageChartAttachment = new Discord.MessageAttachment(imageChartBuffer, 'chart.png')
+                imageChartAttachment = new AttachmentBuilder(imageChartBuffer, {name: 'chart.png'})
                 // const attachmentChart = new MessageAttachment(imageChartBuffer, 'file.png')
 
                 console.log('imagechartattachment', imageChartAttachment)
@@ -167,14 +161,14 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
               var embedYtStats: Discord.MessageEmbedOptions =
               {
                 "url": urlForEmbed,
-                "description": `${"*" + Util.escapeMarkdown(channelBody.items[0].snippet.title) + "*\n" + "https://youtu.be/" + body.items[0].id +
+                "description": `${"*" + Discord.escapeMarkdown(channelBody.items[0].snippet.title) + "*\n" + "https://youtu.be/" + body.items[0].id +
                   `${successimage ? '' : '\nChart Image software crashed, couldn\'t generate. Try again?'}`}`,
                 "color": 16711680,
                 "thumbnail": {
                   "url": body.items[0].snippet.thumbnails.default.url
                 },
                 "author": {
-                  "name": Util.escapeMarkdown(body.items[0].snippet.title),
+                  "name": Discord.escapeMarkdown(body.items[0].snippet.title),
                   "url": "https://youtube.com/watch?v=" + body.items[0].id,
                   "iconURL": channelBody.items[0].snippet.thumbnails.default.url
                 },
@@ -242,6 +236,24 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
                 }
               }
 
+              var userid = ""
+
+              if (message.author) {
+                userid = message.author.id;
+              } else {if (message.user) {
+                userid = message.user.id;
+              }}
+
+              const confirm = new Discord.ButtonBuilder({
+                customId: 'repeatytv|' + userid + "|" + body.items[0].id,
+                label: '🔁',
+                style: 2
+              });
+
+              contentOfMessageReply.content.components = [new Discord.ActionRowBuilder().addComponents(confirm)];
+
+             //contentOfMessageReply.components = [confirm]
+
               var keepsending: boolean = true;
 
               if (type === "interaction") {
@@ -259,6 +271,8 @@ export async function sendYtCountsEmbed(options: sendYtCountsEmbedOptions) {
               if (keepsending) {
 
                 interactionSentYetCache.set(message.id, true)
+
+
 
                 await replyorfollowup(
                   contentOfMessageReply

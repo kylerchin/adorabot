@@ -11,22 +11,27 @@ let fileOfBanTimeouts = editJsonFile(`${__dirname}/../putgetbanstimeout.json`);
 const Discord = require('discord.js');
 const { DiscordTogether } = require('discord-together');
 var elapsedTimeFirstMsg;
+import {GatewayIntentBits,Partials } from 'discord.js'
 var client = new Discord.Client(
   { 
-    partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER', 'GUILD_MEMBER'],
+    partials: [Partials.Message,
+      Partials.Channel,
+      Partials.Reaction,
+      Partials.User,
+      Partials.GuildMember],
     intents: [
-      "GUILDS",
-      "GUILD_BANS",
-      "GUILD_EMOJIS_AND_STICKERS",
-      "GUILD_INTEGRATIONS",
-      "GUILD_WEBHOOKS",
-      "GUILD_INVITES",
-      "GUILD_VOICE_STATES",
-      "GUILD_MESSAGE_REACTIONS",
-      "GUILD_MESSAGE_TYPING",
-      "DIRECT_MESSAGES",
-      "DIRECT_MESSAGE_REACTIONS",
-      "DIRECT_MESSAGE_TYPING"
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildBans,
+      GatewayIntentBits.GuildEmojisAndStickers,
+      GatewayIntentBits.GuildIntegrations,
+      GatewayIntentBits.GuildWebhooks,
+      GatewayIntentBits.GuildInvites,
+      GatewayIntentBits.GuildVoiceStates,
+      GatewayIntentBits.GuildMessageReactions,
+      GatewayIntentBits.GuildMessageTyping,
+      GatewayIntentBits.DirectMessages,
+      GatewayIntentBits.DirectMessageReactions,
+      GatewayIntentBits.DirectMessageTyping
     ],
    waitGuildTimeout: 1000
   });
@@ -51,8 +56,6 @@ import { alertBotAdder } from './modules/alertBotAdder';
 import { listChartsDownload } from './modules/billboard';
 import { createDatabase } from './modules/antiPhishingLinks';
 import {voteReminderRuntime} from './modules/votereminder'
-
-
 
 const NodeCache = require( "node-cache" );
 
@@ -172,11 +175,13 @@ client.on('ready',async () => {
 });
 
 client.on('interactionCreate', async interaction => {
-  tracer.trace('interactionCreate',async () => {
+  
+  console.log('main adora file: interaction triggered by ', interaction.username, ' ', interaction.id)
+  //tracer.trace('interactionCreate',async () => {
  // if (!interaction.isCommand()) return;
   await processInteraction({interaction})
   await dogstatsd.increment('adorabot.interactionCreate');
-  });
+ // });
 });
 
 client.on('rateLimit', async rateLimitInfo => {

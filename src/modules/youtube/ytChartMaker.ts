@@ -310,11 +310,7 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
                     (averagePointForThisMonth - leastAndGreatestObject["leastTime"]) / timeRange;
                 var pointxmonth = canvasWidthRange * percxmonth + paddingLeft;
 
-                ctxLegendXLabel.fillText(
-                    `${monthCodeToWrite}`,
-                    pointxmonth,
-                    canvas.height - 40
-                );
+               
 
                 if (countMonth === 11) {
                     countMonth = 0;
@@ -333,11 +329,24 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
             var percxlegend =
                 (timeLegend - leastAndGreatestObject["leastTime"]) / timeRange;
             var pointx = canvasWidthRange * percxlegend + paddingLeft;
-            ctxSubLegend.beginPath();
-            ctxSubLegend.moveTo(pointx, pointytop);
-            ctxSubLegend.lineTo(pointx, pointybottom);
-            ctxSubLegend.stroke();
-            ctxSubLegend.closePath();
+        
+            var shouldDrawThisTime = true;
+
+                if (timeRange > 90 * 86400_000) {
+                    shouldDrawThisTime = false;
+
+                    if ([1,14].includes(new Date(timeLegend).getUTCDate()) === true) {
+                        shouldDrawThisTime = true;
+                    }
+                }
+                
+                if (shouldDrawThisTime === true) {
+                    ctxSubLegend.beginPath(); 
+                ctxSubLegend.moveTo(pointx, pointytop); 
+                ctxSubLegend.lineTo(pointx, pointybottom); 
+                ctxSubLegend.stroke(); 
+                ctxSubLegend.closePath(); 
+                }
 
             var daysLabelsOffsetFromBottom = 40;
             var monthsLabelsOffsetFromBottom = 25;
@@ -345,38 +354,56 @@ export async function imageGeneratorFunction(optionsForImageGen: imagegeninterfa
 
 
             //more than 20 days
-            if (timeRange > 60 * 60 * 24 * 1000 * 20) {
+            if (timeRange > 86400_000 * 20) {
                 daysLabelsOffsetFromBottom = 80;
                 modulusForDays = 2;
             }
 
 
             //more than 40 days
-            if (timeRange > 60 * 60 * 24 * 1000 * 40) {
+            if (timeRange > 86400_000 * 40) {
                 modulusForDays = 3;
             }
 
-            if (numberOfDaysDone % modulusForDays == 0) {
-                //less than 40 days
-                if (timeRange < 40 * 60 * 24 * 1000 * 20) {
-
-                    // month and date
-                    ctxLegendXLabel.fillText(
-                        `${new Date(timeLegend).getUTCMonth() + 1}/${new Date(timeLegend).getUTCDate()}`,
-                        pointx,
-                        canvas.height - daysLabelsOffsetFromBottom
+            if (timeRange > 90 * 86400_000) {
+                if ([1,14].includes(new Date(timeLegend).getUTCDate()) === true) {
+                    ctxLegendXLabel.fillText( 
+                        `${new Date(timeLegend).getUTCDate()}`, 
+                        pointx, 
+                        canvas.height - daysLabelsOffsetFromBottom 
                     );
 
-                } else {
-                    //bigger than 40 days
-                    //draw only the date
-                    ctxLegendXLabel.fillText(
-                        `${new Date(timeLegend).getUTCDate()}`,
-                        pointx,
-                        canvas.height - daysLabelsOffsetFromBottom
-                    );
+                    if (new Date(timeLegend).getUTCDate() === 14) {
+                        ctxLegendXLabel.fillText( 
+                            `${new Date(timeLegend).getUTCFullYear()}-${new Date(timeLegend).getUTCMonth() + 1}`, 
+                            pointx, 
+                            canvas.height - monthsLabelsOffsetFromBottom
+                        );
+                    }
                 }
-
+            } else {
+                if (numberOfDaysDone % modulusForDays == 0) { 
+                    //less than 30 days 
+                    if (timeRange < 30 * 86400_000) { 
+ 
+                        // month and date 
+                        ctxLegendXLabel.fillText( 
+                            `${new Date(timeLegend).getUTCMonth() + 1}/${new Date(timeLegend).getUTCDate()}`, 
+                            pointx, 
+                            canvas.height - daysLabelsOffsetFromBottom 
+                        ); 
+ 
+                    } else { 
+                        //bigger than 30 days 
+                        //draw only the date 
+                        ctxLegendXLabel.fillText( 
+                            `${new Date(timeLegend).getUTCDate()}`, 
+                            pointx, 
+                            canvas.height - daysLabelsOffsetFromBottom 
+                        ); 
+                    } 
+ 
+                } 
             }
 
             timeLegend += 60 * 60 * 24 * 1000;

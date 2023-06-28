@@ -4,16 +4,16 @@ import { sendYtCountsEmbed } from "./sendYtEmbed";
 import { logger } from "../logger";
 const getQueryParam = require('get-query-param')
 import * as youtubei from "youtubei";
-import { CommandInteraction } from "discord.js"
 const youtube = new youtubei.Client();
 const editJsonFile = require("edit-json-file");
 var importconfigfile = editJsonFile(`${__dirname}/../../removedytvids.json`);
 import { uploadStringToNewRelic } from "./../newRelic";
-import { Message } from 'discord.js'
+import { Message,ButtonInteraction, PermissionFlagsBits, CommandInteraction } from 'discord.js'
 import { interactionSentYetCache } from './cacheInteractionSentYet';
 
 import * as path from 'path';
 import { Worker } from 'worker_threads';
+import { replyorfollowup } from "../replyorfollowup";
 
 function skipChannel(channelid) {
     try {
@@ -125,6 +125,51 @@ function convertUrlToVideoId(ytquery) {
     return getQueryParam('v', precurser);
 }
 
+
+export async function youtubeVideoButtonInteraction(interaction: ButtonInteraction, config:any) {
+          // Defer to send an ephemeral reply later
+    interaction.deferReply()
+    .then(console.log)
+    .catch(console.error);
+
+    const youtubeApiKeyRandomlyChosen = config.youtubeApiKeys[Math.floor(Math.random() * config.youtubeApiKeys.length)];
+
+    const customId = interaction.customId;
+
+    const splitInfo = customId.split("|");
+
+    const userid = splitInfo[1];
+    const videoid = splitInfo[2];
+
+    var sameuser = false;
+
+    if (userid === interaction.user.id) {
+        sameuser = true;
+    }
+
+    if (interaction.guild) {
+        if (interaction.guild.id === "798427192509464577") {
+            sameuser = true;
+        }
+
+        const memberPermissions = await interaction.member.permissionsIn(interaction.channel);
+
+        if (memberPermissions.has(PermissionFlagsBits.UseApplicationCommands)) {
+            sameuser = true;
+        }
+    }
+
+    if (sameuser === true) {
+        // user is allowed to react to this
+        sendYtCountsEmbed({
+            videoid,
+            message: interaction,
+            apikey: youtubeApiKeyRandomlyChosen,
+            type: "interaction"
+        })
+    }
+}
+
 export async function youtubeVideoStatsInteraction(interaction: any, config: any) {
 
     // Defer to send an ephemeral reply later
@@ -225,7 +270,10 @@ export async function youtubeVideoStatsInteraction(interaction: any, config: any
                     // console.timeEnd("youtubei")
 
                     if (videos.length <= 0) {
-                        interaction.reply("I couldn't find any videos matching that term!")
+                        replyorfollowup({
+                            messageorinteraction: interaction,
+                            content: "I couldn't find any videos matching that term!"
+                        })
                         logger.discordInfoLogger.info({ type: "searchYoutubeVideoTermNothingFound", query: searchYtString })
                     } else {
 
