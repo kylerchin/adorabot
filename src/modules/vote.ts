@@ -588,7 +588,7 @@ export async function showTopVoters(voteArgs: showTopVotersArgs) {
 
                     //var descForPage = page
                     var messageMap = {
-                        "content": `Vote for Adora with \`a!vote\` to show up on the leaderboard!\n${voteAskString}`,
+                        "content": `Vote for Adora with \`/vote\` to show up on the leaderboard!\n${voteAskString}`,
                         "embeds": [{
                             "description": page,
                             "title": `Top Voters (past 30 days)`,
