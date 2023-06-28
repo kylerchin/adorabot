@@ -6,6 +6,7 @@ const TimeUuid = require('cassandra-driver').types.TimeUuid;
 import { cassandraclient } from './cassandraclient'
 import { logger, tracer, span } from './logger'
 import { replyorfollowup } from './replyorfollowup';
+import { splitMessage } from './util'
 
 //stolen from https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
 function sortObject(obj) {
@@ -248,7 +249,7 @@ export async function showTopVotersInteraction(voteArgs: showTopVotersArgsIntera
                 
                         });*/
 
-                    pages = Util.splitMessage(sortedFormatedRows.join("\n"), { maxLength: 1500 })
+                    pages = splitMessage(sortedFormatedRows.join("\n"), { maxLength: 1500 })
 
                     console.log(pages)
 
@@ -556,7 +557,7 @@ export async function showTopVoters(voteArgs: showTopVotersArgs) {
             
                     });*/
 
-                pages = Util.splitMessage(sortedFormatedRows.join("\n"), { maxLength: 1500 })
+                pages = splitMessage(sortedFormatedRows.join("\n"), { maxLength: 1500 })
 
                 console.log(pages)
 
