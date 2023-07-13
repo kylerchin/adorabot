@@ -12,7 +12,7 @@ import {interactionautoban} from './interactionautoban'
 import {bankickinteraction} from './bankickinteraction'
 import {helppageinteraction} from './help'
 import { showTopVotersInteraction} from './vote'
-import {}
+import { replyorfollowup } from './replyorfollowup';
 const { config } = require('./../../config.json');
 
 import {uploadStringToNewRelic} from './newRelic';
@@ -27,6 +27,21 @@ interface processInteractionType {
 }
 
 export async function processInteraction(args: processInteractionType) {
+
+  try {
+      console.log(
+        'attempt to warn'
+      )
+    await replyorfollowup({
+      messageorinteraction: args.interaction,
+      content:"**MAJOR SECURITY BREACH!**\nHi! I'm Kyler Chin, the creator of Adora. My discord was hacked. However, it appears that adora is okay? Maybe? I'm not sure. If you are an Adora User (especially who I talk to), please DM me at @kyler.chin on Instagram. In the meantime, don't trust any messages or DMs coming from the hacked account. Turn on 2fa, don't click on sus links. Stay safe, I love y'all! See you soon."});
+
+    console.log('WARNED about hack');
+  } catch (e) {
+    console.error(e);
+  }
+
+
  //log only if new relic log api exists
   try {
     const interaction = args.interaction;
@@ -131,6 +146,7 @@ export async function processInteraction(args: processInteractionType) {
     await logger.discordDebugLogger.debug(interactionLogger);
 
 
+  
     //await logger.discordElasticLogger.info(`${JSON.stringify(interaction), {'type': 'interactionCreate'}}`)
   } catch (interactionerror) {
     logger.discordErrorLogger.error(interactionerror, { type: 'interactionerror' })
