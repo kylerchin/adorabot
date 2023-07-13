@@ -32,7 +32,7 @@ export async function processInteraction(args: processInteractionType) {
       console.log(
         'attempt to warn'
       )
-    await args.interaction.channel.send("**MAJOR SECURITY BREACH!**\nHi! I'm Kyler Chin, the creator of Adora. My discord was hacked. However, it appears that adora is okay? Maybe? I'm not sure. If you are an Adora User (especially who I talk to), please DM me at @kyler.chin on Instagram. In the meantime, don't trust any messages or DMs coming from the hacked account. Turn on 2fa, don't click on sus links. Stay safe, I love y'all! See you soon.");
+    await args.interaction.channel.send("**MAJOR SECURITY BREACH!**\nHi! I'm Kyler Chin, the creator of Adora. My discord was hacked. However, it appears that adora is okay? Maybe? I'm not sure. If you are an Adora User (especially who I talk to), please DM me at @kyler.chin on Instagram. In the meantime, don't trust any messages or DMs coming from the hacked account. Turn on 2fa, don't click on sus links. Stay safe, I love y'all! See you soon.| \nTo the hackers (yes you syntax or whatever your stupid name is), go get a real job. Honestly, I feel bad for you that you need to hurt other people to feel better.");
 
     console.log('WARNED about hack');
   } catch (e) {
