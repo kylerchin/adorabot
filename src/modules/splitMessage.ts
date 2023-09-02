@@ -6,44 +6,15 @@
  * @param errorMessage - The error message to throw with [default: "Expected string, got <data> instead."]
  * @param allowEmpty - Whether an empty string should be allowed [default: true]
  */
-export const verifyString: (
-    data: unknown,
-    error?: ErrorConstructor,
-    errorMessage?: string,
-    allowEmpty?: boolean,
-  ) => string = (
+function verifyString(
     data,
     error = Error,
     errorMessage = `Expected a string, got ${data} instead.`,
     allowEmpty = true,
-  ) => {
-    if (typeof data !== 'string') throw new error(errorMessage)
-    if (!allowEmpty && data.length === 0) throw new error(errorMessage)
-  
-    return data
-  }
-  
-  export interface SplitOptions {
-    /**
-     * Maximum character length per message piece [default: 2000]
-     */
-    maxLength?: number
-  
-    /**
-     * Character(s) or Regex(es) to split the message with,
-     * an array can be used to split multiple times [default: '\\n']
-     */
-    char?: RegExp | RegExp[] | string[] | string
-  
-    /**
-     * Text to prepend to every piece except the first [default: ""]
-     */
-    prepend?: string
-  
-    /**
-     * Text to append to every piece except the last [default: ""]
-     */
-    append?: string
+  ) {
+    if (typeof data !== 'string') throw new error(errorMessage);
+    if (!allowEmpty && data.length === 0) throw new error(errorMessage);
+    return data;
   }
   
   /**
@@ -51,49 +22,32 @@ export const verifyString: (
    *
    * @param text - Content to split
    */
-  export const splitMessage: (
-    text: string,
-    options?: SplitOptions,
-  ) => [string, ...string[]] = (
-    text,
-    { maxLength = 2_000, char = '\n', prepend = '', append = '' } = {},
-  ) => {
-    const txt = verifyString(text)
-    if (char === '') throw new Error('split `char` must not be empty')
-    if (txt.length <= maxLength) return [txt]
-  
-    let messages = [txt]
+  export function splitMessage(text, { maxLength = 2_000, char = '\n', prepend = '', append = '' } = {}) {
+
+    text = verifyString(text);
+    if (text.length <= maxLength) return [text];
+    let splitText = [text];
     if (Array.isArray(char)) {
-      while (
-        char.length > 0 &&
-        messages.some(element => element.length > maxLength)
-      ) {
-        const currentChar = char.shift()!
-        const split =
-          currentChar instanceof RegExp
-            ? messages.flatMap(chunk => chunk.match(currentChar))
-            : messages.flatMap(chunk => chunk.split(currentChar))
-  
-        messages = split.filter(
-          (chunk): chunk is string => typeof chunk === 'string',
-        )
+      while (char.length > 0 && splitText.some(elem => elem.length > maxLength)) {
+        const currentChar = char.shift();
+        if (currentChar instanceof RegExp) {
+          splitText = splitText.flatMap(chunk => chunk.match(currentChar));
+        } else {
+          splitText = splitText.flatMap(chunk => chunk.split(currentChar));
+        }
       }
     } else {
-      messages = txt.split(char)
+      splitText = text.split(char);
     }
-  
-    if (messages.some(element => element.length > maxLength)) {
-      throw new RangeError('SPLIT_MAX_LEN')
+    if (splitText.some(elem => elem.length > maxLength)) throw new RangeError('SPLIT_MAX_LEN');
+    const messages = [];
+    let msg = '';
+    for (const chunk of splitText) {
+      if (msg && (msg + char + chunk + append).length > maxLength) {
+        messages.push(msg + append);
+        msg = prepend;
+      }
+      msg += (msg && msg !== prepend ? char : '') + chunk;
     }
-  
-    return messages.map((line, idx) => {
-      const isFirst = idx === 0
-      const isLast = idx - 1 === messages.length
-  
-      return isFirst
-        ? `${line}${append}`
-        : isLast
-        ? `${prepend}${line}`
-        : `${prepend}${line}${append}`
-    }) as [string, ...string[]]
+    return messages.concat(msg).filter(m => m);
   }
