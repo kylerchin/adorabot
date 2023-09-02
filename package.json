@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "run": "node ./dist/app.js",
-    "build": "mkdir dist && cp ./LexendDecaMedium.ttf ./dist/ && cp ./AtkinsonHyper.ttf ./dist && cp ./NotoSansKR-Regular.otf ./dist && tsc",
+    "build": "mkdir -p dist || true && cp ./LexendDecaMedium.ttf ./dist/ && cp ./AtkinsonHyper.ttf ./dist && cp ./NotoSansKR-Regular.otf ./dist && tsc",
     "movefont": "cp ./LexendDecaMedium.ttf ./dist/",
     "server": "node ./dist/runserver.js",
     "testslash": "node ./dist/testregister.js",
