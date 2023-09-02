@@ -4,6 +4,7 @@ var _ = require('lodash');
 import axios = require('axios');
 import cio = require('cheerio-without-node-native');
 import Discord = require('discord.js');
+import splitMessage from '@lolpants/splitmessage'
 import {Util,ReactionCollector,CommandInteraction,Message} from 'discord.js'
 import {decode} from 'html-entities';
 import { initial } from 'lodash';
@@ -160,9 +161,9 @@ export async function geniusShowOtherSongs(response,requesterid,isInteractionOrM
 
             var arrayOfTexts: Array<string> = [];
 
-            var arrayOfTextsSingleLined = await Util.splitMessage(songLyricsHTML, {char : `\n`});;
+            var arrayOfTextsSingleLined = await splitMessage(songLyricsHTML, {char : `\n`});;
             
-            var arrayOfTextsDoubleLined = await Util.splitMessage(songLyricsHTML, {char : `\n\n`});
+            var arrayOfTextsDoubleLined = await splitMessage(songLyricsHTML, {char : `\n\n`});
 
             if (arrayOfTextsDoubleLined === arrayOfTextsSingleLined) {
                 arrayOfTexts = arrayOfTextsDoubleLined
@@ -417,7 +418,7 @@ export async function geniusLyrics(message:Message,args, client) {
 
             logger.discordInfoLogger.info({type: 'songlyricshtml', message: songLyricsHTML})
 
-            var arrayOfTexts = await Util.splitMessage(songLyricsHTML);
+            var arrayOfTexts = await splitMessage(songLyricsHTML);
 
             console.log(arrayOfTexts)
 
