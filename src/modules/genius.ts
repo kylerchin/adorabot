@@ -4,7 +4,7 @@ var _ = require('lodash');
 import axios = require('axios');
 import cio = require('cheerio-without-node-native');
 import Discord = require('discord.js');
-import splitMessage from '@luludev/splitmessage'
+import { splitMessage } from './splitMessage';
 import {Util,ReactionCollector,CommandInteraction,Message} from 'discord.js'
 import {decode} from 'html-entities';
 import { initial } from 'lodash';
