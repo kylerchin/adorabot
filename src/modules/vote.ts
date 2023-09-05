@@ -146,7 +146,7 @@ export async function showTopVotersInteraction(voteArgs: showTopVotersArgsIntera
             replyorfollowup(
                 {
                     messageorinteraction: voteArgs.interaction,
-                    content: "No votes have been cast yet. Vote for me on top.gg and discordbotlist.com to be added to the leaderboard!",
+                    content: "No votes have been cast yet. Vote for me on top.gg and discordbotlist.com to be added to the leaderboard!\nVoting sites, each site earns 1 vote:\nTop.gg: https://top.gg/bot/737046643974733845/vote\nDiscord Bot List: https://discordbotlist.com/bots/adora-ahelp/upvote\nCheck that your vote has been counted in the leaderboard with `/votes`",
                     tryagaininfiveseconds: true
                 }
             )
