@@ -1,5 +1,7 @@
 # Adora Bot
 
+The Typescript version of this bot is reaching end of life. The rewrite will be here: https://github.com/kylerchin/adora-rs 
+
 Adora bot is a specialised bot aimed at Kpop Discord Servers with YouTube view statistical tracking and powerful moderation features.
 You can add it to your server by using this link:  https://discord.com/api/oauth2/authorize?client_id=737046643974733845&permissions=8&scope=bot
 
